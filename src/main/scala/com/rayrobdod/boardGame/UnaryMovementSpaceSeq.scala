@@ -1,7 +1,5 @@
 package com.rayrobdod.boardGame
 
-import javax.swing.JPanel
-import scala.swing.Panel
 import scala.collection.immutable.Set
 import com.rayrobdod.boardGame.{Token => BoardGameToken}
 import scala.collection.immutable.LinearSeq

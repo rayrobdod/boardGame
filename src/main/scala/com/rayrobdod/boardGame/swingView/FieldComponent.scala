@@ -1,7 +1,6 @@
 package com.rayrobdod.boardGame.swingView
 
 import scala.util.Random
-import scala.swing.Swing
 import java.awt.{Image, GridLayout, Point}
 import javax.swing.{JLabel, JComponent, Icon, JPanel}
 import com.rayrobdod.boardGame.{RectangularField, RectangularSpace, SpaceClassConstructor => SpaceConstructor}

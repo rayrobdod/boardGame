@@ -1,7 +1,5 @@
 package com.rayrobdod.boardGame
 
-import javax.swing.JPanel
-import scala.swing.Panel
 import scala.collection.immutable.{Set, List, Map => IMap}
 import scala.collection.mutable.{Map => MMap}
 import scala.math.Ordering

@@ -2,7 +2,6 @@ package com.rayrobdod.boardGame
 
 import scala.collection.immutable.Seq
 import java.util.concurrent.{Future => JavaFuture, TimeUnit, TimeoutException}
-//import scala.parallel.{Future => ScalaPFuture}
 
 /**
  * A group of spaces such that they form a rectangular board made of
