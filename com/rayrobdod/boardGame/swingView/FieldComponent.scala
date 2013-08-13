@@ -6,6 +6,7 @@ import java.awt.{Image, GridLayout, Point}
 import javax.swing.{JLabel, JComponent, Icon, JPanel}
 import com.rayrobdod.boardGame.{RectangularField, RectangularSpace, SpaceClassConstructor => SpaceConstructor}
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
+import com.rayrobdod.swing.layouts.LayeredLayout
 
 /**
  * A component that displays a RectangularFiled using a certain Tilesheet
@@ -23,6 +24,8 @@ import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
  * @version 2.0
  * @version 25 Aug 2012 - adding layers: one for below the tokens, one for the tokens, and one for above the tokens
  * @version 28 Oct 2012 - fixing afterimage effect with `tokenLayer.setOpaque(false)`
+ * @version 2013 Jun 06 - replacing inner class `OverlappingLayout` with functionally identical 
+				`com.rayrobdod.swing.layouts.LayeredLayout`
  *  
  * @param tilesheet the tilesheet that images to display are selected from
  * @param field the field that this tile will represent
@@ -48,7 +51,7 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	this.add(tokenLayer)
 	this.add(lowLayer)
 	
-	// adding annimations
+	// adding animations
 	(lowIcons ++ highIcons).filter{_.isInstanceOf[AnimationIcon]}.foreach{(x:Icon) => 
 		val animIcon = x.asInstanceOf[AnimationIcon]
 		animIcon.addRepaintOnNextFrameListener(FieldComponent.this)
@@ -69,7 +72,8 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	val spaceLabelMap:Map[RectangularSpace, JLabel] = spaces.zip(lowLayer.labels).toMap
 	
 	// overlapping layout
-	this.setLayout(OverlappingLayout)
+	/* maybe will solve problems? this.setFocusable(true) */
+	this.setLayout(new LayeredLayout)
 	this.doLayout()
 	
 	
@@ -86,34 +90,5 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 		}
 		this.setBackground(transparent)
 		this.setOpaque(false)
-	}
-	
-	object OverlappingLayout extends java.awt.LayoutManager
-	{
-		import java.awt.{Component, Container, Dimension}
-		
-		override def addLayoutComponent(name:String, comp:Component) = {}
-		override def removeLayoutComponent(comp:Component) = {}
-
-		override def layoutContainer(parent:Container) = {
-			parent.getComponents().foreach{(child:Component) =>
-				child.setLocation(0,0)
-				child.setSize(parent.getWidth, parent.getHeight)
-			}
-		}
-
-		override def minimumLayoutSize(parent:Container) = {
-			val width = parent.getComponents.map{_.getMinimumSize.getWidth}.max
-			val height = parent.getComponents.map{_.getMinimumSize.getHeight}.max
-			
-			new Dimension(width.intValue, height.intValue)
-		}
-		
-		override def preferredLayoutSize(parent:Container) = {
-			val width = parent.getComponents.map{_.getPreferredSize.getWidth}.max
-			val height = parent.getComponents.map{_.getPreferredSize.getHeight}.max
-			
-			new Dimension(width.intValue, height.intValue)
-		}
 	}
 }

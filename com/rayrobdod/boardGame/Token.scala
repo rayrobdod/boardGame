@@ -1,6 +1,7 @@
 package com.rayrobdod.boardGame
 
 import scala.actors.Actor
+//import akka.actor.Actor
 import scala.swing.Reactions
 import scala.swing.event.Event
 import com.rayrobdod.boardGame.{Space => BoardGameSpace}
@@ -23,14 +24,18 @@ abstract class Token extends Actor
 	def currentSpace:Space = _currentSpace
 	private def currentSpace_=(newValue:Space) = {_currentSpace = newValue}
 	
-	override def act()
-	{
-		loop { react
-		{
+	/* * for Scala actors */	
+	override def act() {
+		loop { react {
 			case x:Event => reactions(x)
 		}}
 	}
 	
+	/* * for AKKA actors
+	def receive = {
+			case x:Event => reactions(x)
+	} */
+
 	/** A list of things this can do in reponse to recieving an Event in a #! */
 	val reactions = new Reactions.Impl
 	reactions += BaseMovementAct
@@ -39,14 +44,10 @@ abstract class Token extends Actor
 	 * A reaction that responds to Token.Moved events by performing the #passOverAction or #landOnAction
 	 * of the space refered to by the Moved object.
 	 */
-	object BaseMovementAct extends Reactions.Reaction
-	{
-		def apply(event:Event)
-		{
-			event match
-			{
-				case Moved(movedTo:Space, landed:Boolean) =>
-				{
+	object BaseMovementAct extends Reactions.Reaction {
+		def apply(event:Event) {
+			event match {
+				case Moved(movedTo:Space, landed:Boolean) => {
 					movedTo.typeOfSpace.passOverAction(Token.this)
 					if (landed) movedTo.typeOfSpace.landOnAction(Token.this)
 					Token.this.currentSpace = movedTo
@@ -55,10 +56,8 @@ abstract class Token extends Actor
 			}
 		}
 		
-		def isDefinedAt(event:Event):Boolean =
-		{
-			event match
-			{
+		def isDefinedAt(event:Event):Boolean = {
+			event match {
 				case Moved(movedTo:Space, landed:Boolean) => true
 				case _ => false
 			}

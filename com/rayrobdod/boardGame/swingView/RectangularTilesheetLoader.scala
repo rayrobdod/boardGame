@@ -9,6 +9,8 @@ import java.nio.file.{Files, Path, Paths, FileSystems,
 		FileSystemNotFoundException}
 import java.net.URL
 import com.rayrobdod.util.services.ResourcesServiceLoader
+import java.util.ServiceConfigurationError;
+import com.rayrobdod.util.services.Services.readServices;
 
 /**
  * Like {@link java.util.ServiceLoader}, but for Tilesheets.
@@ -20,6 +22,7 @@ import com.rayrobdod.util.services.ResourcesServiceLoader
  * @version 2012 Oct 28 - copying from com.rayrobdod.boardGame.view to com.rayrobdod.boardGame.swingview
  *                        and modifying to use appropriate swingView classes.
  * @version 2012 Dec 02 - nuking; replacing implementaiton with implementation backed by [[com.rayrobdod.util.services.ResourcesServiceLoader]]
+ * @version 2013 Jan 19 - nuking; giving an interface based on ResourceServerLoader, but which allows classes to be loaded as well
  */
 final class RectangularTilesheetLoader(val service:String)
 			extends Iterable[RectangularTilesheet]
@@ -31,15 +34,41 @@ final class RectangularTilesheetLoader(val service:String)
 	
 	private class MyIterator() extends Iterator[RectangularTilesheet]
 	{
-		val backing = new ResourcesServiceLoader(service).iterator;
-		
-		def next():RectangularTilesheet = {
-			val currentTilesheetPath = backing.next();
-			val currentTilesheetURL = currentTilesheetPath.toUri.toURL
-			
-			JSONRectangularTilesheet(currentTilesheetURL)
+		private var current:Int = 0;
+		private val readLines = try {
+			readServices(service);
+		} catch {
+			case e:java.io.IOException => throw new ServiceConfigurationError("", e)
+			case e:java.net.URISyntaxException => throw new ServiceConfigurationError("", e)
 		}
 		
-		def hasNext = backing.hasNext
+		def hasNext = current < readLines.length;
+		def remove = throw new UnsupportedOperationException("Cannot remove from a Service");
+		
+		
+		def next():RectangularTilesheet = {
+			if (!hasNext) throw new java.util.NoSuchElementException();
+			
+			val line = readLines(current);
+			try {
+				val lineURL = ClassLoader.getSystemResource(line);
+				
+				current = current + 1;
+				if (lineURL != null) {
+					JSONRectangularTilesheet(lineURL)
+				} else {
+					val clazz = Class.forName(line + "$")
+					val module = clazz.getField("MODULE$")
+					module.get(null) match {
+						case x:RectangularTilesheet => x
+						case _ => throw new ServiceConfigurationError(line + " is not a RectangularTilesheet")
+					}
+				}
+			} catch {
+				case e:java.net.URISyntaxException => throw new ServiceConfigurationError("Invalid Path", e);
+				case e:ClassNotFoundException => throw new ServiceConfigurationError("", e)
+			}
+			
+		}
 	}
 }

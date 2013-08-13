@@ -9,10 +9,15 @@ import com.rayrobdod.boardGame.RectangularField
 /**
  * A tilesheet that creates a Checked pattern.
  * 
+ * Spaces where the sum of the indexies is even uses a square of the 'light' color,
+ * Spaces where the sum of the indexies is odd uses a square of the 'dark' color
+ * 
  * @author Raymond Dodge
  * @version 2012 Apr 20
  * @version 11 Jun 2012 - changing due to the change of image in RectangularVisualizationRule
  * @version 25 Aug 2012 - change to match new type of Tilesheet
+ * 
+ * @constructor Creates a CheckerboardTilesheet
  * @param light,dark the two colors the checkerboard should show
  * @param dim the size of each tile in the checkerboard
  */

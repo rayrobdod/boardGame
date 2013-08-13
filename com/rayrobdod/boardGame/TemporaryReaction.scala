@@ -6,8 +6,10 @@ import scala.swing.event.Event
 
 /**
  * 
+ * @author Raymond Dodge
  * @version ?? ??? ????
  * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
+ * @deprecated This is stupid, and I don't see a way to properly make this a superclass
  */
 trait TemporaryReaction extends Reaction
 {

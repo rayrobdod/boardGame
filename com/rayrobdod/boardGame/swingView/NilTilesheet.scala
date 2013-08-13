@@ -6,7 +6,7 @@ import scala.util.Random
 import com.rayrobdod.boardGame.{RectangularField => Field}
 
 /**
- * A tilesheet that has only one rule: for anything, display black image.
+ * A tilesheet that has only one rule: for anything, display blank image.
  * @author Raymond Dodge
  * @version 19 Aug 2011
  * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame.view} to {@code com.rayrobdod.boardGame.view}

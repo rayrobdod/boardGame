@@ -2,7 +2,7 @@ package com.rayrobdod.boardGame
 
 import scala.collection.immutable.Seq
 import java.util.concurrent.{Future => JavaFuture, TimeUnit, TimeoutException}
-import scala.parallel.{Future => ScalaPFuture}
+//import scala.parallel.{Future => ScalaPFuture}
 
 /**
  * A group of spaces such that they form a rectangular board made of
@@ -13,15 +13,24 @@ import scala.parallel.{Future => ScalaPFuture}
  * @author Raymond Dodge
  * @version 30 Jul 2011
  * @version 02 Aug 2011 - renamed from RectangularRegionMap to RectangularField
- * @version 03 Aug 2011 - <code>&&</code> is the shortcut version of <code>&</code>... Fixed {@link #containsIndexies}
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
+ * @version 03 Aug 2011 - <code>&&</code> is the shortcut version of
+					 <code>&</code>... Fixed {@link #containsIndexies}
+ * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to
+					 {@code com.rayrobdod.boardGame}
  * @version 2012 Aug 25 - switching x and y in #space and #containsIndexies
  * @version 2012 Oct 28 - changing the spaces field to be protected.
+ * @version 2013 Aug 06 - Apparently 'Future' in scala means 'there's a thing
+			that I will want in the future', not 'there's a thing that will
+			become availiable in the futrue'. Either way, scala.parellel.Future
+			no longer exists, as of Scala 2.11. Using `scala.Function0` instead.
  * @see [[com.rayrobdod.boardGame.RectangularSpace]]
  */
 abstract class RectangularField
 {
-	/**  y is outer layer - x is inner layer */
+	/**
+	 * y is outer layer - x is inner layer
+	 * @deprecated
+	 */
 	def spaces:Seq[Seq[RectangularSpace]]
 	
 	/** retrives a space from the spaces array. */
@@ -35,7 +44,7 @@ abstract class RectangularField
 	final protected def spaceFuture(x:Int, y:Int) =
 	{
 		final class RectangularFieldSpaceFuture(x:Int, y:Int) extends JavaFuture[Option[RectangularSpace]]
-				with ScalaPFuture[Option[RectangularSpace]]
+				with scala.Function0[Option[RectangularSpace]]
 		{
 			override def get = apply
 			override def apply = {

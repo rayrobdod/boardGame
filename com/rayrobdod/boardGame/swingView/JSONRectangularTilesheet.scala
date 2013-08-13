@@ -4,9 +4,10 @@ import com.rayrobdod.boardGame._
 import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import scala.util.Random
-import scala.parallel.Future
+//import scala.parallel.Future
+import scala.{Function0 => Future}
 import scala.annotation.tailrec
-import scala.collection.immutable.{Seq, Map, Vector, Set}
+import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
 import scala.collection.mutable.{Map => MMap}
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -16,28 +17,37 @@ import javax.swing.{Icon, ImageIcon}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 
+import scala.runtime.{AbstractFunction2 => Function2}
+
 /**
  * @author Raymond Dodge
- * @param 2012 Aug 23
- * @param 2012 Aug 25 - decided upon the constructors
- * @param 2012 Aug 27 - found a place where frames and layers were switched, and fixes it, and enabling animations 
+ * @version 2012 Aug 23
+ * @version 2012 Aug 25 - decided upon the constructors
+ * @version 2012 Aug 27 - found a place where frames and layers were switched, and fixes it, and enabling animations
+ * @version 2013 Mar 04 - visualizationRules is now a Seq, from a Set, to make results repeatable
+ * @version 2013 Aug 06 - Apparently 'Future' in scala means 'there's a thing that I will want in the future', not 
+ 			'there's a thing that will become availiable in the futrue'. Either way, scala.parellel.Future no longer exists,
+ 			as of Scala 2.11. Using `scala.Function0` instead.
+ * @version 2013 Jun 03 - replacing stuff in [[#layersWithLCMFrames]] with a library function call
  */
 // class VisualizationRuleBasedRectangularTilesheet extends RectangularTilesheet
 class JSONRectangularTilesheet(
 		val name:String,
-		val visualizationRules:Set[JSONRectangularVisualizationRule]
+		val visualizationRules:Seq[JSONRectangularVisualizationRule]
 ) extends RectangularTilesheet {
 	
 	def getIconFor(field:RectangularField, x:Int, y:Int, rng:Random):(Icon, Icon) =
 	{
 		type ImageFrames = Seq[Image]
 		
-		val layers:Map[Int, ImageFrames] = visualizationRules.filter{
-			_.matches(field, x, y, rng)
-		}.toSeq.sortBy{
-			_.priority
-		}.foldLeft(Map.empty[Int, ImageFrames]){
-			_ ++ _.iconParts
+		val layers:Map[Int, ImageFrames] = {
+			import JSONRectangularVisualizationRule.{FullOrdering, PriorityOrdering}
+			
+			visualizationRules.filter{
+				_.matches(field, x, y, rng)
+			}.toSeq.sorted(PriorityOrdering).foldLeft(Map.empty[Int, ImageFrames]){
+				_ ++ _.iconParts
+			}
 		}
 		
 		val lowHighLayers = layers.partition{_._1 < 0}
@@ -66,9 +76,12 @@ class JSONRectangularTilesheet(
 			
 			// after this, all layers will have the same number of frames
 			val layersWithLCMFrames:Seq[ImageFrames] = layersInOrder.map{(x:ImageFrames) =>
+				/*
 				val countRepeat = 1 to (leastCommonFrameNumber / x.length)
 				val frameRepeat = countRepeat.map{(y:Int) => x}
 				frameRepeat.flatten
+				*/
+				Seq.fill(leastCommonFrameNumber / x.length){x}.flatten
 			}
 			
 			if (! layersWithLCMFrames.isEmpty)
@@ -117,30 +130,31 @@ class JSONRectangularTilesheet(
 /**
  * @author Raymond Dodge
  * @param 2012 Aug 25
+ * @version 2013 Jun 23 - responding to changes in ToScalaCollection
  */
 object JSONRectangularTilesheet
 {
-	import java.nio.file.{Files, Paths}
+	import java.nio.file.{Files, Paths, Path}
 	import java.nio.charset.StandardCharsets.UTF_8
 	import javax.imageio.ImageIO
 	import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
-	import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToSeqJSONParseListener
+	import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 	import scala.collection.JavaConversions.mapAsScalaMap
 
 	def apply(url:URL):JSONRectangularTilesheet = 
 	{
 		val fileReader = Files.newBufferedReader(Paths.get(url.toURI), UTF_8)
 		
-		val listener = new ToSeqJSONParseListener()
+		val listener = ToScalaCollection()
 		JSONParser.parse(listener, fileReader)
 		fileReader.close()
 		
-		val jsonMap = listener.resultMap.map{(x) => ((x._1.toString, x._2))}
+		val jsonMap = listener.resultMap
 		this.apply(url, jsonMap)
 	}
 	
 	def apply(baseURL:URL, jsonMap:Map[String,Any]):JSONRectangularTilesheet = {
-		import JSONRectangularViualizationRule.asInt
+		import JSONRectangularVisualizationRule.asInt
 		
 		val frameImage = 
 		{
@@ -160,7 +174,7 @@ object JSONRectangularTilesheet
 			val classMapURL = new URL(baseURL, jsonMap("classMap").toString)
 			val classMapReader = Files.newBufferedReader(Paths.get(classMapURL.toURI), UTF_8)
 			
-			val listener = new ToSeqJSONParseListener()
+			val listener = ToScalaCollection()
 			JSONParser.parse(listener, classMapReader)
 			classMapReader.close()
 			val classNames = listener.resultMap.mapValues{_.toString}
@@ -178,7 +192,7 @@ object JSONRectangularTilesheet
 			val rulesURL = new URL(baseURL, jsonMap("rules").toString)
 			val rulesReader = Files.newBufferedReader(Paths.get(rulesURL.toURI), UTF_8)
 			
-			val listener = new ToSeqJSONParseListener()
+			val listener = ToScalaCollection()
 			JSONParser.parse(listener, rulesReader)
 			rulesReader.close()
 			
@@ -201,7 +215,7 @@ object JSONRectangularTilesheet
 //			classMap:Map[String, SpaceClassConstructor]
 			rules:Seq[JSONRectangularVisualizationRule]
 	):JSONRectangularTilesheet = {
-		new JSONRectangularTilesheet(name, Set.empty ++ rules)
+		new JSONRectangularTilesheet(name, rules)
 	}
 	
 	
@@ -233,13 +247,14 @@ abstract class RectangularVisualizationRule
  * @param 2012 Aug 23-24
  * @param 2012 Aug 27 - implementing priority
  * @param 2012 Aug 28 - making out-of-bounds matches work
+ * @param 2013 Feb 23 - fixing an error in sumMatches
  */
 class JSONRectangularVisualizationRule(
 		jsonMap:Map[String, Any],
 		tileSeq:Seq[Image],
 		sccMapping:Map[String, SpaceClassConstructor]
 ) extends RectangularVisualizationRule {
-	import JSONRectangularViualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
+	import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 	
 	// Map[layer, frames]
@@ -251,7 +266,7 @@ class JSONRectangularVisualizationRule(
 	
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean =
 	{
-		import JSONRectangularViualizationRule.{scriptEngine, buildBindings, executeScript}
+		import JSONRectangularVisualizationRule.{scriptEngine, buildBindings, executeScript}
 		
 		// identified as a bottleneck
 		//asBoolean( scriptEngine.eval(indexEquation, buildBindings(x, y, width, height)) )
@@ -276,16 +291,13 @@ class JSONRectangularVisualizationRule(
 	}
 	
 	final override def priority:Int = {
-		@tailrec def countMatches(m:Matcher, total:Int = 0):Int =
-		{
-			if (! m.hitEnd)
-			{
+		@tailrec def countMatches(m:Matcher, total:Int = 0):Int = {
+			if (! m.hitEnd) {
 				m.find
 				countMatches(m, total + 1)
-			}
-			else {total}
+			} else {total}
 		}
-		import JSONRectangularViualizationRule.{divisionPattern, andPattern}
+		import JSONRectangularVisualizationRule.{divisionPattern, andPattern}
 		
 		surroundingTiles.size * 10000 + tileRand +
 			(if (indexEquation != "true") {
@@ -294,13 +306,13 @@ class JSONRectangularVisualizationRule(
 				} * {
 					countMatches( andPattern.matcher(indexEquation) )
 				} + {
-					import JSONRectangularViualizationRule.numberPattern
+					import JSONRectangularVisualizationRule.numberPattern
 					
 					@tailrec def sumMatches(m:Matcher, total:Int = 0):Int =
 					{
+						m.find()
 						if (! m.hitEnd)
 						{
-							m.find()
 							val number = Integer.parseInt(m.group)
 							sumMatches(m, total + number)
 						} else {total}
@@ -315,10 +327,12 @@ class JSONRectangularVisualizationRule(
 
 /**
  * @author Raymond Dodge
- * @param 2012 Aug 23-24
- * @param 2012 Aug 27 - asInt and asMapOfFrameIndexies can now handle Long values
+ * @version 2012 Aug 23-24
+ * @version 2012 Aug 27 - asInt and asMapOfFrameIndexies can now handle Long values
+ * @version 2013 Mar 04 - changing from JSONRectangularViualizationRule to JSONRectangularVisualizationRule
+ * @version 2013 Mar 04 - implementing PriorityOrdering, FullOrdering and IterableIntOrdering
  */
-object JSONRectangularViualizationRule
+object JSONRectangularVisualizationRule
 {
 	val divisionPattern = Pattern.compile("[%//]")
 	val numberPattern = Pattern.compile("\\d+")
@@ -406,6 +420,33 @@ object JSONRectangularViualizationRule
 		{
 			def apply(x:(Int, Int)) = 
 				((x._1 + firstInt, x._2 + secondInt))
+		}
+	}
+	
+	
+	def PriorityOrdering = Ordering.by[RectangularVisualizationRule, Int]{(x:RectangularVisualizationRule) => x.priority}
+
+	object FullOrdering extends Ordering[JSONRectangularVisualizationRule] {
+		def compare(x:JSONRectangularVisualizationRule, y:JSONRectangularVisualizationRule):Int = {
+			(x.tileRand compareTo y.tileRand) match {
+				case 0 => (x.indexEquation compareTo y.indexEquation) match {
+					case 0 => IterableIntOrdering.compare(x.iconParts.keys, y.iconParts.keys) match {
+						case i => i
+					}
+					case i => i
+				}
+				case i => i
+			}
+		}
+	}
+	
+	private object IterableIntOrdering extends Ordering[Iterable[Int]] {
+		def compare(x:Iterable[Int], y:Iterable[Int]):Int = {
+			x.zip(y).foldLeft(0){(i:Int, xy:(Int,Int)) =>
+				if (i == 0) {
+					xy._1 compareTo xy._2
+				} else {i}
+			}
 		}
 	}
 }
