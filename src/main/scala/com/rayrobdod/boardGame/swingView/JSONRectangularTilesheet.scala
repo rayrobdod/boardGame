@@ -4,7 +4,6 @@ import com.rayrobdod.boardGame._
 import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import scala.util.Random
-//import scala.parallel.Future
 import scala.{Function0 => Future}
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
@@ -76,11 +75,6 @@ class JSONRectangularTilesheet(
 			
 			// after this, all layers will have the same number of frames
 			val layersWithLCMFrames:Seq[ImageFrames] = layersInOrder.map{(x:ImageFrames) =>
-				/*
-				val countRepeat = 1 to (leastCommonFrameNumber / x.length)
-				val frameRepeat = countRepeat.map{(y:Int) => x}
-				frameRepeat.flatten
-				*/
 				Seq.fill(leastCommonFrameNumber / x.length){x}.flatten
 			}
 			
@@ -196,9 +190,8 @@ object JSONRectangularTilesheet
 			JSONParser.parse(listener, rulesReader)
 			rulesReader.close()
 			
-			val rulesJSON:Seq[Map[_,_]] = Seq.empty ++ listener.result.map{_ match {
+			val rulesJSON:Seq[Map[_,_]] = Seq.empty ++ listener.resultSeq.map{_ match {
 				case x:scala.collection.Map[_,_] => Map.empty ++ x
-				case x:java.util.Map[_,_] => Map.empty ++ mapAsScalaMap(x)
 				case x:Any => Map.empty
 			}}.filterNot{_.isEmpty}
 			val rulesJSON2:Seq[Map[String,_]] = rulesJSON.map{_.map{pair:(Any,Any) => (pair._1.toString, pair._2)}}

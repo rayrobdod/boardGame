@@ -17,6 +17,7 @@ import scala.math.Ordering
  * @version 01 Mar 2012 - now, pathTo's algorythm only stores the precending Space in the path, rather than the entire path so far.
  * @version 01 Mar 2012 - adding #pathToEverywhere, which is basically data used by #pathTo and #distanceTo
  * @version 05 Apr 2012 - adding TypeOfCost parameter to cost-related functions, due to change in [[com.rayrobdod.boardGame.SpaceClass]] 
+ * @version 2013 Aug 20 - using minBy instead of custom comparators 
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @see [[com.rayrobdod.boardGame.SpaceClass]] defines the way this interacts with tokens
  */
@@ -110,60 +111,10 @@ abstract class Space(val typeOfSpace:SpaceClass)
 				if (newDistance < oldDistance) open += ((s, newDistance))
 			}}
 			
-			val ord = new Ordering[(Space, Int)]
-			{
-				def compare(a:(Space, Int), b:(Space, Int)) = {
-					Ordering.Int.compare(a._2, b._2)
-				}
-			}
-			checkingTile = open.min{ord}
+			checkingTile = open.minBy{_._2}
 		}
 		return checkingTile._2
 	}
-	
-	/**
-	 * Finds the shortest path from this space to another space
-	 * This is Dijkstra's algorithm, as the spaces aren't allowed to know where they are in relation
-	 * they are to each other.
-	 * 
-	 * @param other the space to find the movementCost required to get to
-	 * @return the a list of spaces such that the first space is this, the last space is other, and
-	 			the movementcost between the two is minimal
-	 */ /*
-	def pathTo(other:Space, token:Token):List[Space] =
-	{
-		val closed = MMap.empty[Space, (Int, List[Space])]
-		val open = MMap.empty[Space, (Int, List[Space])]
-		var checkingTile:(Space, (Int, List[Space])) = ((this, ((0, List(this) )) ))
-		
-		// (Space, Int) is Space and a distance to the tile from this
-		
-		while (checkingTile._1 != other)
-		{
-			open -= checkingTile._1
-			closed += checkingTile
-			
-			val newTilesToCheck = checkingTile._1.adjacentSpaces
-			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
-			
-			unclosedNewTilesToCheck.foreach{(s:Space) => {
-				val newDistance = checkingTile._2._1 + s.typeOfSpace.cost(token, costType)
-				val oldDistance = open.getOrElse(s, ((Integer.MAX_VALUE, Nil)) )._1
-				val newList:List[Space] = s :: checkingTile._2._2
-				
-				if (newDistance < oldDistance) open += ((s, ((newDistance, newList)) ))
-			}}
-			
-			val ord = new Ordering[(Space, (Int, List[Space]))]
-			{
-				def compare(a:(Space, (Int, List[Space])), b:(Space, (Int, List[Space]))) = {
-					Ordering.Int.compare(a._2._1, b._2._1)
-				}
-			}
-			checkingTile = open.min{ord}
-		}
-		return (checkingTile._2._2).reverse
-	} */
 	
 	/**
 	 * Finds the shortest path from this space to another space
@@ -200,13 +151,7 @@ abstract class Space(val typeOfSpace:SpaceClass)
 				if (newDistance < oldDistance) open += ((s, ((newDistance, checkingTile._1)) ))
 			}}
 			
-			val ord = new Ordering[(Space, (Int, Space))]
-			{
-				def compare(a:(Space, (Int, Space)), b:(Space, (Int, Space))) = {
-					Ordering.Int.compare(a._2._1, b._2._1)
-				}
-			}
-			checkingTile = open.min{ord}
+			checkingTile = open.minBy{_._2._1}
 		}
 		open -= checkingTile._1
 		closed += checkingTile
@@ -249,13 +194,7 @@ abstract class Space(val typeOfSpace:SpaceClass)
 				if (newDistance < oldDistance) open += ((s, ((newDistance, checkingTile._1)) ))
 			}}
 			
-			val ord = new Ordering[(Space, (Int, Space))]
-			{
-				def compare(a:(Space, (Int, Space)), b:(Space, (Int, Space))) = {
-					Ordering.Int.compare(a._2._1, b._2._1)
-				}
-			}
-			checkingTile = open.min{ord}
+			checkingTile = open.minBy{_._2._1}
 			open -= checkingTile._1
 		}
 		closed += checkingTile
