@@ -30,12 +30,6 @@ abstract class SpaceClass
 	 */
 	def landOnAction:Function1[Token, Any]
 	
-	/**
-	 * The cost of moving into this tile.
-	 * should honestly be the same as #cost(token, TokenMovementCost)
-	 */
-//	def movementCost(token:Token):Int
-	
 	/** 
 	 * Some type of cost associated with this space.
 	 */

@@ -1,9 +1,7 @@
 package com.rayrobdod.boardGame.swingView
 
-import scala.util.Random
-import java.awt.{Image, GridLayout, Point}
-import javax.swing.{JLabel, JComponent, Icon}
-import com.rayrobdod.swing.layouts.{MoveToLayout}
+import javax.swing.{JLabel, Icon}
+import com.rayrobdod.swing.layouts.MoveToLayout
 import com.rayrobdod.boardGame.{Token, Space, RectangularSpace}
 import scala.runtime.{AbstractFunction1, AbstractFunction2}
 

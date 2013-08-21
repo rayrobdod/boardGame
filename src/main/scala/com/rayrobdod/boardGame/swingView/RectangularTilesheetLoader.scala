@@ -1,14 +1,6 @@
 package com.rayrobdod.boardGame.swingView
 
 import scala.collection.immutable.Iterable
-import scala.collection.JavaConversions.iterableAsScalaIterable
-import scala.collection.JavaConversions.enumerationAsScalaIterator
-//import com.rayrobdod.boardGame.view.{Tilesheet, JSONTilesheet}
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path, Paths, FileSystems,
-		FileSystemNotFoundException}
-import java.net.URL
-import com.rayrobdod.util.services.ResourcesServiceLoader
 import java.util.ServiceConfigurationError;
 import com.rayrobdod.util.services.Services.readServices;
 
@@ -27,9 +19,6 @@ import com.rayrobdod.util.services.Services.readServices;
 final class RectangularTilesheetLoader(val service:String)
 			extends Iterable[RectangularTilesheet]
 {
-	// IDEA: recognise files ("com/*.json") verses classes ("com.*") and load based on that difference
-	
-	
 	def iterator:Iterator[RectangularTilesheet] = new MyIterator()
 	
 	private class MyIterator() extends Iterator[RectangularTilesheet]

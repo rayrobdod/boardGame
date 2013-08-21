@@ -2,7 +2,6 @@ package com.rayrobdod.boardGame
 
 import scala.collection.immutable.{Set, List, Map => IMap}
 import scala.collection.mutable.{Map => MMap}
-import scala.math.Ordering
 
 /**
  * A spot on a board game board
