@@ -6,10 +6,9 @@ import scala.util.Random
 import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
-import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton}
+import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
 import com.rayrobdod.swing.GridBagConstraintsFactory
 
-import javax.imageio.ImageIO
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
@@ -224,6 +223,14 @@ object JSONTilesheetViewer extends App
 						case "rayrobdod.name,2013-08:tilesheet-indexies" => IndexesTilesheet
 						case "rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet
 	//					case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
+						case _ => {
+							JOptionPane.showMessageDialog(frame,
+									"Tilesheet URI contains an unknown tag",
+									"Unkown URI",
+									JOptionPane.WARNING_MESSAGE
+							)
+							NilTilesheet
+						}
 					}
 				}
 				case _ => JSONTilesheet( tilesheetURI.toURL )
@@ -315,6 +322,14 @@ object JSONTilesheetViewer extends App
 					mapURI.getSchemeSpecificPart match
 					{
 						case RotateFieldURIMatcher(rotate) => rotate
+						case _ => {
+							JOptionPane.showMessageDialog(frame,
+									"Map URI contains an unknown tag",
+									"Unkown URI",
+									JOptionPane.WARNING_MESSAGE
+							)
+							new RotateSpaceRectangularField(rotation, 10, 12)
+						}
 					}
 				}
 				case _ => {
