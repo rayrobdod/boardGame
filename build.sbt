@@ -16,4 +16,7 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "1.0.0")
 
+// This import better be gone by 2.0.1
+libraryDependencies += ("com.rayrobdod" %% "csv" % "1.0.0")
+
 

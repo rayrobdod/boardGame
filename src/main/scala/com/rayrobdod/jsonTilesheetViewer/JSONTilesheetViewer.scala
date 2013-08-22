@@ -19,18 +19,13 @@ import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
 		JSONRectangularTilesheet => JSONTilesheet,
 		RectangularTilesheet => Tilesheet
 }
-import com.rayrobdod.boardGame.view.AnySpace
 import com.rayrobdod.boardGame.{
 		SpaceClassConstructor, RectangularField => Field
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
-import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToSeqJSONParseListener
+import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 import com.rayrobdod.commaSeparatedValues.parser.{CSVParser, ToSeqSeqCSVParseListener, CSVPatterns}
-import com.rayrobdod.deductionTactics.swingView.FieldChessTilesheet
-
-// TODO: tag URIs instead of about URIs
-// TODO: changes in JSON package
-
+//import com.rayrobdod.deductionTactics.swingView.FieldChessTilesheet
 
 
 /**
@@ -48,6 +43,7 @@ import com.rayrobdod.deductionTactics.swingView.FieldChessTilesheet
  * @version 2013 Feb 23 - allowing to access custom maps, and changing appearance of navPanel
  * @version 2013 Mar 03 - making two new Randoms, one which outputs only '1's and one which outputs only '0's, neither of which seem to have an effect.
  * @version 2013 Mar 03 - replace `Integer.parseInt(splitParam(1))` with `splitParam(1).toInt`
+ * @version 2013 Aug 21 - tag URIs instead of about URIs. Updating due to changes in depenencies
  
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
@@ -56,8 +52,8 @@ object JSONTilesheetViewer extends App
 	val frame = new JFrame("JSON Tilesheet Viewer")
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 	
-	val tileUrl:String = if (args.size > 0) args(0) else "about:nil"
-	val mapUrl:String  = if (args.size > 1) args(1) else "about:rotate"
+	val tileUrl:String = if (args.size > 0) args(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil"
+	val mapUrl:String  = if (args.size > 1) args(1) else "tag:rayrobdod.name,2013-08:map-rotate"
 	val rand:String    = if (args.size > 2) args(2) else ""
 	
 	val tileUrlBox = new JTextField(tileUrl)
@@ -172,7 +168,7 @@ object JSONTilesheetViewer extends App
 				val jsonMap = {
 					val reader = Files.newBufferedReader(Paths.get(tilesheetURI), UTF_8)
 					
-					val listener = new ToSeqJSONParseListener()
+					val listener = ToScalaCollection()
 					JSONParser.parse(listener, reader)
 					reader.close()
 					
@@ -187,10 +183,10 @@ object JSONTilesheetViewer extends App
 				val classesReader = Files.newBufferedReader(Paths.get(classesURL.toURI), UTF_8)
 				
 				val classNames = {
-					val listener = new ToSeqJSONParseListener()
+					val listener = ToScalaCollection()
 					JSONParser.parse(listener, classesReader)
 					classesReader.close()
-					val result = listener.result
+					val result = listener.resultSeq
 					
 					result.map{_ match {
 						case x:Tuple2[_,_] => x._2.toString
@@ -205,12 +201,12 @@ object JSONTilesheetViewer extends App
 					field.get(null).asInstanceOf[SpaceClassConstructor]
 				}
 			}
-			case FieldChessTilesheet => {
+		/*	case FieldChessTilesheet => {
 				import com.rayrobdod.deductionTactics._
 				Seq(PassibleSpaceClass, ImpassibleSpaceClass,
 						AttackableOnlySpaceClass, NoStandOnSpaceClass)
 			}
-			case _ => Seq(AnySpace)
+		*/	case _ => Seq(AnySpaceClass)
 		})
 	}
 	
@@ -220,14 +216,14 @@ object JSONTilesheetViewer extends App
 		def apply(tilesheetURI:URI):Tilesheet = {
 			tilesheetURI.getScheme match
 			{
-				case "about" => {
+				case "tag" => {
 					tilesheetURI.getSchemeSpecificPart match
 					{
-						case "nil" => NilTilesheet
+						case "rayrobdod.name,2013-08:tilesheet-nil" => NilTilesheet
 						case CheckerboardURIMatcher(checker) => checker
-						case "indexies" => IndexesTilesheet
-						case "randcolor" => new RandomColorTilesheet
-						case "field" => FieldChessTilesheet
+						case "rayrobdod.name,2013-08:tilesheet-indexies" => IndexesTilesheet
+						case "rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet
+	//					case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
 					}
 				}
 				case _ => JSONTilesheet( tilesheetURI.toURL )
@@ -240,7 +236,7 @@ object JSONTilesheetViewer extends App
 			def unapply(ssp:String):Option[CheckerboardTilesheet] = {
 				val split = ssp.split("[\\?\\&]");
 				
-				if ("checker" == split.head)
+				if ("rayrobdod.name,2013-08:tilesheet-checker" == split.head)
 				{
 					var returnValue = new CheckerboardTilesheet()
 					
@@ -283,7 +279,7 @@ object JSONTilesheetViewer extends App
 			def unapply(ssp:String):Option[RotateSpaceRectangularField] = {
 				val split = ssp.split("[\\?\\&]");
 				
-				if ("rotate" == split.head)
+				if ("rayrobdod.name,2013-08:map-rotate" == split.head)
 				{
 					var builder = new Builder(10,12)
 					
@@ -315,7 +311,7 @@ object JSONTilesheetViewer extends App
 		
 			mapURI.getScheme match
 			{
-				case "about" => {
+				case "tag" => {
 					mapURI.getSchemeSpecificPart match
 					{
 						case RotateFieldURIMatcher(rotate) => rotate
@@ -326,7 +322,7 @@ object JSONTilesheetViewer extends App
 					val metadataPath = Paths.get(mapURI)
 					val metadataReader = Files.newBufferedReader(metadataPath, UTF_8);
 					val metadataMap:Map[String,String] = {
-						val listener = new ToSeqJSONParseListener()
+						val listener = ToScalaCollection()
 						JSONParser.parse(listener, metadataReader)
 						listener.resultMap.mapValues{_.toString}
 					}
@@ -334,7 +330,7 @@ object JSONTilesheetViewer extends App
 					val letterToSpaceClassConsPath = metadataPath.getParent.resolve(metadataMap("classMap"))
 					val letterToSpaceClassConsReader = Files.newBufferedReader(letterToSpaceClassConsPath, UTF_8)
 					val letterToSpaceClassConsMap:Map[String,SpaceClassConstructor] = {
-						val listener = new ToSeqJSONParseListener()
+						val listener = ToScalaCollection()
 						JSONParser.parse(listener, letterToSpaceClassConsReader)
 						val letterToClassNameMap = listener.resultMap.mapValues{_.toString}
 						

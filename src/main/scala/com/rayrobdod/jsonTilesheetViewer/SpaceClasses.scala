@@ -153,6 +153,17 @@ object NotSpaceClass5 extends SpaceClassConstructor
 }
 
 /**
+ * Matches all spaces
+ * @author Raymond Dodge
+ * @version 2013 Feb 23
+ */
+object AnySpaceClass extends SpaceClassConstructor
+{
+	def unapply(a:BoardGameSpaceClass) = true
+	val apply = new SpaceClass(-6)
+}
+
+/**
  * Matches no spaces
  * @author Raymond Dodge
  * @version 2013 Feb 23
@@ -160,5 +171,5 @@ object NotSpaceClass5 extends SpaceClassConstructor
 object NotAnySpaceClass extends SpaceClassConstructor
 {
 	def unapply(a:BoardGameSpaceClass) = false
-	val apply = new SpaceClass(-6)
+	val apply = new SpaceClass(-7)
 }
