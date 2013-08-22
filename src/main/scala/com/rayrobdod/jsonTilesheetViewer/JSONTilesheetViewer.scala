@@ -110,7 +110,18 @@ object JSONTilesheetViewer extends App
 				case "" => Random
 				case "a" => new Random(new java.util.Random(){override def next(bits:Int) = 1})
 				case "b" => new Random(new java.util.Random(){override def next(bits:Int) = 0})
-				case s => new Random(s.toLong)
+				case s => try {
+						new Random(s.toLong)
+					} catch {
+						case e:NumberFormatException => {
+							JOptionPane.showMessageDialog(frame,
+								"Seed must be '', 'a', 'b' or an integer",
+								"Invalid seed",
+								JOptionPane.WARNING_MESSAGE
+							)
+							Random
+						}
+					}
 			}
 		);
 		
