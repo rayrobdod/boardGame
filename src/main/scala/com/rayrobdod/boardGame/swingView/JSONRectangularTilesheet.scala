@@ -128,16 +128,16 @@ class JSONRectangularTilesheet(
  */
 object JSONRectangularTilesheet
 {
-	import java.nio.file.{Files, Paths, Path}
 	import java.nio.charset.StandardCharsets.UTF_8
 	import javax.imageio.ImageIO
+	import java.io.InputStreamReader
 	import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 	import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 	import scala.collection.JavaConversions.mapAsScalaMap
 
 	def apply(url:URL):JSONRectangularTilesheet = 
 	{
-		val fileReader = Files.newBufferedReader(Paths.get(url.toURI), UTF_8)
+		val fileReader = new InputStreamReader(url.openStream(), UTF_8)
 		
 		val listener = ToScalaCollection()
 		JSONParser.parse(listener, fileReader)
@@ -166,7 +166,7 @@ object JSONRectangularTilesheet
 		{
 			// TODO: allow inline
 			val classMapURL = new URL(baseURL, jsonMap("classMap").toString)
-			val classMapReader = Files.newBufferedReader(Paths.get(classMapURL.toURI), UTF_8)
+			val classMapReader = new InputStreamReader(classMapURL.openStream(), UTF_8)
 			
 			val listener = ToScalaCollection()
 			JSONParser.parse(listener, classMapReader)
@@ -184,7 +184,7 @@ object JSONRectangularTilesheet
 		val rules:Seq[JSONRectangularVisualizationRule] = 
 		{
 			val rulesURL = new URL(baseURL, jsonMap("rules").toString)
-			val rulesReader = Files.newBufferedReader(Paths.get(rulesURL.toURI), UTF_8)
+			val rulesReader = new InputStreamReader(rulesURL.openStream(), UTF_8)
 			
 			val listener = ToScalaCollection()
 			JSONParser.parse(listener, rulesReader)
