@@ -27,12 +27,15 @@ abstract class Token
 		
 		moveReactions.foreach{a => a(movedTo, landed)}
 	}
-	private val moveReactions:Buffer[MoveReactionType] = Buffer.empty
-	def addMoveReaction(a:MoveReactionType):Unit = {moveReactions append a}
 	
+	private val moveReactions:Buffer[MoveReactionType] = Buffer.empty
+	def moveReactions_+=(f:MoveReactionType) = moveReactions += f 
+	def moveReactions_-=(f:MoveReactionType) = moveReactions -= f 
 	
 	private val selectedReactions:Buffer[SelectedReactionType] = Buffer.empty
-	def addSelectedReaction(a:SelectedReactionType):Unit = {selectedReactions append a}
+	def selectedReactions_+=(f:SelectedReactionType) = selectedReactions += f 
+	def selectedReactions_-=(f:SelectedReactionType) = selectedReactions -= f 
+	
 	def beSelected(b:Boolean):Unit = selectedReactions.foreach{a => a(b)}
 }
 

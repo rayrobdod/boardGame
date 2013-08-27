@@ -16,7 +16,7 @@ import scala.runtime.{AbstractFunction1, AbstractFunction2}
  */
 class TokenComponent(token:Token, fieldComp:FieldComponent, layout:MoveToLayout, icon:Icon) extends JLabel(icon)
 {
-	token.addMoveReaction(ComponentMovementUpdateAct)
+	token.moveReactions_+=(ComponentMovementUpdateAct)
 	object ComponentMovementUpdateAct extends AbstractFunction2[Space, Boolean, Unit] {
 		def apply(movedTo:Space, landed:Boolean) = {
 			val location = fieldComp.spaceLabelMap(movedTo.asInstanceOf[RectangularSpace]).getLocation()
@@ -24,7 +24,7 @@ class TokenComponent(token:Token, fieldComp:FieldComponent, layout:MoveToLayout,
 		}
 	}
 	
-	token.addSelectedReaction(BeSelectedAct)
+	token.selectedReactions_+=(BeSelectedAct)
 	object BeSelectedAct extends AbstractFunction1[Boolean, Unit] {
 		def apply(b:Boolean) = {
 			TokenComponent.this.setOpaque(b)
