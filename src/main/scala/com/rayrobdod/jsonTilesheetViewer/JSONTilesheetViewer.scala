@@ -29,21 +29,6 @@ import com.rayrobdod.commaSeparatedValues.parser.{CSVParser, ToSeqSeqCSVParseLis
 
 /**
  * @author Raymond Dodge
- * @version 18 - 19 Aug 2011
- * @version 15 Apr 2012 - moved from {@code net.verizon.rayrobdod.boardGame.view} to {@code com.rayrobdod.boardGame.view}
- * @version 19 Apr 2012 - put the fieldComp inside a JPanel so that there isn't the large gaps between tiles
- * @version 20 Apr 2012 - Adding CheckerboardTilesheet as an option
- * @version 20 Apr 2012 - Using URIs to maybe some effect, and giving Checkerboard a deconstructor so queries can effect it.
- * @version 24 Jun 2012 - Allowing specification of files via system notation ('C:\', '//') as well as the previous URI syntax ('file:')
- * @version 25 Jun 2012 - now responds to "TilesheetViewer::classes", making that the list of classes cycled between
- * @version 29 Jun 2012 - putting the urlbox on its own row; attempted to add rand parameter, but it doesn't actually do anything
- * @version 2012 Aug 27 - changes for new version of Tilesheet
- * @version 2012 Jan 19 - adding "about:field"
- * @version 2013 Feb 23 - allowing to access custom maps, and changing appearance of navPanel
- * @version 2013 Mar 03 - making two new Randoms, one which outputs only '1's and one which outputs only '0's, neither of which seem to have an effect.
- * @version 2013 Mar 03 - replace `Integer.parseInt(splitParam(1))` with `splitParam(1).toInt`
- * @version 2013 Aug 21 - tag URIs instead of about URIs. Updating due to changes in depenencies
- 
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
 object JSONTilesheetViewer extends App
@@ -230,7 +215,7 @@ object JSONTilesheetViewer extends App
 					tilesheetURI.getSchemeSpecificPart match
 					{
 						case "rayrobdod.name,2013-08:tilesheet-nil" => NilTilesheet
-						case CheckerboardURIMatcher(checker) => checker
+						case CheckerboardURIMatcher(checker) => checker;
 						case "rayrobdod.name,2013-08:tilesheet-indexies" => IndexesTilesheet
 						case "rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet
 						// case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
@@ -248,45 +233,7 @@ object JSONTilesheetViewer extends App
 			}
 		}
 		
-		object CheckerboardURIMatcher {
-			import java.awt.{Color, Dimension}
-			
-			def unapply(ssp:String):Option[CheckerboardTilesheet] = {
-				val split = ssp.split("[\\?\\&]");
-				
-				if ("rayrobdod.name,2013-08:tilesheet-checker" == split.head)
-				{
-					var returnValue = new CheckerboardTilesheet()
-					
-					split.tail.foreach{(param:String) =>
-						val splitParam = param.split("=");
-						splitParam(0) match {
-							case "size" => {
-								returnValue = returnValue.copy(
-									dim = new Dimension(splitParam(1).toInt,
-											splitParam(1).toInt)
-								)
-							}
-							case "light" => {
-								returnValue = returnValue.copy(
-									light = new Color(splitParam(1).toInt)
-								)
-							}
-							case "dark" => {
-								returnValue = returnValue.copy(
-									dark = new Color(splitParam(1).toInt)
-								)
-							}
-							case _ => {}
-						}
-					}
-					
-					return Some(returnValue)
-				} else {
-					return None;
-				}
-			}
-		}
+		
 	}
 	
 	
