@@ -232,8 +232,6 @@ object JSONTilesheetViewer extends App
 				case _ => JSONTilesheet( tilesheetURI.toURL )
 			}
 		}
-		
-		
 	}
 	
 	

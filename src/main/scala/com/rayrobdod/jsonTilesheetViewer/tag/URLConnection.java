@@ -4,7 +4,7 @@ import java.net.URL;
 import java.io.InputStream;
 import java.io.IOException;
 import com.rayrobdod.boardGame.swingView.*;
-import  com.rayrobdod.jsonTilesheetViewer.CheckerboardURIMatcher;
+import com.rayrobdod.jsonTilesheetViewer.CheckerboardURIMatcher;
 
 class URLConnection extends java.net.URLConnection {
 	public URLConnection(URL u) {

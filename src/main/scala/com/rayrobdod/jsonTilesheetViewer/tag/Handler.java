@@ -42,13 +42,13 @@ public class Handler extends java.net.URLStreamHandler {
         	
         	
 			this.setURL(u, "tag",
-					/* host */ "???",
+					/* host */ null,
 					/* port */ -1,
-					/* authority */ "???",
-					/* userInfo */ "",
-					/* path */ "???",
-					/* query */ "???",
-					/* ref */ "???"
+					/* authority */ null,
+					/* userInfo */ null,
+					/* path */ null,
+					/* query */ null,
+					/* ref */ null
             );
         }
 	}
