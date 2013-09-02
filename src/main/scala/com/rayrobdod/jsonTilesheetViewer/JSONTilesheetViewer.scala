@@ -233,7 +233,7 @@ object JSONTilesheetViewer extends App
 						case CheckerboardURIMatcher(checker) => checker
 						case "rayrobdod.name,2013-08:tilesheet-indexies" => IndexesTilesheet
 						case "rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet
-	//					case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
+						// case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
 						case _ => {
 							JOptionPane.showMessageDialog(frame,
 									"Tilesheet URI contains an unknown tag",
@@ -327,60 +327,60 @@ object JSONTilesheetViewer extends App
 			}
 		}
 		
-			mapURI.getScheme match
-			{
-				case "tag" => {
-					mapURI.getSchemeSpecificPart match
-					{
-						case RotateFieldURIMatcher(rotate) => rotate
-						case _ => {
-							JOptionPane.showMessageDialog(frame,
-									"Map URI contains an unknown tag",
-									"Unkown URI",
-									JOptionPane.WARNING_MESSAGE
-							)
-							new RotateSpaceRectangularField(rotation, 10, 12)
-						}
+		mapURI.getScheme match
+		{
+			case "tag" => {
+				mapURI.getSchemeSpecificPart match
+				{
+					case RotateFieldURIMatcher(rotate) => rotate
+					case _ => {
+						JOptionPane.showMessageDialog(frame,
+								"Map URI contains an unknown tag",
+								"Unkown URI",
+								JOptionPane.WARNING_MESSAGE
+						)
+						new RotateSpaceRectangularField(rotation, 10, 12)
 					}
-				}
-				case _ => {
-					
-					val metadataPath = Paths.get(mapURI)
-					val metadataReader = Files.newBufferedReader(metadataPath, UTF_8);
-					val metadataMap:Map[String,String] = {
-						val listener = ToScalaCollection()
-						JSONParser.parse(listener, metadataReader)
-						listener.resultMap.mapValues{_.toString}
-					}
-			
-					val letterToSpaceClassConsPath = metadataPath.getParent.resolve(metadataMap("classMap"))
-					val letterToSpaceClassConsReader = Files.newBufferedReader(letterToSpaceClassConsPath, UTF_8)
-					val letterToSpaceClassConsMap:Map[String,SpaceClassConstructor] = {
-						val listener = ToScalaCollection()
-						JSONParser.parse(listener, letterToSpaceClassConsReader)
-						val letterToClassNameMap = listener.resultMap.mapValues{_.toString}
-						
-						letterToClassNameMap.mapValues{(objectName:String) => 
-							val clazz = Class.forName(objectName + "$")
-							val field = clazz.getField("MODULE$")
-							
-							field.get(null).asInstanceOf[SpaceClassConstructor]
-						}
-					}
-					
-					val layoutPath = metadataPath.getParent.resolve(metadataMap("layout"))
-					val layoutReader = Files.newBufferedReader(layoutPath, UTF_8)
-					val layoutTable:Seq[Seq[SpaceClassConstructor]] = {
-						val listener = new ToSeqSeqCSVParseListener()
-						new CSVParser(CSVPatterns.commaDelimeted).parse(listener, layoutReader)
-						val letterTable = listener.result
-						
-						letterTable.map{_.map{letterToSpaceClassConsMap}}
-					}
-					
-					Field.applySCC( layoutTable )
 				}
 			}
+			case _ => {
+				
+				val metadataPath = Paths.get(mapURI)
+				val metadataReader = Files.newBufferedReader(metadataPath, UTF_8);
+				val metadataMap:Map[String,String] = {
+					val listener = ToScalaCollection()
+					JSONParser.parse(listener, metadataReader)
+					listener.resultMap.mapValues{_.toString}
+				}
+		
+				val letterToSpaceClassConsPath = metadataPath.getParent.resolve(metadataMap("classMap"))
+				val letterToSpaceClassConsReader = Files.newBufferedReader(letterToSpaceClassConsPath, UTF_8)
+				val letterToSpaceClassConsMap:Map[String,SpaceClassConstructor] = {
+					val listener = ToScalaCollection()
+					JSONParser.parse(listener, letterToSpaceClassConsReader)
+					val letterToClassNameMap = listener.resultMap.mapValues{_.toString}
+					
+					letterToClassNameMap.mapValues{(objectName:String) => 
+						val clazz = Class.forName(objectName + "$")
+						val field = clazz.getField("MODULE$")
+						
+						field.get(null).asInstanceOf[SpaceClassConstructor]
+					}
+				}
+				
+				val layoutPath = metadataPath.getParent.resolve(metadataMap("layout"))
+				val layoutReader = Files.newBufferedReader(layoutPath, UTF_8)
+				val layoutTable:Seq[Seq[SpaceClassConstructor]] = {
+					val listener = new ToSeqSeqCSVParseListener()
+					new CSVParser(CSVPatterns.commaDelimeted).parse(listener, layoutReader)
+					val letterTable = listener.result
+					
+					letterTable.map{_.map{letterToSpaceClassConsMap}}
+				}
+				
+				Field.applySCC( layoutTable )
+			}
+		}
 		
 	}
 }
