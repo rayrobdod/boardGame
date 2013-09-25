@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.net.MalformedURLException;
 
+// TODO: move to utilities
 public class Handler extends java.net.URLStreamHandler {
 
 	public static final String urlChar = "[\\w\\-\\_\\.\\!\\~\\*\\'\\(\\)\\%\\&\\=]+";

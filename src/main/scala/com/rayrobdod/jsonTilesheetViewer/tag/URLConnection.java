@@ -6,7 +6,7 @@ import java.io.IOException;
 import com.rayrobdod.boardGame.swingView.*;
 import com.rayrobdod.jsonTilesheetViewer.CheckerboardURIMatcher;
 
-class URLConnection extends java.net.URLConnection {
+public class URLConnection extends java.net.URLConnection {
 	public URLConnection(URL u) {
 		super(u);
 	}
@@ -39,9 +39,5 @@ class URLConnection extends java.net.URLConnection {
 		} else {
 			throw new IOException("Unknown tag");
 		}
-	}
-	
-	public InputStream getInputStream() throws IOException {
-		return null;
 	}
 }
