@@ -6,6 +6,8 @@ import com.rayrobdod.util.services.Services.readServices;
 
 /**
  * Like {@link java.util.ServiceLoader}, but for Tilesheets.
+ *
+ * Is willing to load either files using 'path/to/file' or scala objects 'package.name.object'
  * 
  * @author Raymond Dodge
  * @version 15 Apr 2012

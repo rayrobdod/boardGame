@@ -12,13 +12,11 @@ crossScalaVersions ++= Seq("2.10.2", "2.9.2", "2.9.1", "2.11.0-M4")
 
 mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
-target := new File("C:/Users/Raymond/AppData/Local/Temp/build/BoardGameGeneric/")
-
 libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20130908")
 
-// This import better be gone by 2.0.1
+// This import better be replaced by 2.0.1
 libraryDependencies += ("com.rayrobdod" %% "csv" % "1.0.0")
 
 
