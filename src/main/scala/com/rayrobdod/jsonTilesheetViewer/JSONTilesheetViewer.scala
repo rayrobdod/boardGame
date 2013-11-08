@@ -4,7 +4,7 @@ import scala.collection.immutable.Seq
 import scala.util.Random
 
 import java.net.{URL, URI}
-import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints}
+import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
 import com.rayrobdod.swing.GridBagConstraintsFactory
@@ -19,7 +19,7 @@ import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
 		RectangularTilesheet => Tilesheet
 }
 import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField => Field
+		SpaceClassConstructor, RectangularField => Field, RectangularSpace
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
@@ -112,8 +112,8 @@ object JSONTilesheetViewer extends App
 		
 		field match {
 			case x:RotateSpaceRectangularField => {
-				fieldComp.lowLayer.labels.zipWithIndex.foreach({(label:JLabel, index:Int) =>
-					label.addMouseListener(new RotateListener(index))
+				x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+					fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 				}.tupled)
 			}
 			case _ => {}
@@ -141,8 +141,8 @@ object JSONTilesheetViewer extends App
 					frame.getContentPane.remove(fieldComp)
 					
 					fieldComp = new FieldComponent(tilesheet, field)
-					fieldComp.lowLayer.labels.zipWithIndex.foreach({(label:JLabel, index:Int) =>
-						label.addMouseListener(new RotateListener(index))
+					x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
 					frame.getContentPane.add(fieldComp)
 					frame.getContentPane.validate()

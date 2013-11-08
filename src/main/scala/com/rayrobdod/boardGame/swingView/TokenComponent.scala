@@ -19,7 +19,7 @@ class TokenComponent(token:Token, fieldComp:FieldComponent, layout:MoveToLayout,
 	token.moveReactions_+=(ComponentMovementUpdateAct)
 	object ComponentMovementUpdateAct extends AbstractFunction2[Space, Boolean, Unit] {
 		def apply(movedTo:Space, landed:Boolean) = {
-			val location = fieldComp.spaceLabelMap(movedTo.asInstanceOf[RectangularSpace]).getLocation()
+			val location = fieldComp.spaceLocation(movedTo.asInstanceOf[RectangularSpace]).getLocation()
 			layout.moveTo(TokenComponent.this, location)
 		}
 	}

@@ -1,7 +1,8 @@
 package com.rayrobdod.boardGame.swingView
 
 import scala.util.Random
-import java.awt.{Image, GridLayout, Point}
+import java.awt.{Image, GridLayout, Point, Component}
+import java.awt.event.{MouseListener}
 import javax.swing.{JLabel, JComponent, Icon, JPanel}
 import com.rayrobdod.boardGame.{RectangularField, RectangularSpace, SpaceClassConstructor => SpaceConstructor}
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
@@ -18,7 +19,7 @@ import com.rayrobdod.swing.layouts.LayeredLayout
  * @param field the field that this tile will represent
  * @todo net.verizon.rayrobdod.swing.layouts.LayeredLayout
  */
-class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng:Random) extends JComponent
+class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng:Random) extends JComponent with RectangularFieldComponent
 {
 	def this(tilesheet:RectangularTilesheet, field:RectangularField) = this(tilesheet, field, Random);
 	
@@ -27,12 +28,12 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	private val points:Seq[Seq[Point]] = field.spaces.indices.map{(y:Int) => field.spaces(y).indices.map{(x:Int) => new Point(x,y)}}
 	private val flatPoints:Seq[Point] = points.flatten
 	
-	val spaces:Seq[RectangularSpace] = flatPoints.map{(p:Point) => field.space(x = p.x, y = p.y)}
+	private val spaces:Seq[RectangularSpace] = flatPoints.map{(p:Point) => field.space(x = p.x, y = p.y)}
 	private val (lowIcons:Seq[Icon], highIcons:Seq[Icon]) = flatPoints.map{(p:Point) => tilesheet.getIconFor(field, p.x, p.y, rng)}.unzip
 	
-	val lowLayer   = new FieldComponentLayer(lowIcons, field.spaces.size)
-	val tokenLayer = new JPanel(null)
-	val highLayer  = new FieldComponentLayer(highIcons, field.spaces.size)
+	private val lowLayer:JPanel   = new FieldComponentLayer(lowIcons, field.spaces.size)
+	val tokenLayer:JPanel = new JPanel(null)
+	private val highLayer = new FieldComponentLayer(highIcons, field.spaces.size)
 	
 	tokenLayer.setBackground(transparent)
 	tokenLayer.setOpaque(false)
@@ -60,7 +61,11 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	/**
 	 * A map of RectangularSpaces to the JLabel that represents that RectangularSpace
 	 */
-	val spaceLabelMap:Map[RectangularSpace, JLabel] = spaces.zip(lowLayer.labels).toMap
+	private val spaceLabelMap:Map[RectangularSpace, Component] = spaces.zip(lowLayer.getComponents).toMap
+	
+	def spaceLocation(space:RectangularSpace) = spaceLabelMap(space).getBounds
+	def addMouseListenerToSpace(space:RectangularSpace, l:MouseListener) = spaceLabelMap(space).addMouseListener(l)
+	def showSpace(space:RectangularSpace) = {}
 	
 	// overlapping layout
 	/* maybe will solve problems? this.setFocusable(true) */
@@ -68,7 +73,7 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	this.doLayout()
 	
 	
-	class FieldComponentLayer(icons:Seq[Icon], height:Int)
+	private class FieldComponentLayer(icons:Seq[Icon], height:Int)
 				extends JPanel(new GridLayout(height, -1))
 	{
 		val labels = icons.map{new JLabel(_)}
