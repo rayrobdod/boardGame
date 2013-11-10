@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
-		FieldComponent, NilTilesheet, IndexesTilesheet, RandomColorTilesheet,
+		RectangularFieldComponent, NilTilesheet, IndexesTilesheet, RandomColorTilesheet,
 		JSONRectangularTilesheet => JSONTilesheet,
 		RectangularTilesheet => Tilesheet
 }
@@ -64,7 +64,7 @@ object JSONTilesheetViewer extends App
 	
 	var tilesheet:Tilesheet = null
 	var field:Field = null
-	var fieldComp:FieldComponent = null
+	var fieldComp:RectangularFieldComponent = null
 	
 	loadNewTilesheet()
 	frame.setVisible(true)
@@ -90,7 +90,7 @@ object JSONTilesheetViewer extends App
 				rotation(tilesheet, tilesheetURI)
 		)
 		
-		fieldComp = new FieldComponent(tilesheet, field,
+		fieldComp = new RectangularFieldComponent(tilesheet, field,
 			randBox.getText match {
 				case "" => Random
 				case "a" => new Random(new java.util.Random(){override def next(bits:Int) = 1})
@@ -140,7 +140,7 @@ object JSONTilesheetViewer extends App
 					
 					frame.getContentPane.remove(fieldComp)
 					
-					fieldComp = new FieldComponent(tilesheet, field)
+					fieldComp = new RectangularFieldComponent(tilesheet, field)
 					x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
 						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)

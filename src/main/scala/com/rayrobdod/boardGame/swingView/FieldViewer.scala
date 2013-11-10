@@ -1,12 +1,12 @@
 package com.rayrobdod.boardGame.swingView
 
-import java.awt.Rectangle
+import java.awt.Shape
 import java.awt.event.MouseListener
 import javax.swing.JPanel
-import com.rayrobdod.boardGame.{RectangularField, RectangularSpace}
+import com.rayrobdod.boardGame.Space
 
 
-trait RectangularFieldComponent {
+trait FieldViewer {
 	
 	/**
 	 * A canvas that a process can use in whatever way they want.
@@ -19,17 +19,17 @@ trait RectangularFieldComponent {
 	 * can say "I want to be on top of this space" and it can move
 	 * to the given rectangle to do so.
 	 */
-	def spaceLocation(space:RectangularSpace):Rectangle
+	def spaceLocation(space:Space):Shape
 	
 	/**
 	 * 
 	 */
-	def addMouseListenerToSpace(space:RectangularSpace, l:MouseListener):Any
+	def addMouseListenerToSpace(space:Space, l:MouseListener):Any
 	
 	/**
 	 * Do something such that the specified space is visible.
 	 * 
 	 * Whether that's switching maps, or moving a containing ScrollPane.
 	 */
-	def showSpace(space:RectangularSpace):Any
+	def showSpace(space:Space):Any
 }

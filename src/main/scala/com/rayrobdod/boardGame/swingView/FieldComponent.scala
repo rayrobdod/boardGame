@@ -4,7 +4,8 @@ import scala.util.Random
 import java.awt.{Image, GridLayout, Point, Component}
 import java.awt.event.{MouseListener}
 import javax.swing.{JLabel, JComponent, Icon, JPanel}
-import com.rayrobdod.boardGame.{RectangularField, RectangularSpace, SpaceClassConstructor => SpaceConstructor}
+import com.rayrobdod.boardGame.{RectangularField, RectangularSpace,
+		SpaceClassConstructor => SpaceConstructor, Space}
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.layouts.LayeredLayout
 
@@ -17,9 +18,8 @@ import com.rayrobdod.swing.layouts.LayeredLayout
  *  
  * @param tilesheet the tilesheet that images to display are selected from
  * @param field the field that this tile will represent
- * @todo net.verizon.rayrobdod.swing.layouts.LayeredLayout
  */
-class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng:Random) extends JComponent with RectangularFieldComponent
+class RectangularFieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng:Random) extends JComponent with FieldViewer
 {
 	def this(tilesheet:RectangularTilesheet, field:RectangularField) = this(tilesheet, field, Random);
 	
@@ -44,7 +44,7 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	// adding animations
 	(lowIcons ++ highIcons).filter{_.isInstanceOf[AnimationIcon]}.foreach{(x:Icon) => 
 		val animIcon = x.asInstanceOf[AnimationIcon]
-		animIcon.addRepaintOnNextFrameListener(FieldComponent.this)
+		animIcon.addRepaintOnNextFrameListener(RectangularFieldComponent.this)
 	}
 	// TODO: stop threads at some point; or threadpool
 	
@@ -61,11 +61,11 @@ class FieldComponent(tilesheet:RectangularTilesheet, field:RectangularField, rng
 	/**
 	 * A map of RectangularSpaces to the JLabel that represents that RectangularSpace
 	 */
-	private val spaceLabelMap:Map[RectangularSpace, Component] = spaces.zip(lowLayer.getComponents).toMap
+	 private val spaceLabelMap:Map[Space, Component] = spaces.zip(lowLayer.getComponents).toMap
 	
-	def spaceLocation(space:RectangularSpace) = spaceLabelMap(space).getBounds
-	def addMouseListenerToSpace(space:RectangularSpace, l:MouseListener) = spaceLabelMap(space).addMouseListener(l)
-	def showSpace(space:RectangularSpace) = {}
+	override def spaceLocation(space:Space) = spaceLabelMap(space).getBounds
+	override def addMouseListenerToSpace(space:Space, l:MouseListener) = spaceLabelMap(space).addMouseListener(l)
+	override def showSpace(space:Space) = {}
 	
 	// overlapping layout
 	/* maybe will solve problems? this.setFocusable(true) */
