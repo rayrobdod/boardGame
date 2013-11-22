@@ -5,7 +5,9 @@ import java.awt.event.MouseListener
 import javax.swing.JPanel
 import com.rayrobdod.boardGame.Space
 
-
+/**
+ * @since 2.1.0
+ */
 trait FieldViewer {
 	
 	/**

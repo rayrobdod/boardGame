@@ -29,6 +29,7 @@ import com.rayrobdod.commaSeparatedValues.parser.{CSVParser, ToSeqSeqCSVParseLis
 
 /**
  * @author Raymond Dodge
+ * @version 2.1.0
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
 object JSONTilesheetViewer extends App

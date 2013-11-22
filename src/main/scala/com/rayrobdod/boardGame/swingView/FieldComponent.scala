@@ -14,8 +14,9 @@ import com.rayrobdod.swing.layouts.LayeredLayout
  * 
  * @author Raymond Dodge
  * @since 03 Aug 2011
- * @version 2.0
+ * @version 2.1.0
  *  
+ * @constructor
  * @param tilesheet the tilesheet that images to display are selected from
  * @param field the field that this tile will represent
  */
