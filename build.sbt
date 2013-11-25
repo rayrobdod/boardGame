@@ -4,7 +4,7 @@ organization := "com.rayrobdod"
 
 organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
-version := "2.0.0-SNAPSHOT"
+version := "2.0.0"
 
 scalaVersion := "2.9.3"
 
@@ -27,6 +27,8 @@ scalacOptions <++= scalaVersion.map{(sv:String) =>
 	if (sv.take(3) == "2.1") {Seq("-feature", "-language:implicitConversions")} else {Nil}
 }
 
+// license nonsense
+licenses += (("GPLv3 or later", new java.net.URL("http://www.gnu.org/licenses/") ))
 
 // anon-fun-reduce
 //autoCompilerPlugins := true
