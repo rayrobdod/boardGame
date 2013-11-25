@@ -21,7 +21,7 @@ import scala.collection.immutable.Seq
 import scala.util.Random
 
 import java.net.{URL, URI}
-import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints}
+import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
 import com.rayrobdod.swing.GridBagConstraintsFactory
@@ -31,12 +31,12 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
-		FieldComponent, NilTilesheet, IndexesTilesheet, RandomColorTilesheet,
+		RectangularFieldComponent, NilTilesheet, IndexesTilesheet, RandomColorTilesheet,
 		JSONRectangularTilesheet => JSONTilesheet,
 		RectangularTilesheet => Tilesheet
 }
 import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField => Field
+		SpaceClassConstructor, RectangularField => Field, RectangularSpace
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
@@ -46,6 +46,7 @@ import com.rayrobdod.commaSeparatedValues.parser.{CSVParser, ToSeqSeqCSVParseLis
 
 /**
  * @author Raymond Dodge
+ * @version 2.1.0
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
 object JSONTilesheetViewer extends App
@@ -81,7 +82,7 @@ object JSONTilesheetViewer extends App
 	
 	var tilesheet:Tilesheet = null
 	var field:Field = null
-	var fieldComp:FieldComponent = null
+	var fieldComp:RectangularFieldComponent = null
 	
 	loadNewTilesheet()
 	frame.setVisible(true)
@@ -107,7 +108,7 @@ object JSONTilesheetViewer extends App
 				rotation(tilesheet, tilesheetURI)
 		)
 		
-		fieldComp = new FieldComponent(tilesheet, field,
+		fieldComp = new RectangularFieldComponent(tilesheet, field,
 			randBox.getText match {
 				case "" => Random
 				case "a" => new Random(new java.util.Random(){override def next(bits:Int) = 1})
@@ -129,8 +130,8 @@ object JSONTilesheetViewer extends App
 		
 		field match {
 			case x:RotateSpaceRectangularField => {
-				fieldComp.lowLayer.labels.zipWithIndex.foreach({(label:JLabel, index:Int) =>
-					label.addMouseListener(new RotateListener(index))
+				x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+					fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 				}.tupled)
 			}
 			case _ => {}
@@ -157,9 +158,9 @@ object JSONTilesheetViewer extends App
 					
 					frame.getContentPane.remove(fieldComp)
 					
-					fieldComp = new FieldComponent(tilesheet, field)
-					fieldComp.lowLayer.labels.zipWithIndex.foreach({(label:JLabel, index:Int) =>
-						label.addMouseListener(new RotateListener(index))
+					fieldComp = new RectangularFieldComponent(tilesheet, field)
+					x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
 					frame.getContentPane.add(fieldComp)
 					frame.getContentPane.validate()
