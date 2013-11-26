@@ -60,7 +60,7 @@ class RectangularFieldComponent(tilesheet:RectangularTilesheet, field:Rectangula
 	this.add(lowLayer)
 	
 	// adding animations
-	(lowIcons ++ highIcons).filter{_.isInstanceOf[AnimationIcon]}.foreach{(x:Icon) => 
+	(lowIcons ++ highIcons).filter{_.isInstanceOf[AnimationIcon]}.foreach{(x:Icon) =>
 		val animIcon = x.asInstanceOf[AnimationIcon]
 		animIcon.addRepaintOnNextFrameListener(RectangularFieldComponent.this)
 	}
@@ -79,7 +79,7 @@ class RectangularFieldComponent(tilesheet:RectangularTilesheet, field:Rectangula
 	/**
 	 * A map of RectangularSpaces to the JLabel that represents that RectangularSpace
 	 */
-	 private val spaceLabelMap:Map[Space, Component] = spaces.zip(lowLayer.getComponents).toMap
+	private val spaceLabelMap:Map[Space, Component] = spaces.zip(lowLayer.getComponents).toMap
 	
 	override def spaceLocation(space:Space) = spaceLabelMap(space).getBounds
 	override def addMouseListenerToSpace(space:Space, l:MouseListener) = spaceLabelMap(space).addMouseListener(l)

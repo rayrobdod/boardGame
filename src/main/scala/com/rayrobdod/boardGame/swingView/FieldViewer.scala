@@ -12,7 +12,7 @@ trait FieldViewer {
 	
 	/**
 	 * A canvas that a process can use in whatever way they want.
-	 * Will usually show the Tokens moving around this field's field
+	 * Will usually be used to show the Tokens moving around the field
 	 */
 	val tokenLayer:JPanel
 	
