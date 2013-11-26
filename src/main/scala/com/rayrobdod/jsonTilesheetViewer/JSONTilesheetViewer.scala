@@ -40,7 +40,7 @@ import com.rayrobdod.boardGame.{
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
-import com.rayrobdod.commaSeparatedValues.parser.{CSVParser, ToSeqSeqCSVParseListener, CSVPatterns}
+import au.com.bytecode.opencsv.CSVReader;
 //import com.rayrobdod.deductionTactics.swingView.FieldChessTilesheet
 
 
@@ -334,9 +334,11 @@ object JSONTilesheetViewer extends App
 				val layoutPath = metadataPath.getParent.resolve(metadataMap("layout"))
 				val layoutReader = Files.newBufferedReader(layoutPath, UTF_8)
 				val layoutTable:Seq[Seq[SpaceClassConstructor]] = {
-					val listener = new ToSeqSeqCSVParseListener()
-					new CSVParser(CSVPatterns.commaDelimeted).parse(listener, layoutReader)
-					val letterTable = listener.result
+					import scala.collection.JavaConversions.collectionAsScalaIterable;
+					
+					val reader = new CSVReader(layoutReader);
+					val letterTable3 = reader.readAll();
+					val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
 					
 					letterTable.map{_.map{letterToSpaceClassConsMap}}
 				}

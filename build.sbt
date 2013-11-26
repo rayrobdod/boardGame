@@ -16,8 +16,7 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20130908")
 
-// This import better be replaced by 2.0.1
-libraryDependencies += ("com.rayrobdod" %% "csv" % "1.0.0")
+libraryDependencies += ("net.sf.opencsv" % "opencsv" % "2.3")
 
 javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 
