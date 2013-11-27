@@ -51,6 +51,17 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 object JSONTilesheetViewer extends App
 {
+	{
+		val prop:String = "java.protocol.handler.pkgs";
+		val pkg:String = "com.rayrobdod.tagprotocol";
+		
+		var value:String = System.getProperty(prop);
+		if (value == null) {value = "";}
+		value = value + "|" + pkg;
+		System.setProperty(prop, value);
+	}
+	
+	
 	val frame = new JFrame("JSON Tilesheet Viewer")
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 	
