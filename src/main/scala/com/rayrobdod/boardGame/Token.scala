@@ -24,11 +24,7 @@ import com.rayrobdod.boardGame.{Space => BoardGameSpace}
  * An object that can move around a game board.
  * 
  * @author Raymond Dodge
- * @version 06 May 2011
- * @version 15 May 2011 - gave a reactions value instead of forcing extending functions
- * @version 03 Oct 2011 - removed the constructor and type, and allowed currentSpace to be null.
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
- * @version 2013 Aug 07 - no longer implements actors, or uses reactions or events
+ * @version 2.0.0
  */
 abstract class Token
 {

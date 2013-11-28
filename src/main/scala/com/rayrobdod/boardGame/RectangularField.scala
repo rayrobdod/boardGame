@@ -27,18 +27,7 @@ import java.util.concurrent.{Future => JavaFuture, TimeUnit, TimeoutException}
  * 
  * 
  * @author Raymond Dodge
- * @version 30 Jul 2011
- * @version 02 Aug 2011 - renamed from RectangularRegionMap to RectangularField
- * @version 03 Aug 2011 - <code>&&</code> is the shortcut version of
-					 <code>&</code>... Fixed {@link #containsIndexies}
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to
-					 {@code com.rayrobdod.boardGame}
- * @version 2012 Aug 25 - switching x and y in #space and #containsIndexies
- * @version 2012 Oct 28 - changing the spaces field to be protected.
- * @version 2013 Aug 06 - Apparently 'Future' in scala means 'there's a thing
-			that I will want in the future', not 'there's a thing that will
-			become availiable in the futrue'. Either way, scala.parellel.Future
-			no longer exists, as of Scala 2.11. Using `scala.Function0` instead.
+ * @version 2.0.0
  * @see [[com.rayrobdod.boardGame.RectangularSpace]]
  */
 abstract class RectangularField
@@ -59,32 +48,20 @@ abstract class RectangularField
 	 */
 	final protected def spaceFuture(x:Int, y:Int) =
 	{
-		final class RectangularFieldSpaceFuture(x:Int, y:Int) extends JavaFuture[Option[RectangularSpace]]
-				with scala.Function0[Option[RectangularSpace]]
+		final class RectangularFieldSpaceFuture(x:Int, y:Int)
+				extends scala.Function0[Option[RectangularSpace]]
 		{
-			override def get = apply
 			override def apply = {
 				while (!isDone) {Thread.sleep(100L)}
 				
-				if (RectangularField.this.containsIndexies(x,y)) Some(RectangularField.this.space(x,y)) else None
-			}
-			
-			override def get(timeout:Long, timeUnit:TimeUnit) = {
-				Thread.sleep(timeUnit.toMillis(timeout))
-				
-				if (isDone) get() else {
-					throw new TimeoutException("RectangularFieldSpaceFuture.get(" + timeout + ":long, " + timeUnit +
-							":java.util.concurrent.TimeUnit)")
-				}
+				if (RectangularField.this.containsIndexies(x,y))
+					Some(RectangularField.this.space(x,y))
+				else
+					None
 			}
 			
 			// in theory, this should never be called in a state when isDone is false.
-			override def isDone:Boolean = {spaces != null}
-			
-			override def cancel(ignored:Boolean):Boolean = false
-			override def isCancelled:Boolean = false
-			
-			override def toString = "RectangularFieldSpaceFuture [RectangularField.this: " + RectangularField.this + "x: " + x + ", y: " + y + "]" 
+			def isDone:Boolean = {spaces != null}
 		}
 		
 		new RectangularFieldSpaceFuture(x,y)
