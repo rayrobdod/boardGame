@@ -29,30 +29,27 @@ import scala.collection.LinearSeqOptimized
  * I haven't grown out of my habit of making useless collections yet…
  * 
  * @author Raymond Dodge
- * @version 09 May 2011
- * @version 14 Jun 2011 - made parametric
- * @version 14 Jun 2011 - fixed isEmpty to report true on empty, not false on empty
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
+ * @version 2.1.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
  */
-class UnaryMovementSpaceSeq[A <: UnaryMovement](override val headOption:Option[A])
+class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOption:Option[A])
 			extends LinearSeq[A] 
 {
-	import UnaryMovementSpaceSeqLoggerInitializer.{unaryLogger => logger}
-	logger.entering("UnaryMovementSpaceSeq", "this(Option[A])", headOption)
+	import UnidirectionalSpaceSeqLoggerInitializer.{unaryLogger => logger}
+	logger.entering("UnidirectionalSpaceSeq", "this(Option[A])", headOption)
 	
 	def this(head:A) = this(Option(head))
 	
 	override def head = headOption.get
 	override def isEmpty = (headOption == None) // assume no nulls, right?
-	override def tail:UnaryMovementSpaceSeq[A] = // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
+	override def tail:UnidirectionalSpaceSeq[A] = // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
 	{
-		logger.entering("UnaryMovementSpaceSeq", "tail()")
+		logger.entering("UnidirectionalSpaceSeq", "tail()")
 		logger.finer(this.head.toString)
 		
 		val next:Option[Space] = headOption.flatMap(_.nextSpace)
 		val nextAsUnary:Option[A] = next.filter(_.isInstanceOf[A]).asInstanceOf[Option[A]]
 		
-		new UnaryMovementSpaceSeq[A](nextAsUnary)
+		new UnidirectionalSpaceSeq[A](nextAsUnary)
 	}
 	
 	override def apply(i:Int):A = 
@@ -70,7 +67,7 @@ class UnaryMovementSpaceSeq[A <: UnaryMovement](override val headOption:Option[A
 	}
 }
 
-private[boardGame] object UnaryMovementSpaceSeqLoggerInitializer
+private[boardGame] object UnidirectionalSpaceSeqLoggerInitializer
 {
 	import java.util.logging.{Logger, Level, ConsoleHandler}
 	
@@ -80,7 +77,7 @@ private[boardGame] object UnaryMovementSpaceSeqLoggerInitializer
 	val finerConsoleHander = new ConsoleHandler()
 	finerConsoleHander.setLevel(Level.FINER)
 	
-	val unaryLogger = Logger.getLogger("net.verizon.rayrobdod.boardGame.UnaryMovementSpaceSeq")
+	val unaryLogger = Logger.getLogger("net.verizon.rayrobdod.boardGame.UnidirectionalSpaceSeq")
 	unaryLogger.addHandler(finerConsoleHander)
 	unaryLogger.setLevel(Level.WARNING)
 }

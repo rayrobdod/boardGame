@@ -24,26 +24,13 @@ import scala.collection.mutable.{Map => MMap}
  * A spot on a board game board
  * 
  * @author Raymond Dodge
- * @version 6 May 2011
- * @version 30 July 2011 - #movementCost() => #movementCost(Token)
- * @version 29 Sept 2011 - moved methods not related to spacial relations between
- 				spaces were moved to a new class SpaceClass
- * @version 20 Oct 2011 - adding #pathTo and #distanceTo
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
- * @version 01 Mar 2012 - now, pathTo's algorythm only stores the precending Space in the path, rather than the entire path so far.
- * @version 01 Mar 2012 - adding #pathToEverywhere, which is basically data used by #pathTo and #distanceTo
- * @version 05 Apr 2012 - adding TypeOfCost parameter to cost-related functions, due to change in [[com.rayrobdod.boardGame.SpaceClass]] 
- * @version 2013 Aug 20 - using minBy instead of custom comparators 
+ *
+ * @constructor
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @see [[com.rayrobdod.boardGame.SpaceClass]] defines the way this interacts with tokens
  */
 abstract class Space(val typeOfSpace:SpaceClass)
 {
-	/**
-	 * returns the type of space that this is
-	 */
-//	def typeOfSpace:SpaceClass
-	
 	/**
 	 * A space that is treated as adjacent to this one; such as a tile that can be directly
 	 * accessed from this tile without passing through other tiles
@@ -216,48 +203,5 @@ abstract class Space(val typeOfSpace:SpaceClass)
 		closed += checkingTile
 		
 		return IMap.empty ++ closed
-	}
-}
-
-/**
- * A [[com.rayrobdod.boardGame.Space]] in which a player can continue in only one direction.
- * 
- * @author Raymond Dodge
- * @version 6 May 2011
- * @version 29 Sept 2011 - modified with super Space; also, no longer abstract
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
- * @param typeOfSpace the class that defines how this space interacts with Tokens.
- * @param nextSpace The space a player will continue to after this one 
- */
-class UnaryMovement(typeOfSpace:SpaceClass, val nextSpace:Option[Space]) extends Space(typeOfSpace)
-{
-	/**
-	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
-	 */
-	override def adjacentSpaces:Set[Space] = nextSpace.toList.toSet
-	
-	/**
-	 * Returns the space a player will reach when using a certain cost.
-	 * @param availiableCost the available for movement
-	 * @return an Option containing a space if there are nextSpaces until the cost is used up.
-	 * @throws ClassCastException if one of the next spaces is not an instance of UnaryMovement, which presumably means
-				there are multiple available adjacentSpaces.
-	 */
-	def spaceAfter(availiableCost:Int, token:Token, costType:TypeOfCost):Option[UnaryMovement] =
-	{
-		if (availiableCost == 0) Option(this)
-		else
-		{
-			nextSpace match
-			{
-				case None => None
-				case Some(x:UnaryMovement) =>
-				{
-					if (availiableCost >= x.typeOfSpace.cost(token, costType)) x.spaceAfter(availiableCost - x.typeOfSpace.cost(token, costType), token, costType)
-					else None
-				}
-				case Some(_) => throw new ClassCastException("Encountered something that is not a UnarySpace; ")
-			}
-		}
 	}
 }
