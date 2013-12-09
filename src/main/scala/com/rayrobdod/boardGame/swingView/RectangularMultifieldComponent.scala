@@ -11,6 +11,8 @@ import com.rayrobdod.boardGame.{RectangularField, RectangularSpace,
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.layouts.LayeredLayout
 
+import com.rayrobdod.boardGame.LoggerInitializer.{rectangularMultifieldLogger => logger}
+
 /**
  * @since 2.1.0
  */
@@ -42,8 +44,10 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 	
 	def spaceLocation(space:Space):Shape = {
 		if (spaceToComponent.contains(space)) {
+			logger.finer("Space found: " + spaceToComponent(space).getBounds().toString);
 			return spaceToComponent(space).getBounds;
 		} else {
+			logger.fine("Space not found");
 			return new Rectangle(-1, -1, 0, 0);
 		}
 	}

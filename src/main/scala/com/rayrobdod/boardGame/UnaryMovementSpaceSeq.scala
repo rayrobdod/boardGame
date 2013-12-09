@@ -21,6 +21,7 @@ import scala.collection.immutable.Set
 import com.rayrobdod.boardGame.{Token => BoardGameToken}
 import scala.collection.immutable.LinearSeq
 import scala.collection.LinearSeqOptimized
+import LoggerInitializer.{unarySeqLogger => logger}
 
 /**
  * Noticed that the UnaryMovement Spaces look like linked list nodes
@@ -34,7 +35,6 @@ import scala.collection.LinearSeqOptimized
 final class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOption:Option[A])
 			extends LinearSeq[A] 
 {
-	import UnidirectionalSpaceSeqLoggerInitializer.{unaryLogger => logger}
 	logger.entering("UnidirectionalSpaceSeq", "this(Option[A])", headOption)
 	
 	def this(head:A) = this(Option(head))
@@ -65,19 +65,4 @@ final class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOp
 		if (this.isEmpty) return 0
 		else return (tail.length + 1)
 	}
-}
-
-private[boardGame] object UnidirectionalSpaceSeqLoggerInitializer
-{
-	import java.util.logging.{Logger, Level, ConsoleHandler}
-	
-	val warningConsoleHander = new ConsoleHandler()
-	warningConsoleHander.setLevel(Level.WARNING)
-	
-	val finerConsoleHander = new ConsoleHandler()
-	finerConsoleHander.setLevel(Level.FINER)
-	
-	val unaryLogger = Logger.getLogger("net.verizon.rayrobdod.boardGame.UnidirectionalSpaceSeq")
-	unaryLogger.addHandler(finerConsoleHander)
-	unaryLogger.setLevel(Level.WARNING)
 }
