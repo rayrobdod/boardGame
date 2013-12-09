@@ -27,9 +27,11 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 	highLayer.setOpaque(false)
 	tokenLayer.setBackground(transparent)
 	tokenLayer.setOpaque(false)
+	this.setLayout(new LayeredLayout)
 	this.add(highLayer)
 	this.add(tokenLayer)
 	this.add(lowLayer)
+	this.doLayout()
 	
 	
 	private var currentField:RectangularField = null
@@ -89,7 +91,6 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 			}
 			
 			spaceToComponent = spaces.zip(lowLabels).toMap;
-			RectangularMultifieldComponent.this.repaint();
 		}
 	}
 	
