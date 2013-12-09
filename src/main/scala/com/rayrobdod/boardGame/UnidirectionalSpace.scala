@@ -31,7 +31,7 @@ import scala.collection.mutable.{Map => MMap}
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
-class UnidirectionalSpace(typeOfSpace:SpaceClass, val nextSpace:Option[Space]) extends Space(typeOfSpace)
+final class UnidirectionalSpace(typeOfSpace:SpaceClass, val nextSpace:Option[Space]) extends Space(typeOfSpace)
 {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.

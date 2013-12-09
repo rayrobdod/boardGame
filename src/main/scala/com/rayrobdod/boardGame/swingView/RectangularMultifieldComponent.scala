@@ -89,6 +89,7 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 			}
 			
 			spaceToComponent = spaces.zip(lowLabels).toMap;
+			RectangularMultifieldComponent.this.repaint();
 		}
 	}
 	

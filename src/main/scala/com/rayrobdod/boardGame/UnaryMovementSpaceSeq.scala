@@ -31,7 +31,7 @@ import scala.collection.LinearSeqOptimized
  * @author Raymond Dodge
  * @version 2.1.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
  */
-class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOption:Option[A])
+final class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOption:Option[A])
 			extends LinearSeq[A] 
 {
 	import UnidirectionalSpaceSeqLoggerInitializer.{unaryLogger => logger}

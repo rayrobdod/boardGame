@@ -27,15 +27,12 @@ import scala.{Function0 => Future}
  * direction, but this makes no specific checks to that effect.
  * 
  * @author Raymond Dodge
- * @version ?? ??? 2011
- * @version 29 Sept 2011 - modified with super Space; also, no longer abstract
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame} to {@code com.rayrobdod.boardGame}
- * @version 2013 Aug 06 - Apparently 'Future' in scala means 'there's a thing that I will want in the future', not 
- 			'there's a thing that will become availiable in the futrue'. Either way, scala.parellel.Future no longer exists,
- 			as of Scala 2.11. Using `scala.Function0` instead.
+ * @version 2.0.0
+ * @see [[com.rayrobdod.boardGame.RectangularField]]
+ 
+ * @constructor
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param *Future a future that returns the spaces that border this.
- * @see [[com.rayrobdod.boardGame.RectangularField]]
  */
 class RectangularSpace(
 		typeOfSpace:SpaceClass,
