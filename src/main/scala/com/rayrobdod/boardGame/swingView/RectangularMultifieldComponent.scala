@@ -59,10 +59,12 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 	
 	def showSpace(space:Space) = {
 		if (spaceToField contains space) {
+			logger.finer("Space found ");
 			val field = spaceToField(space);
 			
 			showField(fieldToTilesheet(field), field)
 		} else {
+			logger.warning("Space not found ");
 			throw new NoSuchElementException("Space's field has not been loaded: " + space)
 		}
 	}
@@ -95,6 +97,8 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 			}
 			
 			spaceToComponent = spaces.zip(lowLabels).toMap;
+			this.invalidate();
+			this.revalidate();
 		}
 	}
 	
