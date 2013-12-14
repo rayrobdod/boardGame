@@ -14,6 +14,7 @@ import com.rayrobdod.swing.layouts.LayeredLayout
 import com.rayrobdod.boardGame.LoggerInitializer.{rectangularMultifieldLogger => logger}
 
 /**
+ * A component that can handle switching between multiple RectangularFields
  * @since 2.1.0
  */
 final class RectangularMultifieldComponent extends JComponent with FieldViewer {
@@ -103,8 +104,12 @@ final class RectangularMultifieldComponent extends JComponent with FieldViewer {
 	}
 	
 	
+	def isMapLoaded(field:RectangularField):Boolean = {
+		fieldToTilesheet.contains(field)
+	}
 	
 	def loadMap(tilesheet:RectangularTilesheet, field:RectangularField) {
+		// memory leaks!
 		spaceToField = spaceToField ++ field.spaces.flatten.map{((_, field))}
 		fieldToTilesheet = fieldToTilesheet + ((field, tilesheet))
 	}
