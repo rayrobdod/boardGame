@@ -27,8 +27,14 @@ scalacOptions <++= scalaVersion.map{(sv:String) =>
 	if (sv.take(3) == "2.1") {Seq("-feature", "-language:implicitConversions")} else {Nil}
 }
 
+
 // license nonsense
 licenses += (("GPLv3 or later", new java.net.URL("http://www.gnu.org/licenses/") ))
+
+mappings in (Compile, packageSrc) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
+
+mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
+
 
 // anon-fun-reduce
 //autoCompilerPlugins := true
