@@ -17,8 +17,6 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.Set
-import com.rayrobdod.boardGame.{Token => BoardGameToken}
 import scala.collection.immutable.LinearSeq
 import scala.collection.LinearSeqOptimized
 import LoggerInitializer.{unarySeqLogger => logger}
