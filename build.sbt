@@ -15,7 +15,7 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
 
 // update for new tag handler
-libraryDependencies += ("com.rayrobdod" %% "utilities" % "20130908")
+libraryDependencies += ("com.rayrobdod" %% "utilities" % "SNAPSHOT")
 
 libraryDependencies += ("net.sf.opencsv" % "opencsv" % "2.3")
 

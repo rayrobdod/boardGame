@@ -27,15 +27,9 @@ import com.rayrobdod.util.services.Services.readServices;
  * Is willing to load either files using 'path/to/file' or scala objects 'package.name.object'
  * 
  * @author Raymond Dodge
- * @version 15 Apr 2012
- * @version 31 May 2012 - adding support for resources in jar files
- * @version 08 Jun 2012 - Making sure a jar file system can't be created twice
- * @version 2012 Oct 28 - copying from com.rayrobdod.boardGame.view to com.rayrobdod.boardGame.swingview
- *                        and modifying to use appropriate swingView classes.
- * @version 2012 Dec 02 - nuking; replacing implementaiton with implementation backed by [[com.rayrobdod.util.services.ResourcesServiceLoader]]
- * @version 2013 Jan 19 - nuking; giving an interface based on ResourceServerLoader, but which allows classes to be loaded as well
+ * @version 2.1.0
  */
-final class RectangularTilesheetLoader(val service:String)
+final class RectangularTilesheetLoader(val service:String, val loader:ClassLoader = Thread.currentThread().getContextClassLoader())
 			extends Iterable[RectangularTilesheet]
 {
 	def iterator:Iterator[RectangularTilesheet] = new MyIterator()
@@ -44,7 +38,7 @@ final class RectangularTilesheetLoader(val service:String)
 	{
 		private var current:Int = 0;
 		private val readLines = try {
-			readServices(service);
+			readServices(service, loader);
 		} catch {
 			case e:java.io.IOException => throw new ServiceConfigurationError("", e)
 			case e:java.net.URISyntaxException => throw new ServiceConfigurationError("", e)
@@ -59,13 +53,25 @@ final class RectangularTilesheetLoader(val service:String)
 			
 			val line = readLines(current);
 			try {
-				val lineURL = ClassLoader.getSystemResource(line);
+				val lineURL = {
+					if (loader == null) {
+						ClassLoader.getSystemResource(line);
+					} else {	
+						loader.getResource(line);
+					}
+				}
 				
 				current = current + 1;
 				if (lineURL != null) {
 					JSONRectangularTilesheet(lineURL)
 				} else {
-					val clazz = Class.forName(line + "$")
+					val clazz = {
+						if (loader == null) {
+							Class.forName(line + "$");
+						} else {	
+							loader.loadClass(line + "$");
+						}
+					}
 					val module = clazz.getField("MODULE$")
 					module.get(null) match {
 						case x:RectangularTilesheet => x
