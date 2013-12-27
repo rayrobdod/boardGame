@@ -171,7 +171,7 @@ object JSONTilesheetViewer extends App
 					frame.getContentPane.remove(fieldComp)
 					
 					fieldComp = new RectangularFieldComponent(tilesheet, field)
-					x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+					field.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
 						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
 					frame.getContentPane.add(fieldComp)
