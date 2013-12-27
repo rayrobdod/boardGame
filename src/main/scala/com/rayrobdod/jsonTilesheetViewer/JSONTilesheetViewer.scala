@@ -30,18 +30,16 @@ import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
-import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
-		RectangularFieldComponent, NilTilesheet, IndexesTilesheet, RandomColorTilesheet,
-		JSONRectangularTilesheet => JSONTilesheet,
-		RectangularTilesheet => Tilesheet
+import com.rayrobdod.boardGame.swingView.{
+		RectangularFieldComponent,
+		JSONRectangularTilesheet,
+		RectangularTilesheet
 }
 import com.rayrobdod.boardGame.{
 		SpaceClassConstructor, RectangularField, RectangularSpace
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
-import au.com.bytecode.opencsv.CSVReader;
-//import com.rayrobdod.deductionTactics.swingView.FieldChessTilesheet
 
 
 /**
@@ -94,7 +92,7 @@ object JSONTilesheetViewer extends App
 	navPanel.add(randBox, endOfLine)
 	navPanel.add(goButton, endOfLine)
 	
-	var tilesheet:Tilesheet = null
+	var tilesheet:RectangularTilesheet = null
 	var field:RectangularField = null
 	var fieldComp:RectangularFieldComponent = null
 	
@@ -116,7 +114,7 @@ object JSONTilesheetViewer extends App
 		}
 		
 		ToggleContentHandlerFactory.setCurrentToTilesheet();
-		tilesheet = tilesheetURL.getContent().asInstanceOf[Tilesheet]
+		tilesheet = tilesheetURL.getContent().asInstanceOf[RectangularTilesheet]
 		
 		ToggleContentHandlerFactory.setCurrentToField();
 		tags.RotateMapTagResource.rotation = rotation(tilesheet, tilesheetURL.toURI)
@@ -189,9 +187,9 @@ object JSONTilesheetViewer extends App
 	
 	
 	
-	def rotation(tilesheet:Tilesheet, tilesheetURI:URI):Seq[SpaceClassConstructor] = {
+	def rotation(tilesheet:RectangularTilesheet, tilesheetURI:URI):Seq[SpaceClassConstructor] = {
 		Seq.empty ++ (tilesheet match {
-			case x:JSONTilesheet => {
+			case x:JSONRectangularTilesheet => {
 				val jsonMap = {
 					val reader = Files.newBufferedReader(Paths.get(tilesheetURI), UTF_8)
 					
