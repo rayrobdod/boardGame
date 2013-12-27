@@ -36,7 +36,7 @@ import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
 		RectangularTilesheet => Tilesheet
 }
 import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField => Field, RectangularSpace
+		SpaceClassConstructor, RectangularField, RectangularSpace
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
@@ -95,7 +95,7 @@ object JSONTilesheetViewer extends App
 	navPanel.add(goButton, endOfLine)
 	
 	var tilesheet:Tilesheet = null
-	var field:Field = null
+	var field:RectangularField = null
 	var fieldComp:RectangularFieldComponent = null
 	
 	loadNewTilesheet()
@@ -108,20 +108,19 @@ object JSONTilesheetViewer extends App
 			case e:java.net.MalformedURLException =>
 						new File(tileUrlBox.getText).toURI.toURL
 		}
-		val mapURI = try {
-			new URI(mapUrlBox.getText)
+		val mapURL = try {
+			new URL(mapUrlBox.getText)
 		} catch {
-			case e:java.net.URISyntaxException =>
-						new File(mapUrlBox.getText).toURI
+			case e:java.net.MalformedURLException =>
+						new File(mapUrlBox.getText).toURI.toURL
 		}
 		
 		ToggleContentHandlerFactory.setCurrentToTilesheet();
-		tilesheet = tileMatcher(tilesheetURL)
+		tilesheet = tilesheetURL.getContent().asInstanceOf[Tilesheet]
 		
-		field = mapMatcher(
-				mapURI,
-				rotation(tilesheet, tilesheetURL.toURI)
-		)
+		ToggleContentHandlerFactory.setCurrentToField();
+		tags.RotateMapTagResource.rotation = rotation(tilesheet, tilesheetURL.toURI)
+		field = mapURL.getContent().asInstanceOf[RectangularField]
 		
 		fieldComp = new RectangularFieldComponent(tilesheet, field,
 			randBox.getText match {
@@ -236,112 +235,5 @@ object JSONTilesheetViewer extends App
 			}
 		*/	case _ => Seq(AnySpaceClass)
 		})
-	}
-	
-	
-	
-	object tileMatcher {
-		def apply(tilesheetURL:URL):Tilesheet = {
-			tilesheetURL.getContent().asInstanceOf[Tilesheet]
-			
-			// TODO: CheckerboardTilesheet
-		}
-	}
-	
-	
-	def mapMatcher(mapURI:URI, rotation:Seq[SpaceClassConstructor]):Field = {
-		object RotateFieldURIMatcher {
-			case class Builder(width:Int, height:Int);
-			
-			def unapply(ssp:String):Option[RotateSpaceRectangularField] = {
-				val split = ssp.split("[\\?\\&]");
-				
-				if ("rayrobdod.name,2013-08:map-rotate" == split.head)
-				{
-					var builder = new Builder(10,12)
-					
-					split.tail.foreach{(param:String) =>
-						val splitParam = param.split("=");
-						splitParam(0) match {
-							case "width" => {
-								builder = builder.copy(
-									width = splitParam(1).toInt
-								)
-							}
-							case "height" => {
-								builder = builder.copy(
-									height = splitParam(1).toInt
-								)
-							}
-							case _ => {}
-						}
-					}
-					
-					return Some(new RotateSpaceRectangularField(
-						rotation, builder.width, builder.height
-					))
-				} else {
-					return None;
-				}
-			}
-		}
-		
-		mapURI.getScheme match
-		{
-			case "tag" => {
-				mapURI.getSchemeSpecificPart match
-				{
-					case RotateFieldURIMatcher(rotate) => rotate
-					case _ => {
-						JOptionPane.showMessageDialog(frame,
-								"Map URI contains an unknown tag",
-								"Unkown URI",
-								JOptionPane.WARNING_MESSAGE
-						)
-						new RotateSpaceRectangularField(rotation, 10, 12)
-					}
-				}
-			}
-			case _ => {
-				
-				val metadataPath = Paths.get(mapURI)
-				val metadataReader = Files.newBufferedReader(metadataPath, UTF_8);
-				val metadataMap:Map[String,String] = {
-					val listener = ToScalaCollection()
-					JSONParser.parse(listener, metadataReader)
-					listener.resultMap.mapValues{_.toString}
-				}
-		
-				val letterToSpaceClassConsPath = metadataPath.getParent.resolve(metadataMap("classMap"))
-				val letterToSpaceClassConsReader = Files.newBufferedReader(letterToSpaceClassConsPath, UTF_8)
-				val letterToSpaceClassConsMap:Map[String,SpaceClassConstructor] = {
-					val listener = ToScalaCollection()
-					JSONParser.parse(listener, letterToSpaceClassConsReader)
-					val letterToClassNameMap = listener.resultMap.mapValues{_.toString}
-					
-					letterToClassNameMap.mapValues{(objectName:String) => 
-						val clazz = Class.forName(objectName + "$")
-						val field = clazz.getField("MODULE$")
-						
-						field.get(null).asInstanceOf[SpaceClassConstructor]
-					}
-				}
-				
-				val layoutPath = metadataPath.getParent.resolve(metadataMap("layout"))
-				val layoutReader = Files.newBufferedReader(layoutPath, UTF_8)
-				val layoutTable:Seq[Seq[SpaceClassConstructor]] = {
-					import scala.collection.JavaConversions.collectionAsScalaIterable;
-					
-					val reader = new CSVReader(layoutReader);
-					val letterTable3 = reader.readAll();
-					val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
-					
-					letterTable.map{_.map{letterToSpaceClassConsMap}}
-				}
-				
-				Field.applySCC( layoutTable )
-			}
-		}
-		
 	}
 }

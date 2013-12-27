@@ -2,17 +2,14 @@ package com.rayrobdod.jsonTilesheetViewer;
 
 import java.net.ContentHandlerFactory;
 import java.net.ContentHandler;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 
 /**
- * @note
+ * 
+ * 
+ * This could be a class instead of an object, but only one
+ * ContentHandlerFactory exists at a time, ever, so what's the point?
+ * 
  * this is not optimal, but given the system's inablity to guess
  * mime types, I guess it is required.
  */
@@ -22,7 +19,10 @@ object ToggleContentHandlerFactory extends ContentHandlerFactory {
 	
 	def createContentHandler(mime:String) = current;
 	
-	def setCurrentToTilesheet() = {
+	def setCurrentToTilesheet() {
 		current = new JsonRectangularTilesheetHandler;
+	}
+	def setCurrentToField() {
+		current = new JsonMapHandler;
 	}
 }
