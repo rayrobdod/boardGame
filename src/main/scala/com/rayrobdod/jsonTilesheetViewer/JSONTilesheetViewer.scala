@@ -58,6 +58,10 @@ object JSONTilesheetViewer extends App
 		var value:String = System.getProperty(prop);
 		value = if (value == null) {pkg} else {value + "|" + pkg};
 		System.setProperty(prop, value);
+		
+		
+		java.net.URLConnection.setContentHandlerFactory(
+				ToggleContentHandlerFactory);
 	}
 	
 	
@@ -111,6 +115,7 @@ object JSONTilesheetViewer extends App
 						new File(mapUrlBox.getText).toURI
 		}
 		
+		ToggleContentHandlerFactory.setCurrentToTilesheet();
 		tilesheet = tileMatcher(tilesheetURL)
 		
 		field = mapMatcher(
