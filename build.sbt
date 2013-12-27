@@ -10,6 +10,8 @@ scalaVersion := "2.9.3"
 
 crossScalaVersions ++= Seq("2.10.2", "2.9.2", "2.9.1", "2.11.0-M4")
 
+exportJars := true
+
 mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
@@ -29,6 +31,23 @@ scalacOptions <++= scalaVersion.map{(sv:String) =>
 
 // license nonsense
 licenses += (("GPLv3 or later", new java.net.URL("http://www.gnu.org/licenses/") ))
+
+
+proguardSettings
+
+ProguardKeys.options in Proguard <+= (baseDirectory in Compile).map{"-include '"+_+"/viewer.proguard'"}
+
+ProguardKeys.inputFilter in Proguard := { file =>
+	if (file.name.startsWith("board-game-generic")) {
+		None
+	} else if (file.name == "classes") {
+		None
+	} else if (file.name.startsWith("rt")) {
+		Some("**.class;java.**;javax.**")
+	} else {
+		Some("**.class")
+	}
+}
 
 // anon-fun-reduce
 //autoCompilerPlugins := true

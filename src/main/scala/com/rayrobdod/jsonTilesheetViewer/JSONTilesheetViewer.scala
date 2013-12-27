@@ -56,8 +56,7 @@ object JSONTilesheetViewer extends App
 		val pkg:String = "com.rayrobdod.tagprotocol";
 		
 		var value:String = System.getProperty(prop);
-		if (value == null) {value = "";}
-		value = value + "|" + pkg;
+		value = if (value == null) {pkg} else {value + "|" + pkg};
 		System.setProperty(prop, value);
 	}
 	
@@ -99,11 +98,11 @@ object JSONTilesheetViewer extends App
 	frame.setVisible(true)
 	
 	def loadNewTilesheet() = {
-		val tilesheetURI = try {
-			new URI(tileUrlBox.getText)
+		val tilesheetURL = try {
+			new URL(tileUrlBox.getText)
 		} catch {
-			case e:java.net.URISyntaxException =>
-						new File(tileUrlBox.getText).toURI
+			case e:java.net.MalformedURLException =>
+						new File(tileUrlBox.getText).toURI.toURL
 		}
 		val mapURI = try {
 			new URI(mapUrlBox.getText)
@@ -112,11 +111,11 @@ object JSONTilesheetViewer extends App
 						new File(mapUrlBox.getText).toURI
 		}
 		
-		tilesheet = tileMatcher(tilesheetURI)
+		tilesheet = tileMatcher(tilesheetURL)
 		
 		field = mapMatcher(
 				mapURI,
-				rotation(tilesheet, tilesheetURI)
+				rotation(tilesheet, tilesheetURL.toURI)
 		)
 		
 		fieldComp = new RectangularFieldComponent(tilesheet, field,
@@ -237,29 +236,10 @@ object JSONTilesheetViewer extends App
 	
 	
 	object tileMatcher {
-		def apply(tilesheetURI:URI):Tilesheet = {
-			tilesheetURI.getScheme match
-			{
-				case "tag" => {
-					tilesheetURI.getSchemeSpecificPart match
-					{
-						case "rayrobdod.name,2013-08:tilesheet-nil" => NilTilesheet
-						case CheckerboardURIMatcher(checker) => checker;
-						case "rayrobdod.name,2013-08:tilesheet-indexies" => IndexesTilesheet
-						case "rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet
-						// case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
-						case _ => {
-							JOptionPane.showMessageDialog(frame,
-									"Tilesheet URI contains an unknown tag",
-									"Unkown URI",
-									JOptionPane.WARNING_MESSAGE
-							)
-							NilTilesheet
-						}
-					}
-				}
-				case _ => JSONTilesheet( tilesheetURI.toURL )
-			}
+		def apply(tilesheetURL:URL):Tilesheet = {
+			tilesheetURL.getContent().asInstanceOf[Tilesheet]
+			
+			// TODO: CheckerboardTilesheet
 		}
 	}
 	
