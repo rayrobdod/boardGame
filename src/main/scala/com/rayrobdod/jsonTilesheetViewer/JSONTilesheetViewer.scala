@@ -30,18 +30,16 @@ import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
-import com.rayrobdod.boardGame.swingView.{CheckerboardTilesheet,
-		RectangularFieldComponent, NilTilesheet, IndexesTilesheet, RandomColorTilesheet,
-		JSONRectangularTilesheet => JSONTilesheet,
-		RectangularTilesheet => Tilesheet
+import com.rayrobdod.boardGame.swingView.{
+		RectangularFieldComponent,
+		JSONRectangularTilesheet,
+		RectangularTilesheet
 }
 import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField => Field, RectangularSpace
+		SpaceClassConstructor, RectangularField, RectangularSpace
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
-import au.com.bytecode.opencsv.CSVReader;
-//import com.rayrobdod.deductionTactics.swingView.FieldChessTilesheet
 
 
 /**
@@ -51,6 +49,20 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 object JSONTilesheetViewer extends App
 {
+	{
+		val prop:String = "java.protocol.handler.pkgs";
+		val pkg:String = "com.rayrobdod.tagprotocol";
+		
+		var value:String = System.getProperty(prop);
+		value = if (value == null) {pkg} else {value + "|" + pkg};
+		System.setProperty(prop, value);
+		
+		
+		java.net.URLConnection.setContentHandlerFactory(
+				ToggleContentHandlerFactory);
+	}
+	
+	
 	val frame = new JFrame("JSON Tilesheet Viewer")
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 	
@@ -80,33 +92,33 @@ object JSONTilesheetViewer extends App
 	navPanel.add(randBox, endOfLine)
 	navPanel.add(goButton, endOfLine)
 	
-	var tilesheet:Tilesheet = null
-	var field:Field = null
+	var tilesheet:RectangularTilesheet = null
+	var field:RectangularField = null
 	var fieldComp:RectangularFieldComponent = null
 	
 	loadNewTilesheet()
 	frame.setVisible(true)
 	
 	def loadNewTilesheet() = {
-		val tilesheetURI = try {
-			new URI(tileUrlBox.getText)
+		val tilesheetURL = try {
+			new URL(tileUrlBox.getText)
 		} catch {
-			case e:java.net.URISyntaxException =>
-						new File(tileUrlBox.getText).toURI
+			case e:java.net.MalformedURLException =>
+						new File(tileUrlBox.getText).toURI.toURL
 		}
-		val mapURI = try {
-			new URI(mapUrlBox.getText)
+		val mapURL = try {
+			new URL(mapUrlBox.getText)
 		} catch {
-			case e:java.net.URISyntaxException =>
-						new File(mapUrlBox.getText).toURI
+			case e:java.net.MalformedURLException =>
+						new File(mapUrlBox.getText).toURI.toURL
 		}
 		
-		tilesheet = tileMatcher(tilesheetURI)
+		ToggleContentHandlerFactory.setCurrentToTilesheet();
+		tilesheet = tilesheetURL.getContent().asInstanceOf[RectangularTilesheet]
 		
-		field = mapMatcher(
-				mapURI,
-				rotation(tilesheet, tilesheetURI)
-		)
+		ToggleContentHandlerFactory.setCurrentToField();
+		tags.RotateMapTagResource.rotation = rotation(tilesheet, tilesheetURL.toURI)
+		field = mapURL.getContent().asInstanceOf[RectangularField]
 		
 		fieldComp = new RectangularFieldComponent(tilesheet, field,
 			randBox.getText match {
@@ -159,7 +171,7 @@ object JSONTilesheetViewer extends App
 					frame.getContentPane.remove(fieldComp)
 					
 					fieldComp = new RectangularFieldComponent(tilesheet, field)
-					x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+					field.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
 						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
 					frame.getContentPane.add(fieldComp)
@@ -175,9 +187,9 @@ object JSONTilesheetViewer extends App
 	
 	
 	
-	def rotation(tilesheet:Tilesheet, tilesheetURI:URI):Seq[SpaceClassConstructor] = {
+	def rotation(tilesheet:RectangularTilesheet, tilesheetURI:URI):Seq[SpaceClassConstructor] = {
 		Seq.empty ++ (tilesheet match {
-			case x:JSONTilesheet => {
+			case x:JSONRectangularTilesheet => {
 				val jsonMap = {
 					val reader = Files.newBufferedReader(Paths.get(tilesheetURI), UTF_8)
 					
@@ -221,131 +233,5 @@ object JSONTilesheetViewer extends App
 			}
 		*/	case _ => Seq(AnySpaceClass)
 		})
-	}
-	
-	
-	
-	object tileMatcher {
-		def apply(tilesheetURI:URI):Tilesheet = {
-			tilesheetURI.getScheme match
-			{
-				case "tag" => {
-					tilesheetURI.getSchemeSpecificPart match
-					{
-						case "rayrobdod.name,2013-08:tilesheet-nil" => NilTilesheet
-						case CheckerboardURIMatcher(checker) => checker;
-						case "rayrobdod.name,2013-08:tilesheet-indexies" => IndexesTilesheet
-						case "rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet
-						// case "rayrobdod.name,2013-08:tilesheet-field" => FieldChessTilesheet
-						case _ => {
-							JOptionPane.showMessageDialog(frame,
-									"Tilesheet URI contains an unknown tag",
-									"Unkown URI",
-									JOptionPane.WARNING_MESSAGE
-							)
-							NilTilesheet
-						}
-					}
-				}
-				case _ => JSONTilesheet( tilesheetURI.toURL )
-			}
-		}
-	}
-	
-	
-	def mapMatcher(mapURI:URI, rotation:Seq[SpaceClassConstructor]):Field = {
-		object RotateFieldURIMatcher {
-			case class Builder(width:Int, height:Int);
-			
-			def unapply(ssp:String):Option[RotateSpaceRectangularField] = {
-				val split = ssp.split("[\\?\\&]");
-				
-				if ("rayrobdod.name,2013-08:map-rotate" == split.head)
-				{
-					var builder = new Builder(10,12)
-					
-					split.tail.foreach{(param:String) =>
-						val splitParam = param.split("=");
-						splitParam(0) match {
-							case "width" => {
-								builder = builder.copy(
-									width = splitParam(1).toInt
-								)
-							}
-							case "height" => {
-								builder = builder.copy(
-									height = splitParam(1).toInt
-								)
-							}
-							case _ => {}
-						}
-					}
-					
-					return Some(new RotateSpaceRectangularField(
-						rotation, builder.width, builder.height
-					))
-				} else {
-					return None;
-				}
-			}
-		}
-		
-		mapURI.getScheme match
-		{
-			case "tag" => {
-				mapURI.getSchemeSpecificPart match
-				{
-					case RotateFieldURIMatcher(rotate) => rotate
-					case _ => {
-						JOptionPane.showMessageDialog(frame,
-								"Map URI contains an unknown tag",
-								"Unkown URI",
-								JOptionPane.WARNING_MESSAGE
-						)
-						new RotateSpaceRectangularField(rotation, 10, 12)
-					}
-				}
-			}
-			case _ => {
-				
-				val metadataPath = Paths.get(mapURI)
-				val metadataReader = Files.newBufferedReader(metadataPath, UTF_8);
-				val metadataMap:Map[String,String] = {
-					val listener = ToScalaCollection()
-					JSONParser.parse(listener, metadataReader)
-					listener.resultMap.mapValues{_.toString}
-				}
-		
-				val letterToSpaceClassConsPath = metadataPath.getParent.resolve(metadataMap("classMap"))
-				val letterToSpaceClassConsReader = Files.newBufferedReader(letterToSpaceClassConsPath, UTF_8)
-				val letterToSpaceClassConsMap:Map[String,SpaceClassConstructor] = {
-					val listener = ToScalaCollection()
-					JSONParser.parse(listener, letterToSpaceClassConsReader)
-					val letterToClassNameMap = listener.resultMap.mapValues{_.toString}
-					
-					letterToClassNameMap.mapValues{(objectName:String) => 
-						val clazz = Class.forName(objectName + "$")
-						val field = clazz.getField("MODULE$")
-						
-						field.get(null).asInstanceOf[SpaceClassConstructor]
-					}
-				}
-				
-				val layoutPath = metadataPath.getParent.resolve(metadataMap("layout"))
-				val layoutReader = Files.newBufferedReader(layoutPath, UTF_8)
-				val layoutTable:Seq[Seq[SpaceClassConstructor]] = {
-					import scala.collection.JavaConversions.collectionAsScalaIterable;
-					
-					val reader = new CSVReader(layoutReader);
-					val letterTable3 = reader.readAll();
-					val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
-					
-					letterTable.map{_.map{letterToSpaceClassConsMap}}
-				}
-				
-				Field.applySCC( layoutTable )
-			}
-		}
-		
 	}
 }
