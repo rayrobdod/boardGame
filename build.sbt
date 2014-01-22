@@ -27,6 +27,12 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
+unmanagedJars in Compile += Attributed.blank(file("C:/Program Files/Java/jre7/lib/jfxrt.jar"))
+
+libraryDependencies += ("org.scalafx" %% "scalafx" % "1.0.0-M7")
+
+javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
+
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
 javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
