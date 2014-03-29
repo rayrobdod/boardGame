@@ -22,7 +22,7 @@ import com.rayrobdod.boardGame.{RectangularField, RectangularSpace,
 		SpaceClassConstructor, Space
 }
 import scalafx.scene.layout.{Pane, StackPane, GridPane}
-import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.Node
 
 
 
@@ -45,7 +45,7 @@ class RectangularFieldComponent(
 			field.space(x = p.x, y = p.y)
 		}
 	}
-	private val (lowIcons:Seq[Image], highIcons:Seq[Image]) = {
+	private val (lowIcons:Seq[Node], highIcons:Seq[Node]) = {
 		flatPoints.map{(p:Point) =>
 			tilesheet.getImageFor(field, p.x, p.y, rng)
 		}.unzip
@@ -59,11 +59,10 @@ class RectangularFieldComponent(
 	
 	
 	
-	private class FieldComponentLayer(icons:Seq[(Point, Image)])
+	private class FieldComponentLayer(labels:Seq[(Point, Node)])
 				extends GridPane
 	{
-		val labels = icons.map{(a) => ((a._1, new ImageView(a._2)))}
-		labels.foreach({(p:Point, i:ImageView) =>
+		labels.foreach({(p:Point, i:Node) =>
 			FieldComponentLayer.this.add(i, p.x, p.y)
 		}.tupled)
 	}

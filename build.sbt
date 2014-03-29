@@ -27,8 +27,6 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
-unmanagedJars in Compile += Attributed.blank(file("C:/Program Files/Java/jre7/lib/jfxrt.jar"))
-
 libraryDependencies += ("org.scalafx" %% "scalafx" % "1.0.0-M7")
 
 javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
@@ -101,6 +99,15 @@ ProguardKeys.inputFilter in Proguard := { file =>
 libraryDependencies += "org.scalatest" %% "scalatest" % (
       "2.2.5" + (if ((scalaVersion.value take 7) == "2.12.0-") { "-" + (scalaVersion.value drop 7) } else {""}) 
     ) % "test"
+
+jfxSettings
+
+JFX.mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer2")
+
+JFX.devKit := JFX.jdk("C:/Program Files/Java/jdk1.7.0_51")
+
+JFX.addJfxrtToClasspath := true
+
 
 testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 

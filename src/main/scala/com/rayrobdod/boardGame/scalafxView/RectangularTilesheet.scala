@@ -18,7 +18,7 @@
 package com.rayrobdod.boardGame.scalafxView
 
 import scala.util.Random
-import scalafx.scene.image.Image
+import scalafx.scene.Node
 import com.rayrobdod.boardGame.RectangularField
 
 /**
@@ -36,5 +36,5 @@ trait RectangularTilesheet
 	 * @return # the part of the image that goes below the movable controlled tokens
 			# the part of the image that goes above the movable controlled tokens
 	 */
-	def getImageFor(field:RectangularField, x:Int, y:Int, rng:Random):(Image, Image) 
+	def getImageFor(field:RectangularField, x:Int, y:Int, rng:Random):(Node, Node) 
 }

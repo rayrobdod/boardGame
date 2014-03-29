@@ -23,3 +23,5 @@ addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.7.0")
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
 addSbtPlugin("com.rayrobdod" % "sbt-alt-package" % "1.0")
+
+addSbtPlugin("no.vedaadata" %% "sbt-javafx" % "0.6")
