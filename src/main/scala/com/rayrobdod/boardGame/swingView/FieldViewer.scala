@@ -23,9 +23,9 @@ import javax.swing.JPanel
 import com.rayrobdod.boardGame.Space
 
 /**
- * @since 2.1.0
+ * @since 3.0.0
  */
-trait FieldViewer {
+trait FieldViewer[A] {
 	
 	/**
 	 * A canvas that a process can use in whatever way they want.
@@ -38,17 +38,17 @@ trait FieldViewer {
 	 * can say "I want to be on top of this space" and it can move
 	 * to the given rectangle to do so.
 	 */
-	def spaceLocation(space:Space):Shape
+	def spaceLocation(space:Space[A]):Shape
 	
 	/**
 	 * 
 	 */
-	def addMouseListenerToSpace(space:Space, l:MouseListener):Any
+	def addMouseListenerToSpace(space:Space[A], l:MouseListener):Any
 	
 	/**
 	 * Do something such that the specified space is visible.
 	 * 
 	 * Whether that's switching maps, or moving a containing ScrollPane.
 	 */
-	def showSpace(space:Space):Any
+	def showSpace(space:Space[A]):Any
 }
