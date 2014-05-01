@@ -26,9 +26,9 @@ import com.rayrobdod.boardGame.RectangularField
  * display in a user interface
  * 
  * @author Raymond Dodge
- * @param 2012 Aug 23
+ * @version 3.0.0
  */
-trait RectangularTilesheet
+trait RectangularTilesheet[A]
 {
 	/** a name for the tilesheet */
 	def name:String
@@ -41,5 +41,5 @@ trait RectangularTilesheet
 	 * @return # the part of the image that goes below the movable controlled tokens
 			# the part of the image that goes above the movable controlled tokens
 	 */
-	def getIconFor(field:RectangularField, x:Int, y:Int, rng:Random):(Icon, Icon) 
+	def getIconFor(field:RectangularField[A], x:Int, y:Int, rng:Random):(Icon, Icon) 
 }

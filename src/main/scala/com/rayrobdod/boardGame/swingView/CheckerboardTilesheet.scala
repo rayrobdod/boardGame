@@ -30,9 +30,7 @@ import com.rayrobdod.boardGame.RectangularField
  * Spaces where the sum of the indexies is odd uses a square of the 'dark' color
  * 
  * @author Raymond Dodge
- * @version 2012 Apr 20
- * @version 11 Jun 2012 - changing due to the change of image in RectangularVisualizationRule
- * @version 25 Aug 2012 - change to match new type of Tilesheet
+ * @version 3.0.0
  * 
  * @constructor Creates a CheckerboardTilesheet
  * @param light,dark the two colors the checkerboard should show
@@ -42,7 +40,7 @@ case class CheckerboardTilesheet(
 		val light:Color = Color.white,
 		val dark:Color = Color.black,
 		val dim:Dimension = new Dimension(16,16)
-) extends RectangularTilesheet {
+) extends RectangularTilesheet[Any] {
 	override def name = "Checkerboard: " + light + "/" + dark;
 	override def toString = name + ", " + dim;
 	
@@ -50,7 +48,7 @@ case class CheckerboardTilesheet(
 	val darkIcon  = new SolidColorIcon(dark,  dim.width, dim.height)
 	val transparentIcon = new SolidColorIcon(new Color(0,0,0,0), dim.width, dim.height)
 	
-	def getIconFor(f:RectangularField, x:Int, y:Int, rng:Random) = {
+	def getIconFor(f:RectangularField[_], x:Int, y:Int, rng:Random) = {
 		(( if ((x+y)%2 == 0) {lightIcon} else {darkIcon}, transparentIcon ))
 	}
 }
