@@ -19,23 +19,28 @@ package com.rayrobdod.boardGame
 
 import scala.collection.immutable.{Set, List, Map => IMap}
 import scala.collection.mutable.{Map => MMap}
+import Space.CostFunction
 
 /**
  * A spot on a board game board
- * 
- * @author Raymond Dodge
- *
- * @constructor
- * @param typeOfSpace the class that defines how this space interacts with Tokens.
- * @see [[com.rayrobdod.boardGame.SpaceClass]] defines the way this interacts with tokens
+ * @version 3.0.0
  */
-abstract class Space(val typeOfSpace:SpaceClass)
-{
+trait Space[A] {
+	/**
+	 * an object that defines how this space interacts with tokens
+	 */
+	def typeOfSpace:A
+	
 	/**
 	 * A space that is treated as adjacent to this one; such as a tile that can be directly
 	 * accessed from this tile without passing through other tiles
 	 */
-	def adjacentSpaces:Traversable[Space]
+	def adjacentSpaces:Traversable[Space[A]]
+	
+	
+	
+	/************** the implemented stuff ****************/
+	
 	
 	/**
 	 * Finds all the spaces within a certain movementCost of this one.
@@ -44,17 +49,16 @@ abstract class Space(val typeOfSpace:SpaceClass)
 	 * @return a set of all spaces that can be reached from this by moving into an adjacentTile
 			using movementCost or less
 	 */
-	def spacesWithin(availableCost:Int, token:Token, costType:TypeOfCost):Set[Space] =
+	def spacesWithin(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] =
 	{
 		if (availableCost < 0) Set.empty
 		else if (availableCost == 0) Set(this)
 		else
 		{
-			Set(this) ++ adjacentSpaces.flatMap((space:Space) => {
+			Set(this) ++ adjacentSpaces.flatMap((space:Space[A]) => {
 				space.spacesWithin(
-					availableCost - space.typeOfSpace.cost(token, costType),
-					token,
-					costType
+					availableCost - costFunction(this, space),
+					costFunction
 				)
 			})
 		}
@@ -67,17 +71,16 @@ abstract class Space(val typeOfSpace:SpaceClass)
 	 * @return a set of all spaces that can be reached from this by moving into an adjacentTile
 			using exactly movementCost
 	 */
-	def spacesAfter(availableCost:Int, token:Token, costType:TypeOfCost):Set[Space] =
+	def spacesAfter(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] =
 	{
 		if (availableCost < 0) Set.empty
 		else if (availableCost == 0) Set(this)
 		else
 		{
-			Set.empty ++ adjacentSpaces.flatMap((space:Space) => {
+			Set.empty ++ adjacentSpaces.flatMap((space:Space[A]) => {
 				space.spacesAfter(
-					availableCost - space.typeOfSpace.cost(token, costType),
-					token,
-					costType
+					availableCost - costFunction(this, space),
+					costFunction
 				)
 			})
 		}
@@ -91,11 +94,11 @@ abstract class Space(val typeOfSpace:SpaceClass)
 	 * @param other the space to find the movementCost required to get to
 	 * @return the movementCost required to get from this space to other
 	 */
-	def distanceTo(other:Space, token:Token, costType:TypeOfCost):Int =
+	def distanceTo(other:Space[A], costFunction:CostFunction[A]):Int =
 	{
-		val closed = MMap.empty[Space, Int]
-		val open = MMap.empty[Space, Int]
-		var checkingTile:(Space, Int) = ((this, 0))
+		val closed = MMap.empty[Space[A], Int]
+		val open = MMap.empty[Space[A], Int]
+		var checkingTile:(Space[A], Int) = ((this, 0))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -107,8 +110,8 @@ abstract class Space(val typeOfSpace:SpaceClass)
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
 			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
 			
-			unclosedNewTilesToCheck.foreach{(s:Space) => {
-				val newDistance = checkingTile._2 + s.typeOfSpace.cost(token, costType)
+			unclosedNewTilesToCheck.foreach{(s:Space[A]) => {
+				val newDistance = checkingTile._2 + costFunction(checkingTile._1, s)
 				val oldDistance = open.getOrElse(s, Integer.MAX_VALUE)
 				
 				if (newDistance < oldDistance) open += ((s, newDistance))
@@ -131,11 +134,11 @@ abstract class Space(val typeOfSpace:SpaceClass)
 	 * @return the a list of spaces such that the first space is this, the last space is other, and
 	 			the movementcost between the two is minimal
 	 */
-	def pathTo(other:Space, token:Token, costType:TypeOfCost):List[Space] =
+	def pathTo(other:Space[A], costFunction:CostFunction[A]):List[Space[A]] =
 	{
-		val closed = MMap.empty[Space, (Int, Space)]
-		val open = MMap.empty[Space, (Int, Space)]
-		var checkingTile:(Space, (Int, Space)) = ((this, ((0, null )) ))
+		val closed = MMap.empty[Space[A], (Int, Space[A])]
+		val open = MMap.empty[Space[A], (Int, Space[A])]
+		var checkingTile:(Space[A], (Int, Space[A])) = ((this, ((0, null )) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -147,8 +150,8 @@ abstract class Space(val typeOfSpace:SpaceClass)
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
 			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
 			
-			unclosedNewTilesToCheck.foreach{(s:Space) => {
-				val newDistance = checkingTile._2._1 + s.typeOfSpace.cost(token, costType)
+			unclosedNewTilesToCheck.foreach{(s:Space[A]) => {
+				val newDistance = checkingTile._2._1 + costFunction(checkingTile._1, s)
 				val oldDistance = open.getOrElse(s, ((Integer.MAX_VALUE, None)) )._1
 				
 				if (newDistance < oldDistance) open += ((s, ((newDistance, checkingTile._1)) ))
@@ -159,8 +162,8 @@ abstract class Space(val typeOfSpace:SpaceClass)
 		open -= checkingTile._1
 		closed += checkingTile
 		
-		var currentTile:Space = other
-		var returnValue:List[Space] = other :: Nil
+		var currentTile:Space[A] = other
+		var returnValue:List[Space[A]] = other :: Nil
 		while ((closed(currentTile)._2) != null)
 		{
 			currentTile = closed(currentTile)._2
@@ -172,14 +175,14 @@ abstract class Space(val typeOfSpace:SpaceClass)
 	/**
 	 * Returns the raw Dijkstra's algorithm data
 	 * 
-	 * @param token the token that is moving from this space to everywhere
+	 * @param costFunction the function defining the cost to move from one space to another
 	 * @return A map where the key is a space, and the value is the cost from here to the key, and how to get there.
 	 */
-	def pathToEverywhere(token:Token, costType:TypeOfCost):IMap[Space, (Int, Space)] =
-	{
-		val closed = MMap.empty[Space, (Int, Space)]
-		val open = MMap.empty[Space, (Int, Space)]
-		var checkingTile:(Space, (Int, Space)) = ((this, ((0, null )) ))
+	def rawDijkstraData(costFunction:CostFunction[A]):IMap[Space[A], (Int, Space[A])] = {
+		
+		val closed = MMap.empty[Space[A], (Int, Space[A])]
+		val open = MMap.empty[Space[A], (Int, Space[A])]
+		var checkingTile:(Space[A], (Int, Space[A])) = ((this, ((0, null )) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -190,8 +193,8 @@ abstract class Space(val typeOfSpace:SpaceClass)
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
 			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
 			
-			unclosedNewTilesToCheck.foreach{(s:Space) => {
-				val newDistance = checkingTile._2._1 + s.typeOfSpace.cost(token, costType)
+			unclosedNewTilesToCheck.foreach{(s:Space[A]) => {
+				val newDistance = checkingTile._2._1 + costFunction(checkingTile._1, s)
 				val oldDistance = open.getOrElse(s, ((Integer.MAX_VALUE, None)) )._1
 				
 				if (newDistance < oldDistance) open += ((s, ((newDistance, checkingTile._1)) ))
@@ -204,4 +207,14 @@ abstract class Space(val typeOfSpace:SpaceClass)
 		
 		return IMap.empty ++ closed
 	}
+}
+
+object Space {
+	
+	/** A function that defines the 'cost' of moving from the first space to the second space */
+	type CostFunction[A] = Function2[Space[A], Space[A], Int]
+	
+	/** A CostFunction with a constant (1) cost for every move. */
+	val constantCostFunction:CostFunction[_] = {(from:Space[_], to:Space[_]) => 1}
+	
 }

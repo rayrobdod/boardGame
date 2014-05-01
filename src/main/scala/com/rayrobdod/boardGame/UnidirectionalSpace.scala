@@ -25,18 +25,18 @@ import scala.collection.mutable.{Map => MMap}
  * A [[com.rayrobdod.boardGame.Space]] in which a player can continue in only one direction.
  * 
  * @author Raymond Dodge
- * @version 2.1.0 rename from UnaryMovement
+ * @version 3.0.0 rename from UnaryMovement
  * 
  * @constructor
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
-final class UnidirectionalSpace(typeOfSpace:SpaceClass, val nextSpace:Option[Space]) extends Space(typeOfSpace)
+final class UnidirectionalSpace[A](val typeOfSpace:A, val nextSpace:Option[UnidirectionalSpace[A]]) extends Space[A]
 {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
 	 */
-	override def adjacentSpaces:Set[Space] = nextSpace.toList.toSet
+	override def adjacentSpaces:Set[UnidirectionalSpace[A]] = nextSpace.toList.toSet
 	
 	/**
 	 * Returns the space a player will reach when using a certain cost.
@@ -45,7 +45,7 @@ final class UnidirectionalSpace(typeOfSpace:SpaceClass, val nextSpace:Option[Spa
 	 * @throws ClassCastException if one of the next spaces is not an instance of UnaryMovement, which presumably means
 				there are multiple available adjacentSpaces.
 	 */
-	def spaceAfter(availiableCost:Int, token:Token, costType:TypeOfCost):Option[UnidirectionalSpace] =
+	def spaceAfter(availiableCost:Int, costFunction:Space.CostFunction[A]):Option[UnidirectionalSpace[_]] =
 	{
 		if (availiableCost == 0) Option(this)
 		else
@@ -53,9 +53,11 @@ final class UnidirectionalSpace(typeOfSpace:SpaceClass, val nextSpace:Option[Spa
 			nextSpace match
 			{
 				case None => None
-				case Some(x:UnidirectionalSpace) =>
+				case Some(x:UnidirectionalSpace[_]) =>
 				{
-					if (availiableCost >= x.typeOfSpace.cost(token, costType)) x.spaceAfter(availiableCost - x.typeOfSpace.cost(token, costType), token, costType)
+					val thisCost = costFunction(this, x)
+					
+					if (availiableCost >= thisCost) x.spaceAfter(availiableCost - thisCost, costFunction)
 					else None
 				}
 				case Some(_) => throw new ClassCastException("Encountered something that is not a UnarySpace; ")
