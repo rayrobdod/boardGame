@@ -27,16 +27,16 @@ import java.util.concurrent.{Future => JavaFuture, TimeUnit, TimeoutException}
  * 
  * 
  * @author Raymond Dodge
- * @version 2.0.0
+ * @version 3.0.0
  * @see [[com.rayrobdod.boardGame.RectangularSpace]]
  */
-abstract class RectangularField
+abstract class RectangularField[A]
 {
 	/**
 	 * y is outer layer - x is inner layer
 	 * @deprecated
 	 */
-	def spaces:Seq[Seq[RectangularSpace]]
+	def spaces:Seq[Seq[StrictRectangularSpace[A]]]
 	
 	/** retrives a space from the spaces array. */
 	final def space(x:Int, y:Int) = spaces(y)(x)
@@ -49,7 +49,7 @@ abstract class RectangularField
 	final protected def spaceFuture(x:Int, y:Int) =
 	{
 		final class RectangularFieldSpaceFuture(x:Int, y:Int)
-				extends scala.Function0[Option[RectangularSpace]]
+				extends scala.Function0[Option[StrictRectangularSpace[A]]]
 		{
 			override def apply = {
 				while (!isDone) {Thread.sleep(100L)}
@@ -69,30 +69,15 @@ abstract class RectangularField
 }
 
 /**
- * A Constructorish for Rectangular Fields. Ish because none of them are #apply().
  */
 object RectangularField
 {
-	/**
-	 * @version 04 Oct 2011
-	 */
-	def applySCC(classConstructors:Seq[Seq[SpaceClassConstructor]]):RectangularField =
-	{
-		this.applySC(classConstructors.map{_.map{_.apply()}})
-	}
-	
-	/**
-	 * @version 29 Sept 2011
-	 * @version 25 Aug 2012 - correction: switching x and y in rectangular space
-	 * @version 25 Aug 2012 - changing anonfuns to have two parameters and use the tupled method
-	 * @version 28 Oct 2012 - switching i and j in for loops, due to discrepency between spaces and spaceFuture.
-	 */
-	def applySC(classes:Seq[Seq[SpaceClass]]):RectangularField = {
-		new RectangularField {
+	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = {
+		new RectangularField[A] {
 			
-			val spaces = classes.zipWithIndex.map({(classSeq:Seq[SpaceClass], j:Int) => 
-				classSeq.zipWithIndex.map({(clazz:SpaceClass, i:Int) => 
-					new RectangularSpace(
+			val spaces = classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) => 
+				classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
+					new StrictRectangularSpaceViaFutures(
 							typeOfSpace = clazz,
 							leftFuture  = spaceFuture(i-1,j),
 							upFuture    = spaceFuture(i,j-1),

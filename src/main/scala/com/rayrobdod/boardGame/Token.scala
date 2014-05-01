@@ -24,35 +24,8 @@ import com.rayrobdod.boardGame.{Space => BoardGameSpace}
  * An object that can move around a game board.
  * 
  * @author Raymond Dodge
- * @version 2.0.0
+ * @version 3.0.0
  */
-abstract class Token
-{
-	import Token._
-	
-	private var _currentSpace:Space = null
-	/** returns the Token's current space. */
-	def currentSpace:Space = _currentSpace
-	protected def currentSpace_=(movedTo:Space, landed:Boolean):Unit = {
-		movedTo.typeOfSpace.passOverAction(Token.this)
-		if (landed) {movedTo.typeOfSpace.landOnAction(Token.this)}
-		_currentSpace = movedTo
-		
-		moveReactions.foreach{a => a(movedTo, landed)}
-	}
-	
-	private val moveReactions:Buffer[MoveReactionType] = Buffer.empty
-	def moveReactions_+=(f:MoveReactionType) = moveReactions += f 
-	def moveReactions_-=(f:MoveReactionType) = moveReactions -= f 
-	
-	private val selectedReactions:Buffer[SelectedReactionType] = Buffer.empty
-	def selectedReactions_+=(f:SelectedReactionType) = selectedReactions += f 
-	def selectedReactions_-=(f:SelectedReactionType) = selectedReactions -= f 
-	
-	def beSelected(b:Boolean):Unit = selectedReactions.foreach{a => a(b)}
-}
-
-object Token {
-	type MoveReactionType = (Space, Boolean) => Unit
-	type SelectedReactionType = (Boolean) => Unit
-}
+abstract class Token[A] (
+	val currentSpace:Space[A]
+)
