@@ -35,7 +35,7 @@ trait Space[A] {
 	 * A space that is treated as adjacent to this one; such as a tile that can be directly
 	 * accessed from this tile without passing through other tiles
 	 */
-	def adjacentSpaces:Traversable[Space[A]]
+	def adjacentSpaces:Traversable[_ <: Space[A]]
 	
 	
 	

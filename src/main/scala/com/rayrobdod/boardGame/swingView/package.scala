@@ -15,28 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
-
-import java.awt.{Component => Comp, Graphics => Graph}
-import javax.swing.Icon
-import scala.util.Random
-import com.rayrobdod.boardGame.RectangularField
+package com.rayrobdod.boardGame
 
 /**
- * A tilesheet that has only one rule: for anything, display blank image.
- * @author Raymond Dodge
- * @version 3.0.0
+ * 
  */
-object NilTilesheet extends RectangularTilesheet[Any]
-{
-	override val name = "Nil"
-	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = getIconFor
-	
-	private val getIconFor = ((BlankIcon, BlankIcon))
-	
-	object BlankIcon extends Icon{
-		def getIconWidth = 16
-		def getIconHeight = 16
-		def paintIcon(c:Comp, g:Graph, x:Int, y:Int) {}
+package object swingView {
+	trait SpaceClassMatcherFactory[SpaceClass] {
+		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
+	
 }

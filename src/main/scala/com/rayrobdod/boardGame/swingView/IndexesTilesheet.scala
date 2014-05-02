@@ -36,7 +36,7 @@ object IndexesTilesheet extends RectangularTilesheet[Any] {
 	val lightIcon = new SolidColorIcon(Color.magenta, dim.width, dim.height)
 	val darkIcon  = new SolidColorIcon(Color.cyan, dim.width, dim.height)
 	
-	def getIconFor(f:RectangularField[_], x:Int, y:Int, rng:Random) = {
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random) = {
 		((
 			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
 			new IndexIcon(x,y)

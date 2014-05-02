@@ -17,26 +17,26 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import java.awt.{Component => Comp, Graphics => Graph}
-import javax.swing.Icon
-import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
+import scala.util.Random
 
 /**
- * A tilesheet that has only one rule: for anything, display blank image.
+ * A single rule for matching spaces on a rectangular field
+ * 
  * @author Raymond Dodge
  * @version 3.0.0
  */
-object NilTilesheet extends RectangularTilesheet[Any]
-{
-	override val name = "Nil"
-	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = getIconFor
+abstract class RectangularVisualizationRule[A] {
 	
-	private val getIconFor = ((BlankIcon, BlankIcon))
+	def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean
+	def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean
+	def randsMatch(rng:Random):Boolean
 	
-	object BlankIcon extends Icon{
-		def getIconWidth = 16
-		def getIconHeight = 16
-		def paintIcon(c:Comp, g:Graph, x:Int, y:Int) {}
+	final def matches(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):Boolean = {
+		indexiesMatch(x, y, field.spaces.size, field.spaces(0).size) &&
+				surroundingTilesMatch(field, x, y) &&
+				randsMatch(rng)
 	}
+	
+	def priority:Int
 }

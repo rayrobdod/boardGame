@@ -17,5 +17,16 @@
 */
 package com.rayrobdod
 
+/**
+ * 
+ */
 package object boardGame {
+	/** A boolean match against a class */
+	trait SpaceClassMatcher[-SpaceClass] {
+		def unapply(sc:SpaceClass):Boolean
+	}
+	
+	object ConstTrueSpaceClassMatcher extends SpaceClassMatcher[Any] {
+		def unapply(sc:Any):Boolean = true
+	}
 }

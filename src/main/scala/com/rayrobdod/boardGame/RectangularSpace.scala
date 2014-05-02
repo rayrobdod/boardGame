@@ -30,9 +30,7 @@ import scala.{Function0 => Future}
  * @version 3.0.0
  * @see [[com.rayrobdod.boardGame.RectangularField]]
  
- * @constructor
- * @param typeOfSpace the class that defines how this space interacts with Tokens.
- * @param *Future a future that returns the spaces that border this.
+ * @typeParam the type of spaceclass used by this class
  */
 trait RectangularSpace[A] extends Space[A] {
 	def left:Option[Space[A]]
@@ -40,7 +38,7 @@ trait RectangularSpace[A] extends Space[A] {
 	def right:Option[Space[A]]
 	def down:Option[Space[A]]
 	
-	override def adjacentSpaces:Set[Space[A]] = {
+	override def adjacentSpaces:Set[_ <: Space[A]] = {
 		val optionSpaces = Set(left,up,right,down)
 		val someSpaces = optionSpaces - None
 		someSpaces.map{_.get}
@@ -54,7 +52,7 @@ trait StrictRectangularSpace[A] extends RectangularSpace[A] {
 	override def right:Option[StrictRectangularSpace[A]]
 	override def down:Option[StrictRectangularSpace[A]]
 	
-	override def adjacentSpaces:Set[StrictRectangularSpace[A]] = {
+	override def adjacentSpaces:Set[_ <: StrictRectangularSpace[A]] = {
 		val optionSpaces = Set(left,up,right,down)
 		val someSpaces = optionSpaces - None
 		someSpaces.map{_.get}

@@ -31,11 +31,11 @@ import com.rayrobdod.boardGame.RectangularField
  */
 class RandomColorTilesheet(
 		val dim:Dimension = new Dimension(64,24)
-		) extends RectangularTilesheet[Any] {
+) extends RectangularTilesheet[Any] {
 	override def name = "Random Color";
 	override def toString = name + ", " + dim;
 	
-	def getIconFor(f:RectangularField[_], x:Int, y:Int, rng:Random) = {
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random) = {
 		val color = new Color(rng.nextInt)
 		
 		(( new SolidColorIcon(color, dim.width, dim.height), new ColorStringIcon(color) ))

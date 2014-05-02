@@ -35,9 +35,7 @@ import com.rayrobdod.boardGame.swingView.{
 		JSONRectangularTilesheet,
 		RectangularTilesheet
 }
-import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField, RectangularSpace
-}
+import com.rayrobdod.boardGame.{RectangularField, RectangularSpace}
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 
@@ -92,9 +90,9 @@ object JSONTilesheetViewer extends App
 	navPanel.add(randBox, endOfLine)
 	navPanel.add(goButton, endOfLine)
 	
-	var tilesheet:RectangularTilesheet = null
-	var field:RectangularField = null
-	var fieldComp:RectangularFieldComponent = null
+	var tilesheet:RectangularTilesheet[SpaceClass] = null
+	var field:RectangularField[SpaceClass] = null
+	var fieldComp:RectangularFieldComponent[SpaceClass] = null
 	
 	loadNewTilesheet()
 	frame.setVisible(true)
@@ -114,11 +112,11 @@ object JSONTilesheetViewer extends App
 		}
 		
 		ToggleContentHandlerFactory.setCurrentToTilesheet();
-		tilesheet = tilesheetURL.getContent().asInstanceOf[RectangularTilesheet]
+		tilesheet = tilesheetURL.getContent().asInstanceOf[RectangularTilesheet[String]]
 		
 		ToggleContentHandlerFactory.setCurrentToField();
-		tags.RotateMapTagResource.rotation = rotation(tilesheet, tilesheetURL.toURI)
-		field = mapURL.getContent().asInstanceOf[RectangularField]
+		field = mapURL.getContent().asInstanceOf[RectangularField[String]]
+		tags.RotateMapTagResource.rotation = allClassesInField(field)
 		
 		fieldComp = new RectangularFieldComponent(tilesheet, field,
 			randBox.getText match {
@@ -142,7 +140,7 @@ object JSONTilesheetViewer extends App
 		
 		field match {
 			case x:RotateSpaceRectangularField => {
-				x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+				x.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace[String], index:Int) =>
 					fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 				}.tupled)
 			}
@@ -171,7 +169,7 @@ object JSONTilesheetViewer extends App
 					frame.getContentPane.remove(fieldComp)
 					
 					fieldComp = new RectangularFieldComponent(tilesheet, field)
-					field.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace, index:Int) =>
+					field.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace[String], index:Int) =>
 						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
 					frame.getContentPane.add(fieldComp)
@@ -187,51 +185,7 @@ object JSONTilesheetViewer extends App
 	
 	
 	
-	def rotation(tilesheet:RectangularTilesheet, tilesheetURI:URI):Seq[SpaceClassConstructor] = {
-		Seq.empty ++ (tilesheet match {
-			case x:JSONRectangularTilesheet => {
-				val jsonMap = {
-					val reader = Files.newBufferedReader(Paths.get(tilesheetURI), UTF_8)
-					
-					val listener = ToScalaCollection()
-					JSONParser.parse(listener, reader)
-					reader.close()
-					
-					listener.resultMap
-				}
-				
-				
-				val classesKey = if (jsonMap.contains("TilesheetViewer::classes"))
-					{"TilesheetViewer::classes"} else {"classMap"}
-				
-				val classesURL = new URL(tilesheetURI.toURL, jsonMap(classesKey).toString)
-				val classesReader = Files.newBufferedReader(Paths.get(classesURL.toURI), UTF_8)
-				
-				val classNames = {
-					val listener = ToScalaCollection()
-					JSONParser.parse(listener, classesReader)
-					classesReader.close()
-					val result = listener.resultSeq
-					
-					result.map{_ match {
-						case x:Tuple2[_,_] => x._2.toString
-						case x:Any => x.toString
-					}}
-				}
-				
-				classNames.map{(objectName:String) =>
-					val clazz = Class.forName(objectName + "$")
-					val field = clazz.getField("MODULE$")
-					
-					field.get(null).asInstanceOf[SpaceClassConstructor]
-				}
-			}
-		/*	case FieldChessTilesheet => {
-				import com.rayrobdod.deductionTactics._
-				Seq(PassibleSpaceClass, ImpassibleSpaceClass,
-						AttackableOnlySpaceClass, NoStandOnSpaceClass)
-			}
-		*/	case _ => Seq(AnySpaceClass)
-		})
+	def allClassesInField(f:RectangularField[SpaceClass]):Seq[SpaceClass] = {
+		f.spaces.flatten.map{_.typeOfSpace}.distinct
 	}
 }

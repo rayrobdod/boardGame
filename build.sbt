@@ -4,7 +4,7 @@ organization := "com.rayrobdod"
 
 organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
-version := "2.1.0-SNAPSHOT"
+version := "3.0.0-SNAPSHOT"
 
 scalaVersion := "2.9.3"
 
@@ -38,6 +38,10 @@ mappings in (Compile, packageSrc) <+= baseDirectory.map{(b) => (new File(b, "LIC
 mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
 
 
+excludeFilter in unmanagedSources := 
+	"TokenComponent.scala" ||
+	"RectangularTilesheetLoader.scala" ||
+	"RectangularMultifieldComponent.scala"
 
 proguardSettings
 
