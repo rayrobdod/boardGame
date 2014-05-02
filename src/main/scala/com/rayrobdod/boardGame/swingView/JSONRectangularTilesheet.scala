@@ -144,32 +144,50 @@ object JSONRectangularTilesheet
 	import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 	import scala.collection.JavaConversions.mapAsScalaMap
 
-	/* def apply(url:URL):JSONRectangularTilesheet = 
-	{
-		val fileReader = new InputStreamReader(url.openStream(), UTF_8)
+	def apply[A](baseURL:URL, classMap:SpaceClassMatcherFactory[A]):JSONRectangularTilesheet[A] = {
 		
+		val baseMap = {
+			val fileReader = new InputStreamReader(baseURL.openStream(), UTF_8)
+			val listener = ToScalaCollection()
+			JSONParser.parse(listener, fileReader)
+			fileReader.close()
+			listener.resultMap
+		}
 		
-		val frameImage = 
-		{
-			val sheetURL:URL = new URL(baseURL, jsonMap("tiles").toString)
+		val frameImage = {
+			val sheetURL:URL = new URL(baseURL, baseMap("tiles").toString)
 			val sheetImage:BufferedImage = ImageIO.read(sheetURL)
-			val tileWidth:Int = asInt(jsonMap("tileWidth"))
-			val tileHeight:Int = asInt(jsonMap("tileHeight"))
+			val tileWidth:Int = baseMap("tileWidth").toString.toInt
+			val tileHeight:Int = baseMap("tileHeight").toString.toInt
 			val tilesX = sheetImage.getWidth / tileWidth
 			val tilesY = sheetImage.getHeight / tileHeight
 			
 			new BlitzAnimImage(sheetImage, tileWidth, tileHeight, 0, tilesX * tilesY)
 		}
 		
-		val name = jsonMap("name").toString
+		val rulesJSON = {
+			val rulesURL:URL = new URL(baseURL, baseMap("rules").toString)
+			val fileReader = new InputStreamReader(rulesURL.openStream(), UTF_8)
+			val listener = ToScalaCollection()
+			JSONParser.parse(listener, fileReader)
+			fileReader.close()
+			
+			val rules1:Seq[Map[_,_]] = Seq.empty ++ listener.resultSeq.map{_ match {
+				case x:scala.collection.Map[_,_] => Map.empty ++ x
+				case x:Any => Map.empty
+			}}.filterNot{_.isEmpty}
+			
+			rules1.map{_.map{pair:(Any,Any) => (pair._1.toString, pair._2)}}
+		}
 		
-		val listener = ToScalaCollection()
-		JSONParser.parse(listener, fileReader)
-		fileReader.close()
 		
-		val jsonMap = listener.resultMap
-		this.apply(url, jsonMap
-	} */
+		this.apply(
+			baseMap("name").toString,
+			frameImage,
+			classMap,
+			rulesJSON
+		)
+	}
 	
 	def apply[A](
 			name:String,
@@ -195,6 +213,5 @@ object JSONRectangularTilesheet
 	):JSONRectangularTilesheet[A] = {
 		new JSONRectangularTilesheet(name, rules)
 	}
-	
 	
 }

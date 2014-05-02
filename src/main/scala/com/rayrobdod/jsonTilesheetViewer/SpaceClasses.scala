@@ -26,7 +26,7 @@ import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
  * # "!whatever" matches everything except "whatever"
  * # "whatever" matches only "whatever"
  */
-class StringSpaceClassMatcher extends SpaceClassMatcherFactory[SpaceClass] {
+object StringSpaceClassMatcher extends SpaceClassMatcherFactory[SpaceClass] {
 	
 	def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
 		if (reference == "*") {ConstTrueSpaceClassMatcher}

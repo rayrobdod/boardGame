@@ -36,7 +36,7 @@ public final class JsonRectangularTilesheetHandler extends ContentHandler {
 	 */
 	public JSONRectangularTilesheet getContent(URLConnection urlc) throws IOException {
 		
-		return JSONRectangularTilesheet.apply(urlc.getURL());
+		return JSONRectangularTilesheet.apply(urlc.getURL(), StringSpaceClassMatcher$.MODULE$);
 	}
 	
 	@Override
