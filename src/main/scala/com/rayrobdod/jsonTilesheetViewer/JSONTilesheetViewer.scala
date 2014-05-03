@@ -113,7 +113,7 @@ object JSONTilesheetViewer extends App
 		
 		ToggleContentHandlerFactory.setCurrentToTilesheet();
 		tilesheet = tilesheetURL.getContent().asInstanceOf[RectangularTilesheet[String]]
-		tags.RotateMapTagResource.rotation = allClassesInTilesheet(tilesheet)
+		tags.RotateMapTagResource.rotation = allClassesInTilesheet(tilesheet) :+ ""
 		
 		ToggleContentHandlerFactory.setCurrentToField();
 		field = mapURL.getContent().asInstanceOf[RectangularField[String]]
