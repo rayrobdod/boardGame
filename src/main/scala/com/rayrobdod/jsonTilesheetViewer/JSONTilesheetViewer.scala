@@ -42,7 +42,7 @@ import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 
 /**
  * @author Raymond Dodge
- * @version 2.1.0
+ * @version 3.0.0
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
 object JSONTilesheetViewer extends App
@@ -113,10 +113,10 @@ object JSONTilesheetViewer extends App
 		
 		ToggleContentHandlerFactory.setCurrentToTilesheet();
 		tilesheet = tilesheetURL.getContent().asInstanceOf[RectangularTilesheet[String]]
+		tags.RotateMapTagResource.rotation = allClassesInTilesheet(tilesheet)
 		
 		ToggleContentHandlerFactory.setCurrentToField();
 		field = mapURL.getContent().asInstanceOf[RectangularField[String]]
-		tags.RotateMapTagResource.rotation = allClassesInField(field)
 		
 		fieldComp = new RectangularFieldComponent(tilesheet, field,
 			randBox.getText match {
@@ -185,7 +185,31 @@ object JSONTilesheetViewer extends App
 	
 	
 	
-	def allClassesInField(f:RectangularField[SpaceClass]):Seq[SpaceClass] = {
-		f.spaces.flatten.map{_.typeOfSpace}.distinct
+	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
+		import com.rayrobdod.boardGame.SpaceClassMatcher
+		import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet
+		import com.rayrobdod.boardGame.swingView.JSONRectangularVisualizationRule
+		import StringSpaceClassMatcher.EqualsMatcher
+		
+		val a = f match {
+			case x:JSONRectangularTilesheet[SpaceClass] => {
+				val a:Seq[JSONRectangularVisualizationRule[SpaceClass]] = x.visualizationRules
+				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
+				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
+				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
+				
+				val e:Seq[Option[SpaceClass]] = d.map{_ match {
+					case EqualsMatcher(ref) => Option(ref)
+					case _ => None
+				}}
+				val f:Seq[SpaceClass] = e.flatten.distinct
+				
+				f
+			}
+			case _ => Seq("")
+		}
+		
+		// System.out.println(a)
+		a
 	}
 }

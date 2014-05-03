@@ -41,5 +41,5 @@ final class RotateMapTagResource extends TagResource {
 }
 
 object RotateMapTagResource {
-	var rotation:Seq[SpaceClass] = Seq.empty 
+	var rotation:Seq[SpaceClass] = Seq("") 
 }

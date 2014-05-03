@@ -22,22 +22,24 @@ import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
 
 /**
- * # '*' matches everything
+ * # "*" matches everything
  * # "!whatever" matches everything except "whatever"
  * # "whatever" matches only "whatever"
+ * 
+ * @since 3.0.0
  */
 object StringSpaceClassMatcher extends SpaceClassMatcherFactory[SpaceClass] {
 	
 	def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
 		if (reference == "*") {ConstTrueSpaceClassMatcher}
-		else if (reference.head == '!') {new unequalsMatcher(reference.tail)}
-		else {new equalsMatcher(reference)}
+		else if (reference.head == '!') {new UnequalsMatcher(reference.tail)}
+		else {new EqualsMatcher(reference)}
 	}
 	
-	private class equalsMatcher(reference:String) extends SpaceClassMatcher[SpaceClass] {
+	case class EqualsMatcher(val reference:String) extends SpaceClassMatcher[SpaceClass] {
 		def unapply(sc:SpaceClass):Boolean = (sc == reference)
 	}
-	private class unequalsMatcher(reference:String) extends SpaceClassMatcher[SpaceClass] {
+	case class UnequalsMatcher(val reference:String) extends SpaceClassMatcher[SpaceClass] {
 		def unapply(sc:SpaceClass):Boolean = (sc != reference)
 	}
 }
