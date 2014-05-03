@@ -118,25 +118,7 @@ object JSONTilesheetViewer extends App
 		ToggleContentHandlerFactory.setCurrentToField();
 		field = mapURL.getContent().asInstanceOf[RectangularField[String]]
 		
-		fieldComp = new RectangularFieldComponent(tilesheet, field,
-			randBox.getText match {
-				case "" => Random
-				case "a" => new Random(new java.util.Random(){override def next(bits:Int) = 1})
-				case "b" => new Random(new java.util.Random(){override def next(bits:Int) = 0})
-				case s => try {
-						new Random(s.toLong)
-					} catch {
-						case e:NumberFormatException => {
-							JOptionPane.showMessageDialog(frame,
-								"Seed must be '', 'a', 'b' or an integer",
-								"Invalid seed",
-								JOptionPane.WARNING_MESSAGE
-							)
-							Random
-						}
-					}
-			}
-		);
+		fieldComp = new RectangularFieldComponent(tilesheet, field, getRandomIndicatedByTextBox())
 		
 		field match {
 			case x:RotateSpaceRectangularField => {
@@ -168,7 +150,7 @@ object JSONTilesheetViewer extends App
 					
 					frame.getContentPane.remove(fieldComp)
 					
-					fieldComp = new RectangularFieldComponent(tilesheet, field)
+					fieldComp = new RectangularFieldComponent(tilesheet, field, getRandomIndicatedByTextBox())
 					field.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace[String], index:Int) =>
 						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
@@ -211,5 +193,25 @@ object JSONTilesheetViewer extends App
 		
 		// System.out.println(a)
 		a
+	}
+	
+	def getRandomIndicatedByTextBox():Random = {
+		randBox.getText match {
+			case "" => Random
+			case "a" => new Random(new java.util.Random(){override def next(bits:Int) = 1})
+			case "b" => new Random(new java.util.Random(){override def next(bits:Int) = 0})
+			case s => try {
+				new Random(s.toLong)
+			} catch {
+				case e:NumberFormatException => {
+					JOptionPane.showMessageDialog(frame,
+					"Seed must be '', 'a', 'b' or an integer",
+					"Invalid seed",
+					JOptionPane.WARNING_MESSAGE
+					)
+					Random
+				}
+			}
+		}
 	}
 }
