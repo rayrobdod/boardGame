@@ -30,7 +30,7 @@ import scala.{Function0 => Future}
  * @version 3.0.0
  * @see [[com.rayrobdod.boardGame.RectangularField]]
  
- * @typeParam the type of spaceclass used by this class
+ * @typeParam A the type of spaceclass used by this class
  */
 trait RectangularSpace[A] extends Space[A] {
 	def left:Option[Space[A]]

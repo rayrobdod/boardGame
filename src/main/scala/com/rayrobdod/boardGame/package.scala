@@ -26,6 +26,7 @@ package object boardGame {
 		def unapply(sc:SpaceClass):Boolean
 	}
 	
+	/** A SpaceClassMatcher that always returns true */
 	object ConstTrueSpaceClassMatcher extends SpaceClassMatcher[Any] {
 		def unapply(sc:Any):Boolean = true
 	}
