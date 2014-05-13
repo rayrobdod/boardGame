@@ -21,7 +21,7 @@ import scala.collection.mutable.Buffer
 import com.rayrobdod.boardGame.{Space => BoardGameSpace}
 
 /**
- * An object that can move around a game board.
+ * An object that exists on a game board.
  * 
  * @author Raymond Dodge
  * @version 3.0.0
