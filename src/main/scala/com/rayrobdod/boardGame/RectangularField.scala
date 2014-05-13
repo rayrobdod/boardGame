@@ -29,6 +29,7 @@ import java.util.concurrent.{Future => JavaFuture, TimeUnit, TimeoutException}
  * @author Raymond Dodge
  * @version 3.0.0
  * @see [[com.rayrobdod.boardGame.RectangularSpace]]
+ * @tparam A the type of spaceclass used by this class
  */
 abstract class RectangularField[A]
 {
@@ -72,6 +73,10 @@ abstract class RectangularField[A]
  */
 object RectangularField
 {
+	/**
+	 * A factory method for Rectangular Fields
+	 * @param classes the Space Classes making up the field
+	 */
 	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = {
 		new RectangularField[A] {
 			

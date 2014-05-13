@@ -24,6 +24,7 @@ import Space.CostFunction
 /**
  * A spot on a board game board
  * @version 3.0.0
+ * @tparam A the type of spaceclass used by this class
  */
 trait Space[A] {
 	/**

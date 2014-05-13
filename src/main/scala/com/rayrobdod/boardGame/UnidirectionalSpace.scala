@@ -28,6 +28,7 @@ import scala.collection.mutable.{Map => MMap}
  * @version 3.0.0 rename from UnaryMovement
  * 
  * @constructor
+ * @tparam A the type of spaceclass used by this class
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
