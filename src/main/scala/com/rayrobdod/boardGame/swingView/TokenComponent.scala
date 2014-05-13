@@ -17,38 +17,78 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import javax.swing.{JLabel, Icon}
-import com.rayrobdod.swing.layouts.MoveToLayout
+import java.awt.{Component, Point}
+import javax.swing.{JLabel, Icon, SwingWorker}
 import com.rayrobdod.boardGame.{Token, Space, RectangularSpace}
-import scala.runtime.{AbstractFunction1, AbstractFunction2}
 
 /**
- * A component that shows a label and moves around a FieldComponent as a token moves around a field.
+ * A component that can react to actions that a token may take
  * 
  * @author Raymond Dodge
  * @since 04 Aug 2011
- * @version 2.1.0
+ * @version 3.0.0
+ * @tparam A the type of spaceclass used by this class
  */
-class TokenComponent(token:Token, fieldComp:FieldViewer, layout:MoveToLayout, icon:Icon) extends JLabel(icon)
-{
-	token.moveReactions_+=(ComponentMovementUpdateAct)
-	object ComponentMovementUpdateAct extends AbstractFunction2[Space, Boolean, Unit] {
-		def apply(movedTo:Space, landed:Boolean) = {
-			val location = new java.awt.Point(
-					(fieldComp.spaceLocation(movedTo).getBounds2D().getCenterX() - TokenComponent.this.getWidth()  / 2).toInt,
-					(fieldComp.spaceLocation(movedTo).getBounds2D().getCenterY() - TokenComponent.this.getHeight() / 2).toInt
-			);
-			layout.moveTo(TokenComponent.this, location)
-		}
+class TokenComponent[A](final var fieldComp:FieldViewer[A]) extends JLabel {
+	
+	final var movementSpeed:Int = 15
+	
+	
+	final def moveToSpace(space:Space[A]) = {
+		
+		val endSpaceBounds = fieldComp.spaceLocation(space).getBounds
+		val endLocation = new Point(
+				(endSpaceBounds.getX + endSpaceBounds.getWidth  / 2 - this.getWidth  / 2).intValue,
+				(endSpaceBounds.getY + endSpaceBounds.getHeight / 2 - this.getHeight / 2).intValue
+		)
+		val startLocation = this.getLocation()
+		
+		
+		val a = new TokenComponent.TokenMover(this, startLocation, endLocation, movementSpeed * 100)
+		a.execute()
 	}
 	
-	token.selectedReactions_+=(BeSelectedAct)
-	object BeSelectedAct extends AbstractFunction1[Boolean, Unit] {
-		def apply(b:Boolean) = {
-			TokenComponent.this.setOpaque(b)
-			TokenComponent.this.repaint()
-		}
+	
+	
+	
+	
+}
+
+/**
+ * @todo This seems like something for the com.rayrobdod.animation package
+ * @since 3.0.0
+ */
+object TokenComponent {
+	private val sleepTime = 100
+	
+	/** @param percent 0 <= percent <= 1 */
+	def pointAlongLine(start:Point, end:Point, percent:Float):Point = {
+		new Point(
+			(start.getX + (end.getX - start.getX) * percent).intValue,
+			(start.getY + (end.getY - start.getY) * percent).intValue
+		)
 	}
 	
-	this.setBackground(java.awt.Color.green)
+	final class TokenMover(comp:Component, start:Point, end:Point, totalTime:Int) extends SwingWorker[Point, Point] {
+		override def doInBackground():Point = {
+			val startTime = System.currentTimeMillis
+			
+			while ((!this.isCancelled) && (startTime + totalTime < System.currentTimeMillis)) {
+				val timeSoFar:Float = System.currentTimeMillis - startTime 
+				val percent:Float = timeSoFar / totalTime
+				this.publish(pointAlongLine(start, end, percent))
+				
+				Thread.sleep(sleepTime)
+			}
+			end
+		}
+		
+		override def process(chunks:java.util.List[Point]) {
+			comp.setLocation(chunks.get(chunks.size() - 1))
+		}
+		
+		override def done() {
+			comp.setLocation(end)
+		}
+	}
 }

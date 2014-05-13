@@ -39,7 +39,6 @@ mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LIC
 
 
 excludeFilter in unmanagedSources := 
-	"TokenComponent.scala" ||
 	"RectangularMultifieldComponent.scala"
 
 proguardSettings
