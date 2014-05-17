@@ -213,9 +213,9 @@ trait Space[A] {
 object Space {
 	
 	/** A function that defines the 'cost' of moving from the first space to the second space */
-	type CostFunction[A] = Function2[Space[A], Space[A], Int]
+	type CostFunction[A] = Function2[Space[_ <: A], Space[_ <: A], Int]
 	
 	/** A CostFunction with a constant (1) cost for every move. */
-	val constantCostFunction:CostFunction[_] = {(from:Space[_], to:Space[_]) => 1}
+	val constantCostFunction:CostFunction[Any] = {(from:Space[_], to:Space[_]) => 1}
 	
 }

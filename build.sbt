@@ -57,6 +57,14 @@ ProguardKeys.inputFilter in Proguard := { file =>
 	}
 }
 
+// scalaTest
+scalaVersion in Test := "2.9.3"
+
+libraryDependencies += "org.scalatest" % "scalatest_2.9.3" % "1.9.2" % "test"
+
+// testOptions in Test += Tests.Argument("-oS")
+
+
 // anon-fun-reduce
 //autoCompilerPlugins := true
 //
