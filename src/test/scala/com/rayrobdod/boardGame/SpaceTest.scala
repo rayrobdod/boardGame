@@ -54,6 +54,23 @@ class SpaceTest extends FunSpec {
 				assertResult(distanceTo + 1){path.length}
 			}
 		}
+		describe ("spacesWithin (uniform cost)") {
+			it ("3 spaces within 1 move of corner") {
+				assertResult(3){uniformField.space(0,0).spacesWithin(1, Space.constantCostFunction).size}
+			}
+			it ("5 spaces within 2 move of corner") {
+				assertResult(6){uniformField.space(0,0).spacesWithin(2, Space.constantCostFunction).size}
+			}
+			it ("5 spaces within 1 move of center") {
+				assertResult(5){uniformField.space(1,1).spacesWithin(1, Space.constantCostFunction).size}
+			}
+			it ("11 spaces within 2 move of center") {
+				assertResult(11){uniformField.space(1,1).spacesWithin(2, Space.constantCostFunction).size}
+			}
+			it ("only space within 0 move of a space is that space") {
+				assertResult(Set(uniformField.space(1,1))){uniformField.space(1,1).spacesWithin(0, Space.constantCostFunction)}
+			}
+		}
 	}
 	
 	
