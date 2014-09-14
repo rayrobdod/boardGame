@@ -41,6 +41,7 @@ abstract class RectangularField[A]
 	
 	/** retrives a space from the spaces array. */
 	final def space(x:Int, y:Int) = spaces(y)(x)
+	final def spaceOption(x:Int, y:Int) = if (this.containsIndexies(x,y)) {Some(spaces(y)(x))} else {None}
 	final def containsIndexies(x:Int, y:Int) = spaces.isDefinedAt(y) && spaces(y).isDefinedAt(x)
 	
 	/** 
@@ -73,6 +74,15 @@ abstract class RectangularField[A]
  */
 object RectangularField
 {
+	private class RectangularFieldSpace[A](val typeOfSpace:A, owner:RectangularField[A], i:Int, j:Int) extends StrictRectangularSpace[A]
+	{
+		override def left:Option[StrictRectangularSpace[A]]  = owner.spaceOption(i-1,j)
+		override def up:Option[StrictRectangularSpace[A]]    = owner.spaceOption(i,j-1)
+		override def right:Option[StrictRectangularSpace[A]] = owner.spaceOption(i+1,j)
+		override def down:Option[StrictRectangularSpace[A]]  = owner.spaceOption(i,j+1)
+	}
+	
+	
 	/**
 	 * A factory method for Rectangular Fields
 	 * @param classes the Space Classes making up the field
@@ -80,15 +90,9 @@ object RectangularField
 	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = {
 		new RectangularField[A] {
 			
-			val spaces = classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) => 
+			val spaces:Seq[Seq[StrictRectangularSpace[A]]] = classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) => 
 				classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
-					new StrictRectangularSpaceViaFutures(
-							typeOfSpace = clazz,
-							leftFuture  = spaceFuture(i-1,j),
-							upFuture    = spaceFuture(i,j-1),
-							rightFuture = spaceFuture(i+1,j),
-							downFuture  = spaceFuture(i,j+1)
-					)
+					new RectangularFieldSpace(clazz, this, i, j)
 				}.tupled)
 			}.tupled)
 		}
