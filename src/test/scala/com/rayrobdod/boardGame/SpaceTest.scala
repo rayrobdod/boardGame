@@ -24,51 +24,51 @@ import org.scalatest.prop.PropertyChecks
 class SpaceTest extends FunSpec {
 
 	describe ("Space") {
-		describe ("distanceTo (uniform cost)") {
+		describe ("distanceTo (uniform cost of 1)") {
 			it ("to itself is zero"){
 				assertResult(0){
-					uniformField.space(2,2).distanceTo(uniformField.space(2,2), Space.constantCostFunction)
+					uniformField(2,2).distanceTo(uniformField(2,2), Space.constantCostFunction)
 				}
 			}
-			it ("jkljl"){
+			it ("to a space six away is six"){
 				assertResult(3 + 3){
-					uniformField.space(0,0).distanceTo(uniformField.space(3,3), Space.constantCostFunction)
+					uniformField(0,0).distanceTo(uniformField(3,3), Space.constantCostFunction)
 				}
 			}
 		}
 		describe ("pathTo (uniform cost)") {
 			it ("Should have the first space be the original space"){
-				val path = uniformField.space(0,0).pathTo(uniformField.space(3,3), Space.constantCostFunction)
+				val path = uniformField(0,0).pathTo(uniformField(3,3), Space.constantCostFunction)
 				
-				assertResult(uniformField.space(0,0)){path.head}
+				assertResult(uniformField(0,0)){path.head}
 			}
 			it ("Should have the last space be the destination"){
-				val path = uniformField.space(0,0).pathTo(uniformField.space(3,3), Space.constantCostFunction)
+				val path = uniformField(0,0).pathTo(uniformField(3,3), Space.constantCostFunction)
 				
-				assertResult(uniformField.space(3,3)){path.last}
+				assertResult(uniformField(3,3)){path.last}
 			}
 			it ("Should have a length one more than the distance to"){
-				val path = uniformField.space(0,0).pathTo(uniformField.space(3,3), Space.constantCostFunction)
-				val distanceTo = uniformField.space(0,0).distanceTo(uniformField.space(3,3), Space.constantCostFunction)
+				val path = uniformField(0,0).pathTo(uniformField(3,3), Space.constantCostFunction)
+				val distanceTo = uniformField(0,0).distanceTo(uniformField(3,3), Space.constantCostFunction)
 				
 				assertResult(distanceTo + 1){path.length}
 			}
 		}
 		describe ("spacesWithin (uniform cost)") {
 			it ("3 spaces within 1 move of corner") {
-				assertResult(3){uniformField.space(0,0).spacesWithin(1, Space.constantCostFunction).size}
+				assertResult(3){uniformField(0,0).spacesWithin(1, Space.constantCostFunction).size}
 			}
 			it ("5 spaces within 2 move of corner") {
-				assertResult(6){uniformField.space(0,0).spacesWithin(2, Space.constantCostFunction).size}
+				assertResult(6){uniformField(0,0).spacesWithin(2, Space.constantCostFunction).size}
 			}
 			it ("5 spaces within 1 move of center") {
-				assertResult(5){uniformField.space(1,1).spacesWithin(1, Space.constantCostFunction).size}
+				assertResult(5){uniformField(1,1).spacesWithin(1, Space.constantCostFunction).size}
 			}
 			it ("11 spaces within 2 move of center") {
-				assertResult(11){uniformField.space(1,1).spacesWithin(2, Space.constantCostFunction).size}
+				assertResult(11){uniformField(1,1).spacesWithin(2, Space.constantCostFunction).size}
 			}
 			it ("only space within 0 move of a space is that space") {
-				assertResult(Set(uniformField.space(1,1))){uniformField.space(1,1).spacesWithin(0, Space.constantCostFunction)}
+				assertResult(Set(uniformField(1,1))){uniformField(1,1).spacesWithin(0, Space.constantCostFunction)}
 			}
 		}
 	}

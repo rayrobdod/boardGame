@@ -21,6 +21,10 @@ package com.rayrobdod
  * 
  */
 package object boardGame {
+	type RectangularFieldIndex = Tuple2[Int, Int]
+	type RectangularField[A] = Map[RectangularFieldIndex, StrictRectangularSpace[A]]
+	
+	
 	/** A boolean match against a class */
 	trait SpaceClassMatcher[-SpaceClass] {
 		def unapply(sc:SpaceClass):Boolean

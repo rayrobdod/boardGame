@@ -39,7 +39,7 @@ mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LIC
 
 
 excludeFilter in unmanagedSources := 
-	"RectangularMultifieldComponent.scala"
+	"RectangularMultifieldComponent.scala" || "RectangularFieldComponent.scala" || "jsonTilesheetViewer"
 
 proguardSettings
 
