@@ -70,8 +70,8 @@ object RectangularField
 	 */
 	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = this.apply(
 		
-		classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) =>
-			classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
+		classes.zipWithIndex.map({(classSeq:Seq[A], i:Int) =>
+			classSeq.zipWithIndex.map({(clazz:A, j:Int) => 
 				(i, j) -> clazz
 			}.tupled)
 		}.tupled).flatten.toMap
