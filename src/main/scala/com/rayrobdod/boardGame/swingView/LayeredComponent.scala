@@ -32,6 +32,18 @@ final class LayeredComponent extends JComponent {
 	var offsetY:Int = 0
 	
 	
+	this.setLayout(null)
+	override def getPreferredSize = {
+		if (this.isPreferredSizeSet) {
+			super.getPreferredSize
+		} else {
+			new java.awt.Dimension(
+				offsetX + layers.map{_.getWest}.max,
+				offsetY + layers.map{_.getSouth}.max
+			)
+		}
+	}
+	
 	protected override def paintComponent(g:Graphics) {
 		layers.foreach{(l:Layer) =>
 			l.paintLayer(this, g, offsetX, offsetY)
