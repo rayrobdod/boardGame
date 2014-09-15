@@ -24,9 +24,9 @@ import scala.collection.mutable.{Buffer}
 final class LayeredComponent extends JComponent {
 	private val layers = Buffer.empty[Layer]
 	
-	def addLayer(x:Layer) = {layers += x}
-	def removeLayer(x:Layer) = {layers -= x}
-	def removeAllLayers() = {layers.clear}
+	def addLayer(x:Layer) = {layers += x; this.repaint()}
+	def removeLayer(x:Layer) = {layers -= x; this.repaint()}
+	def removeAllLayers() = {layers.clear; this.repaint()}
 	
 	var offsetX:Int = 0
 	var offsetY:Int = 0

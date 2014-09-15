@@ -11,8 +11,6 @@
 -keep public class ** extends com.rayrobdod.tagprotocol.tag.TagResource
 -keep public class com.rayrobdod.tagprotocol.tag.Handler
 
-# SpaceClassConstructors that Deduction Tactics uses
--keep class com.rayrobdod.** extends com.rayrobdod.boardGame.SpaceClassConstructor
 
 # keep objects' MODULE$s
 -keepclassmembers,allowshrinking class * {
