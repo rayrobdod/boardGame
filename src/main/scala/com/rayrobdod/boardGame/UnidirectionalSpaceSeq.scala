@@ -28,14 +28,14 @@ import LoggerInitializer.{unarySeqLogger => logger}
  * I haven't grown out of my habit of making useless collections yet…
  * 
  * @author Raymond Dodge
- * @version 2.1.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
+ * @version 3.0.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
  */
-final class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOption:Option[A])
-			extends LinearSeq[A] 
+final class UnidirectionalSpaceSeq[A](override val headOption:Option[UnidirectionalSpace[A]])
+			extends LinearSeq[UnidirectionalSpace[A]] 
 {
 	logger.entering("UnidirectionalSpaceSeq", "this(Option[A])", headOption)
 	
-	def this(head:A) = this(Option(head))
+	def this(head:UnidirectionalSpace[A]) = this(Option(head))
 	
 	override def head = headOption.get
 	override def isEmpty = (headOption == None) // assume no nulls, right?
@@ -44,13 +44,12 @@ final class UnidirectionalSpaceSeq[A <: UnidirectionalSpace](override val headOp
 		logger.entering("UnidirectionalSpaceSeq", "tail()")
 		logger.finer(this.head.toString)
 		
-		val next:Option[Space] = headOption.flatMap(_.nextSpace)
-		val nextAsUnary:Option[A] = next.filter(_.isInstanceOf[A]).asInstanceOf[Option[A]]
+		val next:Option[UnidirectionalSpace[A]] = headOption.flatMap(_.nextSpace)
 		
-		new UnidirectionalSpaceSeq[A](nextAsUnary)
+		new UnidirectionalSpaceSeq[A](next)
 	}
 	
-	override def apply(i:Int):A = 
+	override def apply(i:Int):UnidirectionalSpace[A] =
 	{
 		if (this.isEmpty) throw new IndexOutOfBoundsException("Too high an index called")
 		else if (i < 0) throw new IndexOutOfBoundsException("index less than zero called: " + i)

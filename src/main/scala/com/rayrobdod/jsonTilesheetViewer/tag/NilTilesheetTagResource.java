@@ -35,7 +35,7 @@ public final class NilTilesheetTagResource implements TagResource {
 	}
 	
 	/** Returns an visually void Component */
-	public RectangularTilesheet getContent() {
+	public RectangularTilesheet<Object> getContent() {
 		return NilTilesheet$.MODULE$;
 	}
 	

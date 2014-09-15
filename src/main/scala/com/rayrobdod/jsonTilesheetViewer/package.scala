@@ -20,14 +20,7 @@ package com.rayrobdod
 /**
  * 
  */
-package object boardGame {
-	/** A boolean match against a class */
-	trait SpaceClassMatcher[-SpaceClass] {
-		def unapply(sc:SpaceClass):Boolean
-	}
+package object jsonTilesheetViewer {
+	type SpaceClass = String
 	
-	/** A SpaceClassMatcher that always returns true */
-	object ConstTrueSpaceClassMatcher extends SpaceClassMatcher[Any] {
-		def unapply(sc:Any):Boolean = true
-	}
 }

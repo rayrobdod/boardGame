@@ -18,31 +18,28 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import scala.collection.immutable.Seq
-import com.rayrobdod.boardGame.{SpaceClassConstructor, RectangularField, RectangularSpace}
+import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.StrictRectangularSpaceViaFutures
 
 /**
  * An immutable field that, when asked, produces a new field with a
  * new RectangularSpace in a spot
  * @author Raymond Dodge
- * @version 18 Aug 2011
- * @version 19 Aug 2011 - added single-param rotate function
- * @version 15 Apr 2012 - moved from {@code net.verizon.rayrobdod.boardGame.view} to {@code com.rayrobdod.boardGame.view}
- * @version 15 Apr 2012 - modifying such that it now takes SpaceClassConstructors rather than RectanguleSpaceConstructors
- * @version 2012 Aug 25 - switching x and y in #spaces and #rotate
+ * @version 3.0.0
  */
 class RotateSpaceRectangularField(
-	val rotation:Seq[SpaceClassConstructor],
-	val spaceIndexes:Seq[Seq[Int]]) extends RectangularField
-{
-	def this(rotation:Seq[SpaceClassConstructor],
+	val rotation:Seq[SpaceClass],
+	val spaceIndexes:Seq[Seq[Int]]
+) extends RectangularField[SpaceClass] {
+	def this(rotation:Seq[SpaceClass],
 				width:Int, height:Int) {
 		this(rotation, Seq.fill(height, width){0})
 	}
 	
 	override val spaces = spaceIndexes.zipWithIndex.map({(seq:Seq[Int], i:Int) =>
 		seq.zipWithIndex.map({(index:Int, j:Int) =>
-			new RectangularSpace(
-				typeOfSpace = rotation(index)(),
+			new StrictRectangularSpaceViaFutures[SpaceClass](
+				typeOfSpace = rotation(index),
 				leftFuture = spaceFuture(i-1,j),
 				upFuture = spaceFuture(i,j-1),
 				rightFuture = spaceFuture(i+1,j),

@@ -34,9 +34,9 @@ public final class JsonRectangularTilesheetHandler extends ContentHandler {
 	 * Reads data from a URLConnection's input stream and puts
 	 * that data into a string.
 	 */
-	public JSONRectangularTilesheet getContent(URLConnection urlc) throws IOException {
+	public JSONRectangularTilesheet<String> getContent(URLConnection urlc) throws IOException {
 		
-		return JSONRectangularTilesheet.apply(urlc.getURL());
+		return JSONRectangularTilesheet.apply(urlc.getURL(), StringSpaceClassMatcher$.MODULE$);
 	}
 	
 	@Override

@@ -15,19 +15,28 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod
+package com.rayrobdod.boardGame.swingView
+
+import com.rayrobdod.boardGame.RectangularField
+import scala.util.Random
 
 /**
+ * A single rule for matching spaces on a rectangular field
  * 
+ * @author Raymond Dodge
+ * @version 3.0.0
  */
-package object boardGame {
-	/** A boolean match against a class */
-	trait SpaceClassMatcher[-SpaceClass] {
-		def unapply(sc:SpaceClass):Boolean
+abstract class RectangularVisualizationRule[A] {
+	
+	def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean
+	def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean
+	def randsMatch(rng:Random):Boolean
+	
+	final def matches(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):Boolean = {
+		indexiesMatch(x, y, field.spaces.size, field.spaces(0).size) &&
+				surroundingTilesMatch(field, x, y) &&
+				randsMatch(rng)
 	}
 	
-	/** A SpaceClassMatcher that always returns true */
-	object ConstTrueSpaceClassMatcher extends SpaceClassMatcher[Any] {
-		def unapply(sc:Any):Boolean = true
-	}
+	def priority:Int
 }

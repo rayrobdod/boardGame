@@ -23,8 +23,7 @@ import javax.swing.{JLabel, JComponent, Icon, JPanel}
 import com.rayrobdod.boardGame.Space
 import scala.util.Random
 
-import com.rayrobdod.boardGame.{RectangularField, RectangularSpace,
-		SpaceClassConstructor => SpaceConstructor, Space}
+import com.rayrobdod.boardGame.{RectangularField, RectangularSpace, Space}
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.layouts.LayeredLayout
 

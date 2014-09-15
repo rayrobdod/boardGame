@@ -15,19 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod
+package com.rayrobdod.boardGame
 
 /**
  * 
  */
-package object boardGame {
-	/** A boolean match against a class */
-	trait SpaceClassMatcher[-SpaceClass] {
-		def unapply(sc:SpaceClass):Boolean
+package object swingView {
+	trait SpaceClassMatcherFactory[SpaceClass] {
+		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
 	
-	/** A SpaceClassMatcher that always returns true */
-	object ConstTrueSpaceClassMatcher extends SpaceClassMatcher[Any] {
-		def unapply(sc:Any):Boolean = true
-	}
 }

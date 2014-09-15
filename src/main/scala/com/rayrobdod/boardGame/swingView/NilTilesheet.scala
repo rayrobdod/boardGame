@@ -20,20 +20,17 @@ package com.rayrobdod.boardGame.swingView
 import java.awt.{Component => Comp, Graphics => Graph}
 import javax.swing.Icon
 import scala.util.Random
-import com.rayrobdod.boardGame.{RectangularField => Field}
+import com.rayrobdod.boardGame.RectangularField
 
 /**
  * A tilesheet that has only one rule: for anything, display blank image.
  * @author Raymond Dodge
- * @version 19 Aug 2011
- * @version 15 Dec 2011 - moved from {@code net.verizon.rayrobdod.boardGame.view} to {@code com.rayrobdod.boardGame.view}
- * @version 11 Jun 2012 - changing due to the change of image in RectangularVisualizationRule
- * @version 25 Aug 2012 - change to match new type of Tilesheet
+ * @version 3.0.0
  */
-object NilTilesheet extends RectangularTilesheet
+object NilTilesheet extends RectangularTilesheet[Any]
 {
 	override val name = "Nil"
-	override def getIconFor(f:Field, x:Int, y:Int, rng:Random) = getIconFor
+	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = getIconFor
 	
 	private val getIconFor = ((BlankIcon, BlankIcon))
 	

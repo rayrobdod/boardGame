@@ -23,9 +23,7 @@ import java.net.URLConnection;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.InputStreamReader;
-import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField
-}
+import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet;
 
 /**
@@ -38,7 +36,7 @@ class JsonMapHandler extends ContentHandler {
 	 * that data into a string.
 	 * @throws IOException
 	 */
-	override def getContent(urlc:URLConnection):RectangularField = {
+	override def getContent(urlc:URLConnection):RectangularField[String] = {
 		import java.io.File
 		import java.nio.charset.StandardCharsets.UTF_8
 		import java.nio.file.{Path, Paths, Files}
@@ -56,34 +54,20 @@ class JsonMapHandler extends ContentHandler {
 			listener.resultMap.mapValues{_.toString}
 		}
 
-		val letterToSpaceClassConsPath = metadataPath.getParent.resolve(metadataMap("classMap"))
-		val letterToSpaceClassConsReader = Files.newBufferedReader(letterToSpaceClassConsPath, UTF_8)
-		val letterToSpaceClassConsMap:Map[String,SpaceClassConstructor] = {
-			val listener = ToScalaCollection()
-			JSONParser.parse(listener, letterToSpaceClassConsReader)
-			val letterToClassNameMap = listener.resultMap.mapValues{_.toString}
-			
-			letterToClassNameMap.mapValues{(objectName:String) => 
-				val clazz = Class.forName(objectName + "$")
-				val field = clazz.getField("MODULE$")
-				
-				field.get(null).asInstanceOf[SpaceClassConstructor]
-			}
-		}
 		
 		val layoutPath = metadataPath.getParent.resolve(metadataMap("layout"))
 		val layoutReader = Files.newBufferedReader(layoutPath, UTF_8)
-		val layoutTable:Seq[Seq[SpaceClassConstructor]] = {
+		val layoutTable:Seq[Seq[String]] = {
 			import scala.collection.JavaConversions.collectionAsScalaIterable;
 			
 			val reader = new CSVReader(layoutReader);
 			val letterTable3 = reader.readAll();
 			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
 			
-			letterTable.map{_.map{letterToSpaceClassConsMap}}
+			letterTable
 		}
 		
-		RectangularField.applySCC( layoutTable )
+		RectangularField( layoutTable )
 	}
 	
 	/**
@@ -95,7 +79,7 @@ class JsonMapHandler extends ContentHandler {
 	 override def getContent(urlc:URLConnection, classes:Array[Class[_]]) = {
 		
 		classes.find{
-			_.isAssignableFrom(classOf[RectangularField])
+			_.isAssignableFrom(classOf[RectangularField[_]])
 		}.map{(a) =>
 			getContent(urlc)
 		}.orNull

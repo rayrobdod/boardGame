@@ -17,8 +17,8 @@
 */
 package com.rayrobdod.jsonTilesheetViewer.tags
 
-import com.rayrobdod.tagprotocol.tag.TagResource;
-import com.rayrobdod.boardGame.SpaceClassConstructor
+import com.rayrobdod.tagprotocol.tag.TagResource
+import com.rayrobdod.jsonTilesheetViewer.SpaceClass
 import com.rayrobdod.jsonTilesheetViewer.RotateSpaceRectangularField
 import java.io.InputStream
 import java.util.List
@@ -35,11 +35,11 @@ final class RotateMapTagResource extends TagResource {
 	import RotateMapTagResource._
 	
 	val name:String = "rayrobdod.name,2013-08:map-rotate"
-	def getContent = new RotateSpaceRectangularField(rotation, height, width); 
+	def getContent = new RotateSpaceRectangularField(rotation, height, width);
 	val getInputStream:InputStream = null
 	val getHeaderFields:Map[String,List[String]] = emptyMap[String,List[String]]
 }
 
 object RotateMapTagResource {
-	var rotation:Seq[SpaceClassConstructor] = Seq.empty 
+	var rotation:Seq[SpaceClass] = Seq("") 
 }

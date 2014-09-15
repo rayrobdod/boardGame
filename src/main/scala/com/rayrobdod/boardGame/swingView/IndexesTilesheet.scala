@@ -27,16 +27,16 @@ import com.rayrobdod.boardGame.RectangularField
  * A tilesheet that prints indexies on a tile
  * 
  * @author Raymond Dodge
- * @version 25 Aug 2012
+ * @version 3.0.0
  */
-object IndexesTilesheet extends RectangularTilesheet {
+object IndexesTilesheet extends RectangularTilesheet[Any] {
 	override def name = "IndexesTilesheet"
 	val dim = new Dimension(32,32)
 	
 	val lightIcon = new SolidColorIcon(Color.magenta, dim.width, dim.height)
 	val darkIcon  = new SolidColorIcon(Color.cyan, dim.width, dim.height)
 	
-	def getIconFor(f:RectangularField, x:Int, y:Int, rng:Random) = {
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random) = {
 		((
 			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
 			new IndexIcon(x,y)

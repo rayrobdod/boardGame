@@ -4,7 +4,7 @@ organization := "com.rayrobdod"
 
 organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
-version := "2.1.0-SNAPSHOT"
+version := "3.0.0-SNAPSHOT"
 
 scalaVersion := "2.9.3"
 
@@ -17,7 +17,7 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
 
 // update for new tag handler
-libraryDependencies += ("com.rayrobdod" %% "utilities" % "SNAPSHOT")
+libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
 
 libraryDependencies += ("net.sf.opencsv" % "opencsv" % "2.3")
 
@@ -38,6 +38,8 @@ mappings in (Compile, packageSrc) <+= baseDirectory.map{(b) => (new File(b, "LIC
 mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
 
 
+excludeFilter in unmanagedSources := 
+	"RectangularMultifieldComponent.scala"
 
 proguardSettings
 
@@ -54,6 +56,14 @@ ProguardKeys.inputFilter in Proguard := { file =>
 		Some("**.class")
 	}
 }
+
+// scalaTest
+scalaVersion in Test := "2.9.3"
+
+libraryDependencies += "org.scalatest" % "scalatest_2.9.3" % "1.9.2" % "test"
+
+// testOptions in Test += Tests.Argument("-oS")
+
 
 // anon-fun-reduce
 //autoCompilerPlugins := true

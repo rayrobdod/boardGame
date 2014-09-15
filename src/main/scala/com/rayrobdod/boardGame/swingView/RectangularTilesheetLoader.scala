@@ -27,14 +27,17 @@ import com.rayrobdod.util.services.Services.readServices;
  * Is willing to load either files using 'path/to/file' or scala objects 'package.name.object'
  * 
  * @author Raymond Dodge
- * @version 2.1.0
+ * @version 3.0.0
  */
-final class RectangularTilesheetLoader(val service:String, val loader:ClassLoader = Thread.currentThread().getContextClassLoader())
-			extends Iterable[RectangularTilesheet]
-{
-	def iterator:Iterator[RectangularTilesheet] = new MyIterator()
+final class RectangularTilesheetLoader[SpaceClass](
+		val service:String,
+		val matchers:SpaceClassMatcherFactory[SpaceClass],
+		val loader:ClassLoader = Thread.currentThread().getContextClassLoader()
+) extends Iterable[RectangularTilesheet[SpaceClass]] {
 	
-	private class MyIterator() extends Iterator[RectangularTilesheet]
+	def iterator:Iterator[RectangularTilesheet[SpaceClass]] = new MyIterator()
+	
+	private class MyIterator() extends Iterator[RectangularTilesheet[SpaceClass]]
 	{
 		private var current:Int = 0;
 		private val readLines = try {
@@ -48,7 +51,7 @@ final class RectangularTilesheetLoader(val service:String, val loader:ClassLoade
 		def remove = throw new UnsupportedOperationException("Cannot remove from a Service");
 		
 		
-		def next():RectangularTilesheet = {
+		def next():RectangularTilesheet[SpaceClass] = {
 			if (!hasNext) throw new java.util.NoSuchElementException();
 			
 			val line = readLines(current);
@@ -63,7 +66,7 @@ final class RectangularTilesheetLoader(val service:String, val loader:ClassLoade
 				
 				current = current + 1;
 				if (lineURL != null) {
-					JSONRectangularTilesheet(lineURL)
+					JSONRectangularTilesheet(lineURL, matchers)
 				} else {
 					val clazz = {
 						if (loader == null) {
@@ -74,7 +77,8 @@ final class RectangularTilesheetLoader(val service:String, val loader:ClassLoade
 					}
 					val module = clazz.getField("MODULE$")
 					module.get(null) match {
-						case x:RectangularTilesheet => x
+						// stupid type erasure...
+						case x:RectangularTilesheet[SpaceClass] => x
 						case _ => throw new ServiceConfigurationError(line + " is not a RectangularTilesheet")
 					}
 				}
