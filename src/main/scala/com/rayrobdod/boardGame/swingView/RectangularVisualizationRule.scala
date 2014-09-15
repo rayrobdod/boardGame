@@ -33,7 +33,7 @@ abstract class RectangularVisualizationRule[A] {
 	def randsMatch(rng:Random):Boolean
 	
 	final def matches(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):Boolean = {
-		indexiesMatch(x, y, field.spaces.size, field.spaces(0).size) &&
+		indexiesMatch(x, y, field.map{_._1._1}.max, field.map{_._1._2}.max) &&
 				surroundingTilesMatch(field, x, y) &&
 				randsMatch(rng)
 	}

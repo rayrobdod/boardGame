@@ -151,7 +151,7 @@ object JSONTilesheetViewer extends App
 					frame.getContentPane.remove(fieldComp)
 					
 					fieldComp = new RectangularFieldComponent(tilesheet, field, getRandomIndicatedByTextBox())
-					field.spaces.flatten.zipWithIndex.foreach({(space:RectangularSpace[String], index:Int) =>
+					field.foreach({(space:RectangularSpace[String], index:Int) =>
 						fieldComp.addMouseListenerToSpace(space, new RotateListener(index))
 					}.tupled)
 					frame.getContentPane.add(fieldComp)

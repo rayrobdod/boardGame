@@ -19,7 +19,6 @@ package com.rayrobdod.jsonTilesheetViewer.tags
 
 import com.rayrobdod.tagprotocol.tag.TagResource
 import com.rayrobdod.jsonTilesheetViewer.SpaceClass
-import com.rayrobdod.jsonTilesheetViewer.RotateSpaceRectangularField
 import java.io.InputStream
 import java.util.List
 import java.util.Map

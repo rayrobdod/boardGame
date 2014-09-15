@@ -42,8 +42,7 @@ class RectangularFieldComponent[A](tilesheet:RectangularTilesheet[A], field:Rect
 	
 	private val transparent = new java.awt.Color(0,0,0,0);
 	
-	private val points:Seq[Seq[Point]] = field.spaces.indices.map{(y:Int) => field.spaces(y).indices.map{(x:Int) => new Point(x,y)}}
-	private val flatPoints:Seq[Point] = points.flatten
+	private val flatPoints:Seq[Point] = field.map{x => new Point(x._1._1, x._1._2)}.toSeq
 	
 	private val spaces:Seq[StrictRectangularSpace[A]] = flatPoints.map{(p:Point) => field.space(x = p.x, y = p.y)}
 	private val (lowIcons:Seq[Icon], highIcons:Seq[Icon]) = flatPoints.map{(p:Point) => tilesheet.getIconFor(field, p.x, p.y, rng)}.unzip

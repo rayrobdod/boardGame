@@ -67,9 +67,9 @@ class JSONRectangularVisualizationRule[A](
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[A]) =>
 			val newIndexies = conversion( ((x,y)) )
-			if (field.containsIndexies(newIndexies._1, newIndexies._2))
+			if (field.contains((newIndexies._1, newIndexies._2)))
 			{
-				val spaceClass = field.space(newIndexies._1, newIndexies._2).typeOfSpace
+				val spaceClass = field(newIndexies._1, newIndexies._2).typeOfSpace
 				
 				scc.unapply(spaceClass)
 			} else {true}

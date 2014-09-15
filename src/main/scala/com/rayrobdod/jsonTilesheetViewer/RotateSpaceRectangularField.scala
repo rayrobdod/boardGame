@@ -17,75 +17,21 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.RectangularField
-import com.rayrobdod.boardGame.StrictRectangularSpaceViaFutures
+import com.rayrobdod.boardGame.RectangularFieldIndex
 
-/**
- * An immutable field that, when asked, produces a new field with a
- * new RectangularSpace in a spot
- * @author Raymond Dodge
- * @version 3.0.0
- */
-class RotateSpaceRectangularField(
-	val rotation:Seq[SpaceClass],
-	val spaceIndexes:Seq[Seq[Int]]
-) extends RectangularField[SpaceClass] {
-	def this(rotation:Seq[SpaceClass],
-				width:Int, height:Int) {
-		this(rotation, Seq.fill(height, width){0})
-	}
-	
-	override val spaces = spaceIndexes.zipWithIndex.map({(seq:Seq[Int], i:Int) =>
-		seq.zipWithIndex.map({(index:Int, j:Int) =>
-			new StrictRectangularSpaceViaFutures[SpaceClass](
-				typeOfSpace = rotation(index),
-				leftFuture = spaceFuture(i-1,j),
-				upFuture = spaceFuture(i,j-1),
-				rightFuture = spaceFuture(i+1,j),
-				downFuture = spaceFuture(i,j+1)
-			)
-		}.tupled)
-	}.tupled)
-	
-	
-	
-	def rotate(x:Int, y:Int):RotateSpaceRectangularField = 
+
+object RotateRectangularField{
+	def apply(rotation:Seq[SpaceClass],
+			currentField:RectangularField[SpaceClass],
+			spaceToRotate:RectangularFieldIndex):RectangularField[SpaceClass] =
 	{
-		val newSpaceIndexes = spaceIndexes.updated(y,
-			spaceIndexes(y).updated(x,
-				((spaceIndexes(y)(x) + 1) % rotation.size)
-			)
-		)
+		val currentClasses = currentField.map{x => ((x._1, x._2.typeOfSpace))}
+		val currentClassRotate = currentClasses(spaceToRotate)
+		val nextClassRotate = rotation( (rotation.indexOf(currentClassRotate) + 1) % rotation.size )
+		val nextClasses = currentClasses + ((spaceToRotate, nextClassRotate))
+		val nextField = RectangularField.apply(nextClasses)
 		
-		new RotateSpaceRectangularField(rotation, newSpaceIndexes)
-	}
-	
-	def rotate(i:Int):RotateSpaceRectangularField = 
-	{
-		val lengths:Seq[Int] = spaceIndexes.map{_.size}
-		
-		val coords:Either[Int,(Int,Int)] = lengths.zipWithIndex.foldLeft[Either[Int,(Int,Int)]](Left(i))
-		{(indexesLeftResultRight:Either[Int,(Int,Int)], (lengthI:(Int, Int))) =>
-			{
-				val (length, i) = lengthI
-				
-				indexesLeftResultRight match
-				{
-					case right:Right[_,_] => right 
-					case Left(x:Int) => if (x >= length) {
-							Left(x - length)
-						} else {
-							Right((i, x))
-						}
-				}
-			}
-		}
-		
-		coords match
-		{
-			case x:Left[_,_] => throw new IndexOutOfBoundsException("param was greater than size of array")
-			case Right(Tuple2(i:Int,j:Int)) => this.rotate(j,i)
-		}
+		return nextField
 	}
 }
