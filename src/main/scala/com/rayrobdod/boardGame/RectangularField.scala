@@ -17,84 +17,70 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.Seq
-import java.util.concurrent.{Future => JavaFuture, TimeUnit, TimeoutException}
+import scala.collection.immutable.{Seq, Set, Map}
 
 /**
- * A group of spaces such that they form a rectangular board made of
- * [[com.rayrobdod.boardGame.RectangularSpace]]s, such that they follow
- * ecludian geometery.
+ * A RectangularField is a set of [[com.rayrobdod.boardGame.RectangularSpace]]s,
+ * such that each space is connected to adjacent spaces Ecludian-geometry wise.
  * 
  * 
- * @author Raymond Dodge
  * @version 3.0.0
  * @see [[com.rayrobdod.boardGame.RectangularSpace]]
- * @tparam A the type of spaceclass used by this class
- */
-abstract class RectangularField[A]
-{
-	/**
-	 * y is outer layer - x is inner layer
-	 * @deprecated
-	 */
-	def spaces:Seq[Seq[StrictRectangularSpace[A]]]
-	
-	/** retrives a space from the spaces array. */
-	final def space(x:Int, y:Int) = spaces(y)(x)
-	final def spaceOption(x:Int, y:Int) = if (this.containsIndexies(x,y)) {Some(spaces(y)(x))} else {None}
-	final def containsIndexies(x:Int, y:Int) = spaces.isDefinedAt(y) && spaces(y).isDefinedAt(x)
-	
-	/** 
-	 * Creates a future (both {@link java.util.concurrent.Future} and {@link scala.parallel.Future}) that, when called, will
-	 * return the same value as {@code space(x,y)}
-	 */
-	final protected def spaceFuture(x:Int, y:Int) =
-	{
-		final class RectangularFieldSpaceFuture(x:Int, y:Int)
-				extends scala.Function0[Option[StrictRectangularSpace[A]]]
-		{
-			override def apply = {
-				while (!isDone) {Thread.sleep(100L)}
-				
-				if (RectangularField.this.containsIndexies(x,y))
-					Some(RectangularField.this.space(x,y))
-				else
-					None
-			}
-			
-			// in theory, this should never be called in a state when isDone is false.
-			def isDone:Boolean = {spaces != null}
-		}
-		
-		new RectangularFieldSpaceFuture(x,y)
-	}
-}
-
-/**
  */
 object RectangularField
 {
-	private class RectangularFieldSpace[A](val typeOfSpace:A, owner:RectangularField[A], i:Int, j:Int) extends StrictRectangularSpace[A]
-	{
-		override def left:Option[StrictRectangularSpace[A]]  = owner.spaceOption(i-1,j)
-		override def up:Option[StrictRectangularSpace[A]]    = owner.spaceOption(i,j-1)
-		override def right:Option[StrictRectangularSpace[A]] = owner.spaceOption(i+1,j)
-		override def down:Option[StrictRectangularSpace[A]]  = owner.spaceOption(i,j+1)
+	/* @since 3.0.0 */
+	private final class RectangularFieldSpace[A](
+			private val fieldClasses:Map[RectangularFieldIndex, A],
+			private val myIndex:(Int, Int)
+	) extends StrictRectangularSpace[A] {
+		private val (i,j) = myIndex
+		private def getSpaceAt(i:RectangularFieldIndex):Option[StrictRectangularSpace[A]] = {
+			if (fieldClasses.contains(i)) {
+				Some(new RectangularFieldSpace(fieldClasses, i))
+			} else {None}
+		}
+		
+		// RectangularSpace Implementation
+		
+		override val typeOfSpace:A = fieldClasses(myIndex)
+		override def left:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i-1,j)
+		override def up:Option[StrictRectangularSpace[A]]    = this.getSpaceAt(i,j-1)
+		override def right:Option[StrictRectangularSpace[A]] = this.getSpaceAt(i+1,j)
+		override def down:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i,j+1)
+		
+		// Object Overrides
+		
+		// Until there's something that can apply to all RectangularSpaces, we're doing somehting specialized for this
+		override def equals(other:Any):Boolean = {
+			if (! other.isInstanceOf[RectangularFieldSpace[_]]) return false;
+			val other2 = other.asInstanceOf[RectangularFieldSpace[_]]
+			
+			return (other2.fieldClasses == this.fieldClasses &&
+					other2.myIndex == this.myIndex)
+		}
+		override def hashCode:Int = myIndex.hashCode
 	}
 	
 	
 	/**
 	 * A factory method for Rectangular Fields
 	 * @param classes the Space Classes making up the field
+	 * @version 3.0.0
 	 */
-	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = {
-		new RectangularField[A] {
-			
-			val spaces:Seq[Seq[StrictRectangularSpace[A]]] = classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) => 
-				classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
-					new RectangularFieldSpace(clazz, this, i, j)
-				}.tupled)
+	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = this.apply(
+		
+		classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) =>
+			classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
+				(i, j) -> clazz
 			}.tupled)
-		}
+		}.tupled).flatten.toMap
+	)
+	
+	/**
+	 * @since 3.0.0
+	 */
+	def apply[A](classes:Map[RectangularFieldIndex, A]):RectangularField[A] = {
+		classes.map{x => ((x._1, new RectangularFieldSpace(classes, x._1) ))}
 	}
 }
