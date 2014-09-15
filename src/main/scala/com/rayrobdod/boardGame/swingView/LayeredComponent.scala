@@ -25,6 +25,8 @@ final class LayeredComponent extends JComponent {
 	private val layers = Buffer.empty[Layer]
 	
 	def addLayer(x:Layer) = {layers += x}
+	def removeLayer(x:Layer) = {layers -= x}
+	def removeAllLayers() = {layers.clear}
 	
 	var offsetX:Int = 0
 	var offsetY:Int = 0
