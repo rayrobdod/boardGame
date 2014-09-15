@@ -79,6 +79,10 @@ class RectangularFieldTest extends FunSpec {
 			val a = RectangularField(threeByThree)
 			assertResult(a(2,1)){a(1,1).right.get}
 		}
+		it ("space right space left of 1,1 is space 1,1"){
+			val a = RectangularField(threeByThree)
+			assertResult(a(1,1)){a(1,1).left.get.right.get}
+		}
 		it ("space above of 0,0 is None"){
 			val a = RectangularField(threeByThree)
 			assertResult(None){a(0,0).up}

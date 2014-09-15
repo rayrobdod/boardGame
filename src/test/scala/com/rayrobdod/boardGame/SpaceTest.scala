@@ -24,13 +24,13 @@ import org.scalatest.prop.PropertyChecks
 class SpaceTest extends FunSpec {
 
 	describe ("Space") {
-		describe ("distanceTo (uniform cost)") {
+		describe ("distanceTo (uniform cost of 1)") {
 			it ("to itself is zero"){
 				assertResult(0){
 					uniformField(2,2).distanceTo(uniformField(2,2), Space.constantCostFunction)
 				}
 			}
-			it ("jkljl"){
+			it ("to a space six away is six"){
 				assertResult(3 + 3){
 					uniformField(0,0).distanceTo(uniformField(3,3), Space.constantCostFunction)
 				}
