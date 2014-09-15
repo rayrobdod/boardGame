@@ -38,8 +38,7 @@ mappings in (Compile, packageSrc) <+= baseDirectory.map{(b) => (new File(b, "LIC
 mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
 
 
-excludeFilter in unmanagedSources := 
-	"RectangularMultifieldComponent.scala" || "RectangularFieldComponent.scala" || "jsonTilesheetViewer"
+excludeFilter in unmanagedSources := "jsonTilesheetViewer"
 
 proguardSettings
 
