@@ -18,6 +18,7 @@
 package com.rayrobdod.boardGame.swingView
 
 import java.awt.{Component, Graphics}
+import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
 
 trait Layer {
 	/**
@@ -37,8 +38,17 @@ trait Layer {
 	 */
 	def getSouth:Int
 	
+	
+	
 	/**
 	 * Paints this layer
 	 */
 	def paintLayer(c:Component, g:Graphics, x:Int, y:Int)
+	
+	
+	
+	/**
+	 * Performs an action in resopnse to a mouse click.
+	 */
+	def clicked(e:MouseEvent)
 }

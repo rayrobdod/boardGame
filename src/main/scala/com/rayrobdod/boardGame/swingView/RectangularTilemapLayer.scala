@@ -18,6 +18,7 @@
 package com.rayrobdod.boardGame.swingView
 
 import java.awt.{Component, Graphics}
+import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
 import javax.swing.Icon
 import scala.collection.immutable.Map
 import scala.util.Random
@@ -51,6 +52,37 @@ final class RectangularTilemapLayer(
 			val iconY = index._2 * tileHeight
 			
 			icon.paintIcon(c, g, iconX + offsetX, iconY + offsetY)
+		}.tupled)
+	}
+	
+	private var mouseListeners:Map[RectangularFieldIndex, Seq[MouseListener]] = Map.empty.withDefaultValue(Nil)
+	def addMouseListener(index:RectangularFieldIndex, ml:MouseListener) {
+		mouseListeners = mouseListeners + ((index, mouseListeners(index) :+ ml))
+	}
+	override def clicked(e:MouseEvent) {
+		// tiles should not overlap
+		mouseListeners.foreach({(index:RectangularFieldIndex, ml:Seq[MouseListener]) =>
+			val iconX = index._1 * tileWidth
+			val iconY = index._2 * tileHeight
+			
+			val translatedE = new MouseEvent(
+				e.getSource.asInstanceOf[Component],
+				e.getID,
+				e.getWhen,
+				e.getModifiers,
+				e.getX - iconX,
+				e.getY - iconY,
+				e.getXOnScreen,
+				e.getYOnScreen,
+				e.getClickCount,
+				e.isPopupTrigger,
+				e.getButton
+			)
+			
+			if (0 <= translatedE.getX && translatedE.getX < tileWidth &&
+					0 <= translatedE.getY && translatedE.getY < tileHeight) {
+				ml.foreach{_.mouseClicked(translatedE)}
+			}
 		}.tupled)
 	}
 }

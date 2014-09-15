@@ -18,8 +18,9 @@
 package com.rayrobdod.boardGame.swingView
 
 import javax.swing.JComponent
-import java.awt.{Graphics}
-import scala.collection.mutable.{Buffer}
+import java.awt.{Component, Graphics}
+import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
+import scala.collection.mutable.Buffer
 
 final class LayeredComponent extends JComponent {
 	private val layers = Buffer.empty[Layer]
@@ -49,4 +50,26 @@ final class LayeredComponent extends JComponent {
 			l.paintLayer(this, g, offsetX, offsetY)
 		}
 	}
+	
+	this.addMouseListener(new MouseAdapter() {
+		override def mouseClicked(e:MouseEvent) = {
+			val translatedE = new MouseEvent(
+				e.getSource.asInstanceOf[Component],
+				e.getID,
+				e.getWhen,
+				e.getModifiers,
+				e.getX - offsetX,
+				e.getY - offsetY,
+				e.getXOnScreen,
+				e.getYOnScreen,
+				e.getClickCount,
+				e.isPopupTrigger,
+				e.getButton
+			)
+				
+			layers.foreach{(l:Layer) => 
+				l.clicked(translatedE)
+			}
+		}
+	})
 }

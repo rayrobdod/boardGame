@@ -99,6 +99,17 @@ object JSONTilesheetViewer extends App
 			fieldComp.addLayer(a._1)
 			fieldComp.addLayer(a._2)
 			
+			fieldComp.offsetX = 32
+			fieldComp.offsetY = -32
+			
+			currentRotationState.toSeq.map{_._1}.foreach{index =>
+				a._1.addMouseListener(index, new MouseAdapter() {
+					override def mouseClicked(e:MouseEvent) = {
+						System.out.println(index, e.getX, e.getY)
+					}
+				})
+			}
+			
 		} else {
 			val a = RectangularFieldLayer(
 				inputFields.field,
