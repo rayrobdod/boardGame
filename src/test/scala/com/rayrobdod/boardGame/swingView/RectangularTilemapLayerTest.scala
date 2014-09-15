@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
+import java.awt.{Component, Graphics}
 import javax.swing.Icon
 import com.rayrobdod.swing.SolidColorIcon
 
@@ -33,6 +34,7 @@ class RectangularTilemapLayerTest extends FunSpec {
 	
 	
 	
+	describe ("Bounds checking") {
 	describe ("RectangularTilemapLayer with icon32 and map(0,0)to(3,3)") {
 		val uut = new RectangularTilemapLayer(tiles(0 to 3, 0 to 3, icon32))
 		
@@ -95,6 +97,51 @@ class RectangularTilemapLayerTest extends FunSpec {
 		}
 		it ("getSouth is (32 * 2)"){
 			assertResult(2 * 32){uut.getSouth}
+		}
+	}
+	}
+	describe ("paintLayer") {
+	describe ("at offset (0,0)") {
+		
+		it ("icon at (0,0) is painted at (0,0)"){
+			val uut = new RectangularTilemapLayer(Map( ((0,0)) -> new MockPaintIcon(32, 32, 0, 0) ))
+			uut.paintLayer(null, null, 0, 0)
+		}
+		it ("icon at (1,0) is painted at (32,0)"){
+			val uut = new RectangularTilemapLayer(Map( ((1,0)) -> new MockPaintIcon(32, 32, 32, 0) ))
+			uut.paintLayer(null, null, 0, 0)
+		}
+		it ("icon at (1,1) is painted at (32,32)"){
+			val uut = new RectangularTilemapLayer(Map( ((1,1)) -> new MockPaintIcon(32, 32, 32, 32) ))
+			uut.paintLayer(null, null, 0, 0)
+		}
+	}
+	describe ("at offset (5,5)") {
+		
+		it ("icon at (0,0) is painted at (5,5)"){
+			val uut = new RectangularTilemapLayer(Map( ((0,0)) -> new MockPaintIcon(32, 32, 5, 5) ))
+			uut.paintLayer(null, null, 5, 5)
+		}
+		it ("icon at (1,0) is painted at (37,5)"){
+			val uut = new RectangularTilemapLayer(Map( ((1,0)) -> new MockPaintIcon(32, 32, 37, 5) ))
+			uut.paintLayer(null, null, 5, 5)
+		}
+		it ("icon at (1,1) is painted at (37,37)"){
+			val uut = new RectangularTilemapLayer(Map( ((1,1)) -> new MockPaintIcon(32, 32, 37, 37) ))
+			uut.paintLayer(null, null, 5, 5)
+		}
+	}
+	}
+	
+	
+	
+	
+	class MockPaintIcon(width:Int, height:Int, expectedX:Int, expectedY:Int) extends javax.swing.Icon {
+		def getIconWidth = width
+		def getIconHeight = height
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int) = {
+			assertResult(expectedX){x}
+			assertResult(expectedY){y}
 		}
 	}
 }

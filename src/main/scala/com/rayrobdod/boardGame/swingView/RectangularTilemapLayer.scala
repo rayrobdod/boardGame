@@ -44,13 +44,13 @@ final class RectangularTilemapLayer(
 	override def getSouth:Int = tileHeight * mapHeight - getNorth
 	
 	
-	override def paintLayer(c:Component, g:Graphics, x:Int, y:Int) = {
+	override def paintLayer(c:Component, g:Graphics, offsetX:Int, offsetY:Int) = {
 		// tiles should not overlap
 		tiles.foreach({(index:RectangularFieldIndex, icon:Icon) =>
 			val iconX = index._1 * tileWidth
 			val iconY = index._2 * tileHeight
 			
-			icon.paintIcon(c, g, iconX, iconY)
+			icon.paintIcon(c, g, iconX + offsetX, iconY + offsetY)
 		}.tupled)
 	}
 }
