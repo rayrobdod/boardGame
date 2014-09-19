@@ -70,8 +70,6 @@ object JSONTilesheetViewer extends App
 		}
 	})
 	
-	var currentRotationState:RectangularField[SpaceClass] = null
-	var currentRotationRotation:Seq[SpaceClass] = null
 	val fieldComp = new LayeredComponent 
 	
 	frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
@@ -83,12 +81,16 @@ object JSONTilesheetViewer extends App
 	frame.setVisible(true)
 	
 	def loadNewTilesheet() = {
-		currentRotationRotation = allClassesInTilesheet(inputFields.tilesheet) :+ ""
-		currentRotationState = {
-			RectangularField(Seq.fill(14, 12){currentRotationRotation.head})
-		}
 		
 		if (inputFields.fieldIsRotationField) {
+			
+			val currentRotationRotation:Seq[SpaceClass] = {
+				allClassesInTilesheet(inputFields.tilesheet) :+ ""
+			}
+			val currentRotationState:RectangularField[SpaceClass] = {
+				RectangularField(Seq.fill(14, 12){currentRotationRotation.head})
+			}
+			
 			val a = RectangularFieldLayer(
 				currentRotationState,
 				inputFields.tilesheet,
@@ -99,15 +101,11 @@ object JSONTilesheetViewer extends App
 			fieldComp.addLayer(a._1)
 			fieldComp.addLayer(a._2)
 			
-			fieldComp.offsetX = 32
-			fieldComp.offsetY = -32
 			
 			currentRotationState.toSeq.map{_._1}.foreach{index =>
-				a._1.addMouseListener(index, new MouseAdapter() {
-					override def mouseClicked(e:MouseEvent) = {
-						System.out.println(index, e.getX, e.getY)
-					}
-				})
+				a._1.addMouseListener(index, new FieldRotationMouseListener(
+						index, currentRotationRotation, currentRotationState
+				))
 			}
 			
 		} else {
@@ -121,8 +119,6 @@ object JSONTilesheetViewer extends App
 			fieldComp.addLayer(a._1)
 			fieldComp.addLayer(a._2)
 		}
-		
-		
 		
 		frame.pack()
 	}
@@ -142,14 +138,14 @@ object JSONTilesheetViewer extends App
 		import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet
 		import com.rayrobdod.boardGame.swingView.JSONRectangularVisualizationRule
 		import StringSpaceClassMatcher.EqualsMatcher
-					
+		
 		val a = f match {
 			case x:JSONRectangularTilesheet[SpaceClass] => {
 				val a:Seq[JSONRectangularVisualizationRule[SpaceClass]] = x.visualizationRules
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
 				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
-					
+				
 				val e:Seq[Option[SpaceClass]] = d.map{_ match {
 					case EqualsMatcher(ref) => Option(ref)
 					case _ => None
@@ -160,8 +156,46 @@ object JSONTilesheetViewer extends App
 				}
 			case _ => Seq("")
 		}
-				
+		
 		// System.out.println(a)
 		a
+	}
+	
+	
+	final class FieldRotationMouseListener(
+			index:(Int,Int),
+			currentRotationRotation:Seq[SpaceClass],
+			currentRotationState:RectangularField[SpaceClass]
+	) extends MouseAdapter {
+		override def mouseClicked(e:MouseEvent) = {
+			
+			val currentSpace:SpaceClass = currentRotationState(index).typeOfSpace
+			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
+			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
+			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
+			
+			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
+					currentRotationState.map{x => ((x._1, x._2.typeOfSpace))} +
+							((index, nextSpace))
+			
+			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)
+			
+			val a = RectangularFieldLayer(
+				nextRotationState,
+				inputFields.tilesheet,
+				inputFields.rng
+			)
+			
+			fieldComp.removeAllLayers()
+			fieldComp.addLayer(a._1)
+			fieldComp.addLayer(a._2)
+			
+			
+			nextRotationState.toSeq.map{_._1}.foreach{index =>
+				a._1.addMouseListener(index, new FieldRotationMouseListener(
+						index, currentRotationRotation, nextRotationState
+				))
+			}
+		}
 	}
 }
