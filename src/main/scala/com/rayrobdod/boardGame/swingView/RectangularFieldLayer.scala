@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2013  Raymond Dodge
+	Copyright (C) 2014  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,17 +15,29 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame
+package com.rayrobdod.boardGame.swingView
 
-import scala.collection.mutable.Buffer
-import com.rayrobdod.boardGame.{Space => BoardGameSpace}
+import scala.util.Random
+import javax.swing.Icon
+import com.rayrobdod.boardGame.RectangularField
+
+
+
 
 /**
- * An object that exists on a game board.
- * 
- * @author Raymond Dodge
  * @version 3.0.0
  */
-abstract class Token[A] (
-	val currentSpace:Space[A]
-)
+object RectangularFieldLayer {
+	def apply[A](
+			field:RectangularField[A],
+			tilesheet:RectangularTilesheet[A],
+			rng:Random = Random
+	):(RectangularTilemapLayer, RectangularTilemapLayer) = {
+		
+		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
+		val top = a.mapValues{_._1}
+		val bot = a.mapValues{_._2}
+		
+		(( new RectangularTilemapLayer(top), new RectangularTilemapLayer(bot) ))
+	}
+}
