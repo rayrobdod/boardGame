@@ -55,6 +55,16 @@ final class RectangularTilemapLayer(
 		}.tupled)
 	}
 	
+	
+	def spaceBounds(index:RectangularFieldIndex):java.awt.Shape = {
+		val iconX = index._1 * tileWidth
+		val iconY = index._2 * tileHeight
+		
+		new java.awt.Rectangle(iconX, iconY, tileWidth, tileHeight)
+	}
+	
+	
+	
 	private var mouseListeners:Map[RectangularFieldIndex, Seq[MouseListener]] = Map.empty.withDefaultValue(Nil)
 	def addMouseListener(index:RectangularFieldIndex, ml:MouseListener) {
 		mouseListeners = mouseListeners + ((index, mouseListeners(index) :+ ml))
