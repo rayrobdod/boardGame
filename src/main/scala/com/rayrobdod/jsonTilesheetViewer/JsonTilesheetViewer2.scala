@@ -37,12 +37,11 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame.scalafxView.{
-		RectangularFieldComponent,
 		RectangularTilesheet,
 		IndexesTilesheet
 }
 import com.rayrobdod.boardGame.{
-		SpaceClassConstructor, RectangularField, RectangularSpace
+		RectangularField, RectangularSpace
 }
 import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
 import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
@@ -73,7 +72,7 @@ object JSONTilesheetViewer2 extends JFXApp
 	val goButton = new Button("Go")
 	
 	
-	val tilesheet:RectangularTilesheet = IndexesTilesheet
+	val tilesheet:RectangularTilesheet[_] = IndexesTilesheet
 	val field:RectangularField = (new RotateMapTagResource).getContent
 	val fieldComp = new RectangularFieldComponent(tilesheet, field)
 	

@@ -30,7 +30,7 @@ import com.rayrobdod.boardGame.RectangularField
  * 
  * @author Raymond Dodge
  */
-object IndexesTilesheet extends RectangularTilesheet {
+object IndexesTilesheet extends RectangularTilesheet[Any] {
 	override def name = "IndexesTilesheet"
 	case class Dimension(val width:Int, val height:Int)
 	val dim = new Dimension(32,32)
@@ -50,7 +50,7 @@ object IndexesTilesheet extends RectangularTilesheet {
 		retVal
 	}
 	
-	def getImageFor(f:RectangularField, x:Int, y:Int, rng:Random):(Node, Node) = {
+	def getImageFor(f:RectangularField[_], x:Int, y:Int, rng:Random):(Node, Node) = {
 		((
 			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
 			IndexImage(x,y)
