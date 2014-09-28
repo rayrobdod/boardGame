@@ -65,19 +65,37 @@ object RectangularField
 	
 	/**
 	 * A factory method for Rectangular Fields
+	 * 
+	 * It will convert the locations in the array to indexies by using the
+	 * inner array as the first dimension and the outer array as the
+	 * first dimension.
+	 * 
+	 * It sounds wierd, but it matches the most common ways of making a
+	 * Seq[Seq[_]]. Both OpenCSV and direct inline have this endianess.
+	 * 
+	 * An example is, given the below sequence, `g` would be be considered
+	 * at index (0, 2) by this function. Even though normally, that element
+	 * would be accessed by (2)(0).
+	 * {{{
+	 *     Seq( Seq( a, b, c ),
+	 *          Seq( d, e, f ),
+	 *          Seq( g, h, i )
+	 *     )
+	 * }}}
 	 * @param classes the Space Classes making up the field
 	 * @version 3.0.0
 	 */
 	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = this.apply(
 		
-		classes.zipWithIndex.map({(classSeq:Seq[A], i:Int) =>
-			classSeq.zipWithIndex.map({(clazz:A, j:Int) => 
+		classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) =>
+			classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
 				(i, j) -> clazz
 			}.tupled)
 		}.tupled).flatten.toMap
 	)
 	
 	/**
+	 * A factory method for Rectangular Fields
 	 * @since 3.0.0
 	 */
 	def apply[A](classes:Map[RectangularFieldIndex, A]):RectangularField[A] = {

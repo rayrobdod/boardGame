@@ -24,11 +24,41 @@ import org.scalatest.prop.PropertyChecks
 
 class RectangularFieldTest extends FunSpec {
 	
+	val twoByTwoMap:Map[RectangularFieldIndex, Char] = Map(
+		(0,0) → 'a', (0,1) → 'b', (1,0) → 'c', (1,1) → 'd'
+	)
 	val threeByThree:Seq[Seq[Char]] = Seq("abc", "def", "ghi")
 	val sixByOne:Seq[Seq[Char]] = Seq("abcdef")
+	val twoByTwoCsv:Seq[Seq[String]] = {
+		import scala.collection.JavaConversions.collectionAsScalaIterable;
+		
+		val a = new au.com.bytecode.opencsv.CSVReader(
+			new java.io.StringReader("a,b\nc,d")
+		).readAll
+		
+		Seq.empty ++ a.map{Seq.empty ++ _}
+	}
 	
 	
-	describe ("The RectangularField Factory") {
+	describe ("The RectangularField Map[Index, _] Factory") {
+		it ("resultant space class 0,0 matches input"){
+			val a = RectangularField(twoByTwoMap)
+			assertResult('a'){a(0,0).typeOfSpace}
+		}
+		it ("resultant space class 0,1 matches input"){
+			val a = RectangularField(twoByTwoMap)
+			assertResult('b'){a(0,1).typeOfSpace}
+		}
+		it ("resultant space class 1,0 matches input"){
+			val a = RectangularField(twoByTwoMap)
+			assertResult('c'){a(1,0).typeOfSpace}
+		}
+		it ("resultant space 3,0 doesn't exist, for input 2x2"){
+			val a = RectangularField(twoByTwoMap)
+			intercept[NoSuchElementException]{a(3,0)}
+		}
+	}
+	describe ("The RectangularField Seq[Seq[_]] Factory") {
 		it ("resultant space class 0,0 matches input"){
 			val a = RectangularField(threeByThree)
 			assertResult('a'){a(0,0).typeOfSpace}
@@ -56,6 +86,24 @@ class RectangularFieldTest extends FunSpec {
 		it ("resultant space 3,0 does exist, for input 6x1"){
 			val a = RectangularField(sixByOne)
 			assertResult('d'){a(3,0).typeOfSpace}
+		}
+	}
+	describe ("The RectangularField Seq[Seq[_]] Factory, from a CSV") {
+		it ("resultant space class 0,0 matches input"){
+			val a = RectangularField(twoByTwoCsv)
+			assertResult("a"){a(0,0).typeOfSpace}
+		}
+		it ("resultant space class 1,0 matches input"){
+			val a = RectangularField(twoByTwoCsv)
+			assertResult("b"){a(1,0).typeOfSpace}
+		}
+		it ("resultant space class 0,1 matches input"){
+			val a = RectangularField(twoByTwoCsv)
+			assertResult("c"){a(0,1).typeOfSpace}
+		}
+		it ("resultant space 3,0 doesn't exist, for input 2x2"){
+			val a = RectangularField(twoByTwoCsv)
+			intercept[NoSuchElementException]{a(3,0)}
 		}
 	}
 	describe ("RectangularField") {

@@ -27,7 +27,7 @@ import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet;
 
 /**
- * A contentHandler that will turn anything into a String
+ * A contentHandler that will compose a map from a JSON and linked documents
  */
 class JsonMapHandler extends ContentHandler {
 	

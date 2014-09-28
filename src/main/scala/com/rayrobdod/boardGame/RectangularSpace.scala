@@ -46,6 +46,10 @@ trait RectangularSpace[A] extends Space[A] {
 }
 
 
+/**
+ * A RectangularSpace with the additional reqqquirement that every
+ * adjacenet space also be a StrictRectangularSpace
+ */
 trait StrictRectangularSpace[A] extends RectangularSpace[A] {
 	override def left:Option[StrictRectangularSpace[A]]
 	override def up:Option[StrictRectangularSpace[A]]

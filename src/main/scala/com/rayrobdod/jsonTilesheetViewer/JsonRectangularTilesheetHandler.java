@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet;
 
 /**
- * A contentHandler that will turn anything into a String
+ * A contentHandler that will compose a JSONTilesheet from a json and linked documents 
  */
 public final class JsonRectangularTilesheetHandler extends ContentHandler {
 	
