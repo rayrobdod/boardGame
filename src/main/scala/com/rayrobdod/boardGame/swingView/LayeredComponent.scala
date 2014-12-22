@@ -39,8 +39,8 @@ final class LayeredComponent extends JComponent {
 			super.getPreferredSize
 		} else {
 			new java.awt.Dimension(
-				offsetX + layers.map{_.getWest}.max,
-				offsetY + layers.map{_.getSouth}.max
+				offsetX + (0 +: layers.map{_.getWest}).max,
+				offsetY + (0 +: layers.map{_.getSouth}).max
 			)
 		}
 	}

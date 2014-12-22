@@ -126,7 +126,11 @@ object JSONRectangularVisualizationRule
 	val numberPattern = Pattern.compile("\\d+")
 	val andPattern = Pattern.compile("&")
 	
-	val scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript")
+	val scriptEngine = {
+		val retVal = new ScriptEngineManager(null).getEngineByName("JavaScript")
+		if (retVal == null) throw new NullPointerException("scriptEngine not found")
+		retVal
+	}
 	
 	def buildBindings(x:Int, y:Int, width:Int, height:Int):Bindings = {
 		val binding = new SimpleBindings
