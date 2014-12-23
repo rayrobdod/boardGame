@@ -21,8 +21,20 @@ package com.rayrobdod.boardGame
  * 
  */
 package object swingView {
-	trait SpaceClassMatcherFactory[SpaceClass] {
+}
+
+package swingView {
+	trait SpaceClassMatcherFactory[-SpaceClass] {
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
 	
+	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
+	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
+		def apply(s:String):SpaceClassMatcher[Any] = ConstTrueSpaceClassMatcher
+	}
+	
+	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns false */
+	object ConstFalseSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
+		def apply(s:String):SpaceClassMatcher[Any] = ConstFalseSpaceClassMatcher
+	}
 }
