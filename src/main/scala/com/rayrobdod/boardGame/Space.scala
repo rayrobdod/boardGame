@@ -47,6 +47,7 @@ trait Space[A] {
 	 * Finds all the spaces within a certain movementCost of this one.
 	 * 
 	 * @param availableCost the amount of movementCost available
+	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return a set of all spaces that can be reached from this by moving into an adjacentTile
 			using movementCost or less
 	 */
@@ -69,6 +70,7 @@ trait Space[A] {
 	 * Finds all the spaces that take exactly movementCost to get To.
 	 * 
 	 * @param availableCost the amount of movementCost available
+	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return a set of all spaces that can be reached from this by moving into an adjacentTile
 			using exactly movementCost
 	 */
@@ -93,6 +95,7 @@ trait Space[A] {
 	 * they are to each other.
 	 * 
 	 * @param other the space to find the movementCost required to get to
+	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return the movementCost required to get from this space to other
 	 */
 	def distanceTo(other:Space[A], costFunction:CostFunction[A]):Int =
@@ -132,6 +135,7 @@ trait Space[A] {
 	 * which searches the whole field
 	 * 
 	 * @param other the space to find the movementCost required to get to
+	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return the a list of spaces such that the first space is this, the last space is other, and
 	 			the movementcost between the two is minimal
 	 */

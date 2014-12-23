@@ -48,7 +48,7 @@ trait Layer {
 	
 	
 	/**
-	 * Performs an action in resopnse to a mouse click.
+	 * Performs an action in response to a mouse click.
 	 */
 	def clicked(e:MouseEvent)
 }
