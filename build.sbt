@@ -6,9 +6,9 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 version := "3.0.0-SNAPSHOT"
 
-scalaVersion := "2.9.3"
+scalaVersion := "2.10.4"
 
-crossScalaVersions ++= Seq("2.10.3", "2.9.2", "2.9.1", "2.11.2")
+crossScalaVersions ++= Seq("2.10.4", "2.9.2", "2.9.1", "2.11.4")
 
 exportJars := true
 
@@ -57,11 +57,11 @@ ProguardKeys.inputFilter in Proguard := { file =>
 }
 
 // scalaTest
-scalaVersion in Test := "2.9.3"
+scalaVersion in Test := "2.10.4"
 
-libraryDependencies += "org.scalatest" % "scalatest_2.9.3" % "1.9.2" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.2.1" % "test"
 
-// testOptions in Test += Tests.Argument("-oS")
+testOptions in Test += Tests.Argument("-oS")
 
 
 // anon-fun-reduce
