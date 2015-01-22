@@ -8,7 +8,7 @@ version := "3.0.0-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
-crossScalaVersions ++= Seq("2.10.4", "2.9.2", "2.9.1", "2.11.4")
+crossScalaVersions ++= Seq("2.9.1", "2.9.2", "2.9.3", "2.10.4", "2.11.4")
 
 exportJars := true
 
@@ -16,7 +16,6 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
 
-// update for new tag handler
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
 
 libraryDependencies += ("net.sf.opencsv" % "opencsv" % "2.3")
@@ -38,7 +37,6 @@ mappings in (Compile, packageSrc) <+= baseDirectory.map{(b) => (new File(b, "LIC
 mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
 
 
-// excludeFilter in unmanagedSources := "jsonTilesheetViewer"
 
 proguardSettings
 
@@ -63,11 +61,4 @@ libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.2.1" % "test"
 
 testOptions in Test += Tests.Argument("-oS")
 
-
-// anon-fun-reduce
-//autoCompilerPlugins := true
-//
-//addCompilerPlugin("com.rayrobdod" %% "anon-fun-reduce" % "1.0.0")
-//
-//libraryDependencies += ("com.rayrobdod" %% "anon-fun-reduce" % "1.0.0")
 
