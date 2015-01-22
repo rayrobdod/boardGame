@@ -31,7 +31,7 @@ import scala.collection.immutable.{Set, List, Map}
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
-final class UnidirectionalSpace[A](val typeOfSpace:A, val nextSpace:Option[UnidirectionalSpace[A]]) extends Space[A]
+final class UnidirectionalSpace[A](override val typeOfSpace:A, val nextSpace:Option[UnidirectionalSpace[A]]) extends Space[A]
 {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
@@ -41,6 +41,7 @@ final class UnidirectionalSpace[A](val typeOfSpace:A, val nextSpace:Option[Unidi
 	/**
 	 * Returns the space a player will reach when using a certain cost.
 	 * @param availiableCost the available for movement
+	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return an Option containing a space if there are nextSpaces until the cost is used up.
 	 * @throws ClassCastException if one of the next spaces is not an instance of UnaryMovement, which presumably means
 				there are multiple available adjacentSpaces.

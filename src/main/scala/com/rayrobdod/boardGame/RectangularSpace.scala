@@ -23,7 +23,7 @@ import scala.{Function0 => Future}
  * A [[com.rayrobdod.boardGame.Space]] in a rectangular board, such that
  * it can have zero or one bordering space in each of the four cardinal directions.
  * 
- * Ecludian geometery says that {@code this.left.right == this}, similarly for each other
+ * Ecludian geometery says that `this.left.right == this` and `this.up.down == this`, similarly for each other
  * direction, but this makes no specific checks to that effect.
  * 
  * @author Raymond Dodge
@@ -33,11 +33,18 @@ import scala.{Function0 => Future}
  * @tparam A the type of spaceclass used by this class
  */
 trait RectangularSpace[A] extends Space[A] {
+	/** The space that is located to the left  of this space, whatever 'left'  means */
 	def left:Option[Space[A]]
+	/** The space that is located to the up    of this space, whatever 'up'    means */
 	def up:Option[Space[A]]
+	/** The space that is located to the right of this space, whatever 'right' means */
 	def right:Option[Space[A]]
+	/** The space that is located to the down  of this space, whatever 'down'  means */
 	def down:Option[Space[A]]
 	
+	/**
+	 * the union of `this.left`, `this.up`, `this.right`, `this.down`
+	 */
 	override def adjacentSpaces:Set[_ <: Space[A]] = {
 		val optionSpaces = Set(left,up,right,down)
 		val someSpaces = optionSpaces - None
@@ -63,6 +70,17 @@ trait StrictRectangularSpace[A] extends RectangularSpace[A] {
 	}
 }
 
+/**
+ * A RectangularSpace where the values of `left`, `right`, `up` and `down` are
+ * lazily evaluated from scala.Function0s
+ * 
+ * @constructor
+ * @tparam A the type of spaceclass used by this class
+ * @param leftFuture  A function that is called to determine the result of the `left`  method
+ * @param upFuture    A function that is called to determine the result of the `up`    method
+ * @param rightFuture A function that is called to determine the result of the `right` method
+ * @param downFuture  A function that is called to determine the result of the `down`  method 
+ */
 final class RectangularSpaceViaFutures[A](
 		val typeOfSpace:A,
 		leftFuture:Future[Option[Space[A]]],
@@ -70,12 +88,23 @@ final class RectangularSpaceViaFutures[A](
 		rightFuture:Future[Option[Space[A]]],
 		downFuture:Future[Option[Space[A]]]) extends RectangularSpace[A]
 {
-	lazy val left:Option[Space[A]] = leftFuture()
-	lazy val up:Option[Space[A]] = upFuture()
-	lazy val right:Option[Space[A]] = rightFuture()
-	lazy val down:Option[Space[A]] = downFuture()
+	lazy override val left:Option[Space[A]] = leftFuture()
+	lazy override val up:Option[Space[A]] = upFuture()
+	lazy override val right:Option[Space[A]] = rightFuture()
+	lazy override val down:Option[Space[A]] = downFuture()
 }
 
+/**
+ * A StrictRectangularSpace where the values of `left`, `right`, `up` and `down` are
+ * lazily evaluated from scala.Function0s
+ * 
+ * @constructor
+ * @tparam A the type of spaceclass used by this class
+ * @param leftFuture  A function that is called to determine the result of the `left`  method
+ * @param upFuture    A function that is called to determine the result of the `up`    method
+ * @param rightFuture A function that is called to determine the result of the `right` method
+ * @param downFuture  A function that is called to determine the result of the `down`  method 
+ */
 final class StrictRectangularSpaceViaFutures[A](
 		val typeOfSpace:A,
 		leftFuture:Future[Option[StrictRectangularSpace[A]]],
@@ -83,8 +112,8 @@ final class StrictRectangularSpaceViaFutures[A](
 		rightFuture:Future[Option[StrictRectangularSpace[A]]],
 		downFuture:Future[Option[StrictRectangularSpace[A]]]) extends StrictRectangularSpace[A]
 {
-	lazy val left:Option[StrictRectangularSpace[A]] = leftFuture()
-	lazy val up:Option[StrictRectangularSpace[A]] = upFuture()
-	lazy val right:Option[StrictRectangularSpace[A]] = rightFuture()
-	lazy val down:Option[StrictRectangularSpace[A]] = downFuture()
+	lazy override val left:Option[StrictRectangularSpace[A]] = leftFuture()
+	lazy override val up:Option[StrictRectangularSpace[A]] = upFuture()
+	lazy override val right:Option[StrictRectangularSpace[A]] = rightFuture()
+	lazy override val down:Option[StrictRectangularSpace[A]] = downFuture()
 }
