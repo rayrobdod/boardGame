@@ -40,29 +40,24 @@ final class UnidirectionalSpace[A](override val typeOfSpace:A, val nextSpace:Opt
 	
 	/**
 	 * Returns the space a player will reach when using a certain cost.
-	 * @param availiableCost the available for movement
+	 * @param availableCost the available for movement
 	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return an Option containing a space if there are nextSpaces until the cost is used up.
 	 * @throws ClassCastException if one of the next spaces is not an instance of UnaryMovement, which presumably means
 				there are multiple available adjacentSpaces.
 	 */
-	def spaceAfter(availiableCost:Int, costFunction:Space.CostFunction[A]):Option[UnidirectionalSpace[_]] =
+	def spaceAfter(availableCost:Int, costFunction:Space.CostFunction[A]):Option[UnidirectionalSpace[_]] =
 	{
-		if (availiableCost == 0) Option(this)
-		else
-		{
-			nextSpace match
-			{
-				case None => None
-				case Some(x:UnidirectionalSpace[_]) =>
-				{
-					val thisCost = costFunction(this, x)
-					
-					if (availiableCost >= thisCost) x.spaceAfter(availiableCost - thisCost, costFunction)
-					else None
-				}
-				case Some(_) => throw new ClassCastException("Encountered something that is not a UnarySpace; ")
-			}
+		if (availableCost < 0) {None}
+		else if (availableCost == 0) {Option(this)}
+		else {
+			nextSpace.map{x:UnidirectionalSpace[A] =>
+				val actualCost = costFunction(this, x)
+				
+				if (actualCost > availableCost) {None}
+				else if (actualCost == availableCost) {Some(x)}
+				else {x.spaceAfter(availableCost - actualCost, costFunction)}
+			}.flatten
 		}
 	}
 }
