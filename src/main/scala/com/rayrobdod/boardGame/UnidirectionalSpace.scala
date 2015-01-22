@@ -57,7 +57,8 @@ final class UnidirectionalSpace[A](override val typeOfSpace:A, val nextSpace:Opt
 				if (actualCost > availableCost) {None}
 				else if (actualCost == availableCost) {Some(x)}
 				else {x.spaceAfter(availableCost - actualCost, costFunction)}
-			}.flatten
+			}.flatten.headOption
+			// `headOption` because scala_2.9.
 		}
 	}
 }

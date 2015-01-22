@@ -56,6 +56,13 @@ class UnidirectionalSpaceTest extends FunSpec {
 				it ("23") { assertResult( Some(spaceSeq(23)) ){spaceSeq(23).spaceAfter(0, Space.constantCostFunction)} }
 				it ("40") { assertResult( Some(spaceSeq(40)) ){spaceSeq(40).spaceAfter(0, Space.constantCostFunction)} }
 			}
+			describe ("is None when availiableCost is negative"){
+				it (" 0") { assertResult( None ){spaceSeq( 0).spaceAfter(-2, Space.constantCostFunction)} }
+				it (" 5") { assertResult( None ){spaceSeq( 5).spaceAfter(-2, Space.constantCostFunction)} }
+				it ("12") { assertResult( None ){spaceSeq(12).spaceAfter(-2, Space.constantCostFunction)} }
+				it ("23") { assertResult( None ){spaceSeq(23).spaceAfter(-2, Space.constantCostFunction)} }
+				it ("40") { assertResult( None ){spaceSeq(40).spaceAfter(-2, Space.constantCostFunction)} }
+			}
 			describe ("is the next value when cost is one space"){
 				it (" 0") { assertResult( Some(spaceSeq( 1)) ){spaceSeq( 0).spaceAfter(1, Space.constantCostFunction)} }
 				it (" 5") { assertResult( Some(spaceSeq( 6)) ){spaceSeq( 5).spaceAfter(1, Space.constantCostFunction)} }
