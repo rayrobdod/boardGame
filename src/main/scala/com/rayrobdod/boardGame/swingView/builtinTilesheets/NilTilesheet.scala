@@ -17,7 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import java.awt.{Component => Comp, Graphics => Graph}
+import java.awt.{Component, Graphics}
 import javax.swing.Icon
 import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
@@ -37,6 +37,6 @@ object NilTilesheet extends RectangularTilesheet[Any]
 	object BlankIcon extends Icon{
 		def getIconWidth = 16
 		def getIconHeight = 16
-		def paintIcon(c:Comp, g:Graph, x:Int, y:Int) {}
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int) {}
 	}
 }
