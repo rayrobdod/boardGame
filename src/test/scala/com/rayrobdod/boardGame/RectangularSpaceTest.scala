@@ -21,122 +21,98 @@ import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 
 class RectangularSpaceTest extends FunSpec {
-
+	
 	describe ("RectangularSpaceViaFutures") {
-		describe ("left") {
+		
+		def directionTests(
+				factory:Function1[Function0[Option[Space[Int]]], RectangularSpace[Int]],
+				dirFunction:Function1[RectangularSpace[Int], Option[Space[Int]]]
+		) {
 			it ("is the result of calling the leftOption parameter"){
-				val res = Some(new UnescapableSpace("a"))
-				val src = new RectangularSpaceViaFutures("b", {() => res}, noneFuture, noneFuture, noneFuture)
+				val res = Some(new UnescapableSpace(0))
+				val src = factory( {() => res} );
 				
-				assertResult(res){src.left}
+				assertResult(res){dirFunction(src)}
 			}
-			it ("leftOption is only evaluated once"){
-				val src = new RectangularSpaceViaFutures(0, {() => Some(new UnescapableSpace(scala.util.Random.nextInt()))}, noneFuture, noneFuture, noneFuture)
+			it ("factory from constructor is only evaluated once"){
+				val src = factory( {() => Some(new UnescapableSpace(scala.util.Random.nextInt()))} );
 				
-				val res = src.left
-				assertResult(res){src.left}
+				val res = dirFunction(src)
+				assertResult(res){dirFunction(src)}
 			}
+		}
+		
+		
+		describe ("left") {
+			directionTests(
+				{x => new RectangularSpaceViaFutures(1, x, noneFuture, noneFuture, noneFuture)},
+				{x => x.left}
+			)
 		}
 		describe ("up") {
-			it ("is the result of calling the upOption parameter"){
-				val res = Some(new UnescapableSpace("a"))
-				val src = new RectangularSpaceViaFutures("b", noneFuture, {() => res}, noneFuture, noneFuture)
-				
-				assertResult(res){src.up}
-			}
-			it ("upOption is only evaluated once"){
-				val src = new RectangularSpaceViaFutures(0, noneFuture, {() => Some(new UnescapableSpace(scala.util.Random.nextInt()))}, noneFuture, noneFuture)
-				
-				val res = src.up
-				assertResult(res){src.up}
-			}
+			directionTests(
+				{x => new RectangularSpaceViaFutures(1, noneFuture, x, noneFuture, noneFuture)},
+				{x => x.up}
+			)
 		}
 		describe ("right") {
-			it ("is the result of calling the rightOption parameter"){
-				val res = Some(new UnescapableSpace("a"))
-				val src = new RectangularSpaceViaFutures("b", noneFuture, noneFuture, {() => res}, noneFuture)
-				
-				assertResult(res){src.right}
-			}
-			it ("rightOption is only evaluated once"){
-				val src = new RectangularSpaceViaFutures(0, noneFuture, noneFuture, {() => Some(new UnescapableSpace(scala.util.Random.nextInt()))}, noneFuture)
-				
-				val res = src.right
-				assertResult(res){src.right}
-			}
+			directionTests(
+				{x => new RectangularSpaceViaFutures(1, noneFuture, noneFuture, x, noneFuture)},
+				{x => x.right}
+			)
 		}
 		describe ("down") {
-			it ("is the result of calling the downOption parameter"){
-				val res = Some(new UnescapableSpace("a"))
-				val src = new RectangularSpaceViaFutures("b", noneFuture, noneFuture, noneFuture, {() => res})
-				
-				assertResult(res){src.down}
-			}
-			it ("downOption is only evaluated once"){
-				val src = new RectangularSpaceViaFutures(0, noneFuture, noneFuture, noneFuture, {() => Some(new UnescapableSpace(scala.util.Random.nextInt()))})
-				
-				val res = src.down
-				assertResult(res){src.down}
-			}
+			directionTests(
+				{x => new RectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, x)},
+				{x => x.down}
+			)
 		}
 	}
 	
 	describe ("StrictRectangularSpaceViaFutures") {
-		describe ("left") {
+		
+		def directionTests(
+				factory:Function1[Function0[Option[StrictRectangularSpace[Int]]], StrictRectangularSpace[Int]],
+				dirFunction:Function1[StrictRectangularSpace[Int], Option[StrictRectangularSpace[Int]]]
+		) {
 			it ("is the result of calling the leftOption parameter"){
-				val res = Some(new UnescapableRectangularSpace("a"))
-				val src = new StrictRectangularSpaceViaFutures("b", {() => res}, noneFuture, noneFuture, noneFuture)
+				val res = Some(new UnescapableRectangularSpace(0))
+				val src = factory( {() => res} );
 				
-				assertResult(res){src.left}
+				assertResult(res){dirFunction(src)}
 			}
-			it ("leftOption is only evaluated once"){
-				val src = new StrictRectangularSpaceViaFutures(0, {() => Some(new UnescapableRectangularSpace(scala.util.Random.nextInt()))}, noneFuture, noneFuture, noneFuture)
+			it ("factory from constructor is only evaluated once"){
+				val src = factory( {() => Some(new UnescapableRectangularSpace(scala.util.Random.nextInt()))} );
 				
-				val res = src.left
-				assertResult(res){src.left}
+				val res = dirFunction(src)
+				assertResult(res){dirFunction(src)}
 			}
+		}
+		
+		
+		describe ("left") {
+			directionTests(
+				{x => new StrictRectangularSpaceViaFutures(1, x, noneFuture, noneFuture, noneFuture)},
+				{x => x.left}
+			)
 		}
 		describe ("up") {
-			it ("is the result of calling the upOption parameter"){
-				val res = Some(new UnescapableRectangularSpace("a"))
-				val src = new StrictRectangularSpaceViaFutures("b", noneFuture, {() => res}, noneFuture, noneFuture)
-				
-				assertResult(res){src.up}
-			}
-			it ("upOption is only evaluated once"){
-				val src = new StrictRectangularSpaceViaFutures(0, noneFuture, {() => Some(new UnescapableRectangularSpace(scala.util.Random.nextInt()))}, noneFuture, noneFuture)
-				
-				val res = src.up
-				assertResult(res){src.up}
-			}
+			directionTests(
+				{x => new StrictRectangularSpaceViaFutures(1, noneFuture, x, noneFuture, noneFuture)},
+				{x => x.up}
+			)
 		}
 		describe ("right") {
-			it ("is the result of calling the rightOption parameter"){
-				val res = Some(new UnescapableRectangularSpace("a"))
-				val src = new StrictRectangularSpaceViaFutures("b", noneFuture, noneFuture, {() => res}, noneFuture)
-				
-				assertResult(res){src.right}
-			}
-			it ("rightOption is only evaluated once"){
-				val src = new StrictRectangularSpaceViaFutures(0, noneFuture, noneFuture, {() => Some(new UnescapableRectangularSpace(scala.util.Random.nextInt()))}, noneFuture)
-				
-				val res = src.right
-				assertResult(res){src.right}
-			}
+			directionTests(
+				{x => new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, x, noneFuture)},
+				{x => x.right}
+			)
 		}
 		describe ("down") {
-			it ("is the result of calling the downOption parameter"){
-				val res = Some(new UnescapableRectangularSpace("a"))
-				val src = new StrictRectangularSpaceViaFutures("b", noneFuture, noneFuture, noneFuture, {() => res})
-				
-				assertResult(res){src.down}
-			}
-			it ("downOption is only evaluated once"){
-				val src = new StrictRectangularSpaceViaFutures(0, noneFuture, noneFuture, noneFuture, {() => Some(new UnescapableRectangularSpace(scala.util.Random.nextInt()))})
-				
-				val res = src.down
-				assertResult(res){src.down}
-			}
+			directionTests(
+				{x => new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, x)},
+				{x => x.down}
+			)
 		}
 	}
 	
