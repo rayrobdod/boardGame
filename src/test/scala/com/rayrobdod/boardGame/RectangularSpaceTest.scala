@@ -67,6 +67,33 @@ class RectangularSpaceTest extends FunSpec {
 				{x => x.down}
 			)
 		}
+		
+		
+		describe ("adjacentSpaces") {
+			describe ("when all four elements are Some") {
+				def adsfasdf(x:Int) = {() => Option(new UnescapableSpace(x))}
+				val src = new RectangularSpaceViaFutures(1, adsfasdf(34), adsfasdf(64), adsfasdf(134), adsfasdf(-134))
+				
+				it ("has a length of four") { assertResult(4){src.adjacentSpaces.size} }
+				it ("contains the left value")  { assert(src.adjacentSpaces contains src.left.get)  }
+				it ("contains the right value") { assert(src.adjacentSpaces contains src.right.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)    }
+				it ("contains the down value" ) { assert(src.adjacentSpaces contains src.down.get)  }
+			}
+			describe ("when all four elements are None") {
+				def src = new RectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, noneFuture)
+				
+				it ("has a length of zero") { assertResult(0){src.adjacentSpaces.size} }
+			}
+			describe ("when there is a mix of Some and None") {
+				def adsfasdf(x:Int) = {() => Option(new UnescapableSpace(x))}
+				val src = new RectangularSpaceViaFutures(1, adsfasdf(7), adsfasdf(-345), noneFuture, noneFuture)
+				
+				it ("has a length equal to the count of Somes") { assertResult(2){src.adjacentSpaces.size} }
+				it ("contains the left value" ) { assert(src.adjacentSpaces contains src.left.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)   }
+			}
+		}
 	}
 	
 	describe ("StrictRectangularSpaceViaFutures") {
@@ -114,6 +141,33 @@ class RectangularSpaceTest extends FunSpec {
 				{x => x.down}
 			)
 		}
+		
+		
+		describe ("adjacentSpaces") {
+			describe ("when all four elements are Some") {
+				def adsfasdf(x:Int) = {() => Option(new UnescapableRectangularSpace(x))}
+				val src = new StrictRectangularSpaceViaFutures(1, adsfasdf(34), adsfasdf(64), adsfasdf(134), adsfasdf(-134))
+				
+				it ("has a length of four") { assertResult(4){src.adjacentSpaces.size} }
+				it ("contains the left value")  { assert(src.adjacentSpaces contains src.left.get)  }
+				it ("contains the right value") { assert(src.adjacentSpaces contains src.right.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)    }
+				it ("contains the down value" ) { assert(src.adjacentSpaces contains src.down.get)  }
+			}
+			describe ("when all four elements are None") {
+				def src = new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, noneFuture)
+				
+				it ("has a length of zero") { assertResult(0){src.adjacentSpaces.size} }
+			}
+			describe ("when there is a mix of Some and None") {
+				def adsfasdf(x:Int) = {() => Option(new UnescapableRectangularSpace(x))}
+				val src = new StrictRectangularSpaceViaFutures(1, adsfasdf(7), adsfasdf(-345), noneFuture, noneFuture)
+				
+				it ("has a length equal to the count of Somes") { assertResult(2){src.adjacentSpaces.size} }
+				it ("contains the left value" ) { assert(src.adjacentSpaces contains src.left.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)   }
+			}
+		}
 	}
 	
 	
@@ -129,6 +183,8 @@ class RectangularSpaceTest extends FunSpec {
 				other2.canEquals(this) && (other2.typeOfSpace == this.typeOfSpace)
 			} else {false}
 		}
+		override def toString = {"UnescapableSpace(" + typeOfSpace + ")"}
+		override def hashCode = typeOfSpace.hashCode * 31
 	}
 	final class UnescapableRectangularSpace[A](val typeOfSpace:A) extends StrictRectangularSpace[A] {
 		val left  = None
@@ -143,5 +199,7 @@ class RectangularSpaceTest extends FunSpec {
 				other2.canEquals(this) && (other2.typeOfSpace == this.typeOfSpace)
 			} else {false}
 		}
+		override def toString = {"UnescapableRectangularSpace(" + typeOfSpace + ")"}
+		override def hashCode = typeOfSpace.hashCode * 31
 	}
 }
