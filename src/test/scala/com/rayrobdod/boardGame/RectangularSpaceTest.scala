@@ -75,10 +75,10 @@ class RectangularSpaceTest extends FunSpec {
 				val src = new RectangularSpaceViaFutures(1, adsfasdf(34), adsfasdf(64), adsfasdf(134), adsfasdf(-134))
 				
 				it ("has a length of four") { assertResult(4){src.adjacentSpaces.size} }
-				it ("contains the left value")  { assert(src.adjacentSpaces contains src.left.get)  }
-				it ("contains the right value") { assert(src.adjacentSpaces contains src.right.get) }
-				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)    }
-				it ("contains the down value" ) { assert(src.adjacentSpaces contains src.down.get)  }
+				it ("contains the left value")  { assert(src.adjacentSpaces.map{x => x:Space[Int]} contains src.left.get)  }
+				it ("contains the right value") { assert(src.adjacentSpaces.map{x => x:Space[Int]} contains src.right.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces.map{x => x:Space[Int]} contains src.up.get)    }
+				it ("contains the down value" ) { assert(src.adjacentSpaces.map{x => x:Space[Int]} contains src.down.get)  }
 			}
 			describe ("when all four elements are None") {
 				def src = new RectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, noneFuture)
@@ -90,8 +90,8 @@ class RectangularSpaceTest extends FunSpec {
 				val src = new RectangularSpaceViaFutures(1, adsfasdf(7), adsfasdf(-345), noneFuture, noneFuture)
 				
 				it ("has a length equal to the count of Somes") { assertResult(2){src.adjacentSpaces.size} }
-				it ("contains the left value" ) { assert(src.adjacentSpaces contains src.left.get) }
-				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)   }
+				it ("contains the left value" ) { assert(src.adjacentSpaces.map{x => x:Space[Int]} contains src.left.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces.map{x => x:Space[Int]} contains src.up.get)   }
 			}
 		}
 	}
@@ -149,10 +149,10 @@ class RectangularSpaceTest extends FunSpec {
 				val src = new StrictRectangularSpaceViaFutures(1, adsfasdf(34), adsfasdf(64), adsfasdf(134), adsfasdf(-134))
 				
 				it ("has a length of four") { assertResult(4){src.adjacentSpaces.size} }
-				it ("contains the left value")  { assert(src.adjacentSpaces contains src.left.get)  }
-				it ("contains the right value") { assert(src.adjacentSpaces contains src.right.get) }
-				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)    }
-				it ("contains the down value" ) { assert(src.adjacentSpaces contains src.down.get)  }
+				it ("contains the left value")  { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.left.get)  }
+				it ("contains the right value") { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.right.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.up.get)    }
+				it ("contains the down value" ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.down.get)  }
 			}
 			describe ("when all four elements are None") {
 				def src = new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, noneFuture)
@@ -164,8 +164,8 @@ class RectangularSpaceTest extends FunSpec {
 				val src = new StrictRectangularSpaceViaFutures(1, adsfasdf(7), adsfasdf(-345), noneFuture, noneFuture)
 				
 				it ("has a length equal to the count of Somes") { assertResult(2){src.adjacentSpaces.size} }
-				it ("contains the left value" ) { assert(src.adjacentSpaces contains src.left.get) }
-				it ("contains the up value"   ) { assert(src.adjacentSpaces contains src.up.get)   }
+				it ("contains the left value" ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.left.get) }
+				it ("contains the up value"   ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.up.get)   }
 			}
 		}
 	}
@@ -192,7 +192,7 @@ class RectangularSpaceTest extends FunSpec {
 		val right = None
 		val down  = None
 		
-		protected def canEquals(other:Any):Boolean = other.isInstanceOf[UnescapableSpace[_]]
+		protected def canEquals(other:Any):Boolean = other.isInstanceOf[UnescapableRectangularSpace[_]]
 		override def equals(other:Any):Boolean = {
 			if (other.isInstanceOf[UnescapableRectangularSpace[_]]) {
 				val other2 = other.asInstanceOf[UnescapableRectangularSpace[_]]
