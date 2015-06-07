@@ -172,7 +172,7 @@ class RectangularSpaceTest extends FunSpec {
 	
 	
 	
-	val noneFuture = {() => None}
+	def noneFuture = {() => None}
 	final class UnescapableSpace[A](val typeOfSpace:A) extends Space[A] {
 		val adjacentSpaces = Nil
 		
