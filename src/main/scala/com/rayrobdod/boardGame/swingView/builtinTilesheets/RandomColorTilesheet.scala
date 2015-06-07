@@ -19,6 +19,7 @@ package com.rayrobdod.boardGame.swingView
 
 import java.awt.Color
 import java.awt.Dimension
+import javax.swing.Icon
 import scala.util.Random
 import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
@@ -32,10 +33,10 @@ import com.rayrobdod.boardGame.RectangularField
 class RandomColorTilesheet(
 		val dim:Dimension = new Dimension(64,24)
 ) extends RectangularTilesheet[Any] {
-	override def name = "Random Color";
-	override def toString = name + ", " + dim;
+	override def name:String = "Random Color";
+	override def toString:String = name + ", " + dim;
 	
-	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random) = {
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
 		val color = new Color(rng.nextInt)
 		
 		(( new SolidColorIcon(color, dim.width, dim.height), new ColorStringIcon(color) ))

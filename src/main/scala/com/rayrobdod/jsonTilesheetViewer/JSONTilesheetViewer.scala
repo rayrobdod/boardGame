@@ -80,7 +80,7 @@ object JSONTilesheetViewer extends App
 	loadNewTilesheet()
 	frame.setVisible(true)
 	
-	def loadNewTilesheet() = {
+	def loadNewTilesheet():Unit = {
 		
 		if (inputFields.fieldIsRotationField) {
 			
@@ -157,7 +157,6 @@ object JSONTilesheetViewer extends App
 			case _ => Seq("")
 		}
 		
-		// System.out.println(a)
 		a
 	}
 	
@@ -167,7 +166,7 @@ object JSONTilesheetViewer extends App
 			currentRotationRotation:Seq[SpaceClass],
 			currentRotationState:RectangularField[SpaceClass]
 	) extends MouseAdapter {
-		override def mouseClicked(e:MouseEvent) = {
+		override def mouseClicked(e:MouseEvent):Unit = {
 			
 			val currentSpace:SpaceClass = currentRotationState(index).typeOfSpace
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)

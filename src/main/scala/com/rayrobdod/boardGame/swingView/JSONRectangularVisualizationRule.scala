@@ -63,7 +63,7 @@ class JSONRectangularVisualizationRule[A](
 		asBoolean( executeScript(indexEquation, buildBindings(x, y, width, height)) )
 	}
 	
-	override def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int) = {
+	override def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean = {
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[A]) =>
 			val newIndexies = conversion( ((x,y)) )
@@ -111,7 +111,7 @@ class JSONRectangularVisualizationRule[A](
 					val m = numberPattern.matcher(indexEquation)
 					sumMatches(m)
 				}
-			} else 0)
+			} else {0})
 	}
 }
 
@@ -178,7 +178,7 @@ object JSONRectangularVisualizationRule
 		normalizedFrameIndex
 	}
 	
-	def asIndexTranslationFunction(s:String) =
+	def asIndexTranslationFunction(s:String):Function1[(Int, Int), (Int, Int)] =
 	{
 		import java.util.regex.{Pattern, Matcher}
 		
@@ -193,7 +193,7 @@ object JSONRectangularVisualizationRule
 		
 		new Function1[(Int, Int), (Int, Int)]
 		{
-			def apply(x:(Int, Int)) = 
+			def apply(x:(Int, Int)):(Int, Int) = 
 				((x._1 + firstInt, x._2 + secondInt))
 		}
 	}

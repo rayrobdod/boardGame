@@ -28,6 +28,8 @@ scalacOptions <++= scalaVersion.map{(sv:String) =>
 	if (sv.take(3) == "2.1") {Seq("-feature", "-language:implicitConversions")} else {Nil}
 }
 
+scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
+
 
 // license nonsense
 licenses += (("GPLv3 or later", new java.net.URL("http://www.gnu.org/licenses/") ))

@@ -32,6 +32,6 @@ object RotateRectangularField{
 		val nextClasses = currentClasses + ((spaceToRotate, nextClassRotate))
 		val nextField = RectangularField.apply(nextClasses)
 		
-		return nextField
+		nextField
 	}
 }

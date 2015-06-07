@@ -76,7 +76,7 @@ class JsonMapHandler extends ContentHandler {
 	 * Otherwise, returns null.
 	 * @throws IOException
 	 */
-	 override def getContent(urlc:URLConnection, classes:Array[Class[_]]) = {
+	 override def getContent(urlc:URLConnection, classes:Array[Class[_]]):RectangularField[_] = {
 		
 		classes.find{
 			_.isAssignableFrom(classOf[RectangularField[_]])
@@ -87,10 +87,12 @@ class JsonMapHandler extends ContentHandler {
 	}
 	
 	protected def canEquals(other:Any):Boolean = {
-		return (other.isInstanceOf[JsonMapHandler]);
+		other.isInstanceOf[JsonMapHandler]
 	}
 	
 	override def equals(other:Any):Boolean = {
-		return (this.canEquals(other) && other.asInstanceOf[JsonMapHandler].canEquals(this));
+		this.canEquals(other) && other.asInstanceOf[JsonMapHandler].canEquals(this)
 	}
+	
+	override def hashCode:Int = 16588
 }

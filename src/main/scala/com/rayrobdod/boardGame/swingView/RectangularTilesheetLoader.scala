@@ -47,8 +47,8 @@ final class RectangularTilesheetLoader[SpaceClass](
 			case e:java.net.URISyntaxException => throw new ServiceConfigurationError("", e)
 		}
 		
-		def hasNext = current < readLines.length;
-		def remove = throw new UnsupportedOperationException("Cannot remove from a Service");
+		def hasNext:Boolean = current < readLines.length;
+		def remove:Nothing = throw new UnsupportedOperationException("Cannot remove from a Service");
 		
 		
 		def next():RectangularTilesheet[SpaceClass] = {

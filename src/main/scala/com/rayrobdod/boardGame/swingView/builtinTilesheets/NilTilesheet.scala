@@ -29,14 +29,14 @@ import com.rayrobdod.boardGame.RectangularField
  */
 object NilTilesheet extends RectangularTilesheet[Any]
 {
-	override val name = "Nil"
+	override val name:String = "Nil"
 	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = getIconFor
 	
 	private val getIconFor = ((BlankIcon, BlankIcon))
 	
 	object BlankIcon extends Icon{
-		def getIconWidth = 16
-		def getIconHeight = 16
-		def paintIcon(c:Component, g:Graphics, x:Int, y:Int) {}
+		def getIconWidth:Int = 16
+		def getIconHeight:Int = 16
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
 	}
 }

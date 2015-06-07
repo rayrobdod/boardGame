@@ -36,7 +36,7 @@ final class IndexiesTilesheetTagResource extends TagResource {
 
 final class RandomColorTilesheetTagResource extends TagResource {
 	val name:String = "rayrobdod.name,2013-08:tilesheet-randcolor"
-	def getContent = new RandomColorTilesheet
+	def getContent:RandomColorTilesheet = new RandomColorTilesheet
 	val getInputStream:InputStream = null
 	val getHeaderFields:Map[String,List[String]] = emptyMap[String,List[String]]
 }

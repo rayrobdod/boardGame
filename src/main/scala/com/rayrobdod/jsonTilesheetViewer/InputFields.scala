@@ -59,8 +59,8 @@ final class InputFields(
 	}
 	def rng:Random = randBox.getText match {
 		case "" => Random
-		case "a" => new Random(new java.util.Random(){override def next(bits:Int) = 1})
-		case "b" => new Random(new java.util.Random(){override def next(bits:Int) = 0})
+		case "a" => new Random(new java.util.Random(){override def next(bits:Int):Int = 1})
+		case "b" => new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 		case s => try {
 			new Random(s.toLong)
 		} catch {

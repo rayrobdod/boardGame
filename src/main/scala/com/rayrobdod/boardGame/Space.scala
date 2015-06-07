@@ -53,8 +53,8 @@ trait Space[A] {
 	 */
 	def spacesWithin(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] =
 	{
-		if (availableCost < 0) Set.empty
-		else if (availableCost == 0) Set(this)
+		if (availableCost < 0) {Set.empty}
+		else if (availableCost == 0) {Set(this)}
 		else
 		{
 			Set(this) ++ adjacentSpaces.flatMap((space:Space[A]) => {
@@ -76,8 +76,8 @@ trait Space[A] {
 	 */
 	def spacesAfter(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] =
 	{
-		if (availableCost < 0) Set.empty
-		else if (availableCost == 0) Set(this)
+		if (availableCost < 0) {Set.empty}
+		else if (availableCost == 0) {Set(this)}
 		else
 		{
 			Set.empty ++ adjacentSpaces.flatMap((space:Space[A]) => {
@@ -123,7 +123,7 @@ trait Space[A] {
 			
 			checkingTile = open.minBy{_._2}
 		}
-		return checkingTile._2
+		checkingTile._2
 	}
 	
 	/**
@@ -174,7 +174,7 @@ trait Space[A] {
 			currentTile = closed(currentTile)._2
 			returnValue = currentTile :: returnValue
 		}
-		return returnValue
+		returnValue
 	}
 	
 	/**
@@ -210,7 +210,7 @@ trait Space[A] {
 		}
 		closed += checkingTile
 		
-		return IMap.empty ++ closed
+		IMap.empty ++ closed
 	}
 }
 

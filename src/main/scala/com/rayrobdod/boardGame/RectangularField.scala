@@ -53,10 +53,10 @@ object RectangularField
 		
 		// Until there's something that can apply to all RectangularSpaces, we're doing somehting specialized for this
 		override def equals(other:Any):Boolean = {
-			if (! other.isInstanceOf[RectangularFieldSpace[_]]) return false;
+			if (! other.isInstanceOf[RectangularFieldSpace[_]]) {false}
 			val other2 = other.asInstanceOf[RectangularFieldSpace[_]]
 			
-			return (other2.fieldClasses == this.fieldClasses &&
+			(other2.fieldClasses == this.fieldClasses &&
 					other2.myIndex == this.myIndex)
 		}
 		override def hashCode:Int = myIndex.hashCode

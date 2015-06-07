@@ -25,16 +25,16 @@ import scala.collection.mutable.Buffer
 final class LayeredComponent extends JComponent {
 	private val layers = Buffer.empty[Layer]
 	
-	def addLayer(x:Layer) = {layers += x; this.repaint()}
-	def removeLayer(x:Layer) = {layers -= x; this.repaint()}
-	def removeAllLayers() = {layers.clear; this.repaint()}
+	def addLayer(x:Layer):Unit = {layers += x; this.repaint()}
+	def removeLayer(x:Layer):Unit = {layers -= x; this.repaint()}
+	def removeAllLayers():Unit = {layers.clear; this.repaint()}
 	
 	var offsetX:Int = 0
 	var offsetY:Int = 0
 	
 	
 	this.setLayout(null)
-	override def getPreferredSize = {
+	override def getPreferredSize:java.awt.Dimension = {
 		if (this.isPreferredSizeSet) {
 			super.getPreferredSize
 		} else {
@@ -52,7 +52,7 @@ final class LayeredComponent extends JComponent {
 	}
 	
 	this.addMouseListener(new MouseAdapter() {
-		override def mouseClicked(e:MouseEvent) = {
+		override def mouseClicked(e:MouseEvent):Unit = {
 			val translatedE = new MouseEvent(
 				e.getSource.asInstanceOf[Component],
 				e.getID,

@@ -20,6 +20,7 @@ package com.rayrobdod.boardGame.swingView
 import java.awt.Color
 import java.awt.Dimension
 import scala.util.Random
+import javax.swing.Icon
 import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
 
@@ -30,13 +31,13 @@ import com.rayrobdod.boardGame.RectangularField
  * @version 3.0.0
  */
 object IndexesTilesheet extends RectangularTilesheet[Any] {
-	override def name = "IndexesTilesheet"
-	val dim = new Dimension(32,32)
+	override def name:String = "IndexesTilesheet"
+	val dim:Dimension = new Dimension(32,32)
 	
 	val lightIcon = new SolidColorIcon(Color.magenta, dim.width, dim.height)
 	val darkIcon  = new SolidColorIcon(Color.cyan, dim.width, dim.height)
 	
-	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random) = {
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = {
 		((
 			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
 			new IndexIcon(x,y)
@@ -44,8 +45,8 @@ object IndexesTilesheet extends RectangularTilesheet[Any] {
 	}
 	
 	class IndexIcon(xIndex:Int, yIndex:Int) extends javax.swing.Icon {
-		override def getIconWidth = dim.width
-		override def getIconHeight = dim.height
+		override def getIconWidth:Int = dim.width
+		override def getIconHeight:Int = dim.height
 		
 		import java.awt.{Component, Graphics}
 		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int)

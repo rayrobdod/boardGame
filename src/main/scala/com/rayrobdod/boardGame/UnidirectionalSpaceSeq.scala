@@ -37,8 +37,8 @@ final class UnidirectionalSpaceSeq[A](override val headOption:Option[Unidirectio
 	
 	def this(head:UnidirectionalSpace[A]) = this(Option(head))
 	
-	override def head = headOption.get
-	override def isEmpty = (headOption == None) // assume no nulls, right?
+	override def head:UnidirectionalSpace[A] = headOption.get
+	override def isEmpty:Boolean = (headOption == None) // assume no nulls, right?
 	override def tail:UnidirectionalSpaceSeq[A] = // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
 	{
 		logger.entering("UnidirectionalSpaceSeq", "tail()")
@@ -51,15 +51,14 @@ final class UnidirectionalSpaceSeq[A](override val headOption:Option[Unidirectio
 	
 	override def apply(i:Int):UnidirectionalSpace[A] =
 	{
-		if (this.isEmpty) throw new IndexOutOfBoundsException("Too high an index called")
-		else if (i < 0) throw new IndexOutOfBoundsException("index less than zero called: " + i)
-		else if (i == 0) return head
-		else return tail.apply(i - 1)
+		if (this.isEmpty) {throw new IndexOutOfBoundsException("Too high an index called")}
+		else if (i < 0) {throw new IndexOutOfBoundsException("index less than zero called: " + i)}
+		else if (i == 0) {head}
+		else {tail.apply(i - 1)}
 	}
 	
 	override def length:Int =
 	{
-		if (this.isEmpty) return 0
-		else return (tail.length + 1)
+		if (this.isEmpty) {0} else {tail.length + 1}
 	}
 }

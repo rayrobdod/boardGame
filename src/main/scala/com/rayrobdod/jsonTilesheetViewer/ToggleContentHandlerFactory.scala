@@ -34,7 +34,7 @@ object ToggleContentHandlerFactory extends ContentHandlerFactory {
 	
 	private var current:ContentHandler = null;
 	
-	def createContentHandler(mime:String) = current;
+	def createContentHandler(mime:String):ContentHandler = current;
 	
 	def setCurrentToTilesheet() {
 		current = new JsonRectangularTilesheetHandler;
