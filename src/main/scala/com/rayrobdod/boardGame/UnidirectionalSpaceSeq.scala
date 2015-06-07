@@ -42,11 +42,15 @@ final class UnidirectionalSpaceSeq[A](override val headOption:Option[Unidirectio
 	override def tail:UnidirectionalSpaceSeq[A] = // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
 	{
 		logger.entering("UnidirectionalSpaceSeq", "tail()")
-		logger.finer(this.head.toString)
+		logger.finer(this.headOption.toString)
 		
-		val next:Option[UnidirectionalSpace[A]] = headOption.flatMap(_.nextSpace)
-		
-		new UnidirectionalSpaceSeq[A](next)
+		if (this.isEmpty) {
+			throw new UnsupportedOperationException("Cannot get tail of empty list")
+		} else {
+			val next:Option[UnidirectionalSpace[A]] = headOption.flatMap(_.nextSpace)
+			
+			new UnidirectionalSpaceSeq[A](next)
+		}
 	}
 	
 	override def apply(i:Int):UnidirectionalSpace[A] =
