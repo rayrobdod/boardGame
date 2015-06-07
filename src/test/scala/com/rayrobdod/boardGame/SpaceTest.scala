@@ -71,6 +71,23 @@ class SpaceTest extends FunSpec {
 				assertResult(Set(uniformField(1,1))){uniformField(1,1).spacesWithin(0, Space.constantCostFunction)}
 			}
 		}
+		describe ("spacesAfter (uniform cost)") {
+			it ("2 spaces after 1 move of corner") {
+				assertResult(2){uniformField(0,0).spacesAfter(1, Space.constantCostFunction).size}
+			}
+			it ("4 spaces after 2 move of corner") {
+				assertResult(4){uniformField(0,0).spacesAfter(2, Space.constantCostFunction).size}
+			}
+			it ("4 spaces after 1 move of center") {
+				assertResult(4){uniformField(1,1).spacesAfter(1, Space.constantCostFunction).size}
+			}
+			it ("7 spaces after 2 move of center") {
+				assertResult(7){uniformField(1,1).spacesAfter(2, Space.constantCostFunction).size}
+			}
+			it ("only space after 0 move of a space is that space") {
+				assertResult(Set(uniformField(1,1))){uniformField(1,1).spacesAfter(0, Space.constantCostFunction)}
+			}
+		}
 	}
 	
 	
