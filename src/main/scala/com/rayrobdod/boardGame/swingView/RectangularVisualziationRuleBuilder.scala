@@ -38,11 +38,13 @@ class RectangularVisualziationRuleBuilder[A](
 		spaceClassUnapplier:SpaceClassMatcherFactory[A]
 ) extends Builder[ParamaterizedRectangularVisualizationRule[A]] {
 	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
-	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Object) = key match {
+	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Object):ParamaterizedRectangularVisualizationRule[A] = key match {
 		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
 		case "indexies" => a.copy(indexEquation = value.toString)
 		case "surroundingTiles" => 
-			a.copy(surroundingTiles = value.asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => (( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))})
+			a.copy(surroundingTiles = value.asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => 
+				(( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))
+			})
 		case "tiles" => a.copy(iconParts = asMapOfFrameIndexies(value).mapValues{_.map{tileSeq}})
 		case _ => a
 	}
@@ -141,7 +143,7 @@ object JSONRectangularVisualizationRule
 		binding
 	}
 	
-	def executeScript(script:String, bindings:Bindings) = {
+	def executeScript(script:String, bindings:Bindings):Any = {
 		scriptEngine.eval(script, bindings)
 	}
 	
@@ -159,7 +161,7 @@ object JSONRectangularVisualizationRule
 		case y:String => java.lang.Boolean.parseBoolean(y)
 	}
 	
-	def asMapOfFrameIndexies(frameIndexies:Any) =
+	def asMapOfFrameIndexies(frameIndexies:Any):Map[Int, Seq[Int]] =
 	{
 		val normalizedFrameIndex:Map[Int, Seq[Int]] = frameIndexies match {
 			case x:Int => Map(-127 → Seq(x) )
@@ -184,8 +186,9 @@ object JSONRectangularVisualizationRule
 		
 		val pairPattern = Pattern.compile("""\(([\+\-]?\d+),([\+\-]?\d+)\)""")
 		val matcher = pairPattern.matcher(s)
-		if (!matcher.matches())
+		if (!matcher.matches()) {
 			throw new IllegalArgumentException(s + " does not match pair pattern.")
+		}
 		val firstStr = matcher.group(1)
 		val secondStr = matcher.group(2)
 		val firstInt = asInt(firstStr)
@@ -199,7 +202,9 @@ object JSONRectangularVisualizationRule
 	}
 	
 	
-	def PriorityOrdering = Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
+	def PriorityOrdering:Ordering[RectangularVisualizationRule[_]] = {
+		Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
+	}
 
 	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_]] {
 		def compare(x:ParamaterizedRectangularVisualizationRule[_], y:ParamaterizedRectangularVisualizationRule[_]):Int = {

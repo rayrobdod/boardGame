@@ -33,7 +33,6 @@ import javax.swing.{Icon, ImageIcon}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 
-import scala.runtime.{AbstractFunction2 => Function2}
 
 /**
  * @version 3.0.0
