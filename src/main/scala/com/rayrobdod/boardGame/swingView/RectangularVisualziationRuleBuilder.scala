@@ -15,25 +15,18 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame
+package swingView
 
-import com.rayrobdod.boardGame._
 import scala.util.Random
-import scala.{Function0 => Future}
 import scala.annotation.tailrec
-import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
-import scala.collection.mutable.{Map => MMap}
+import scala.collection.immutable.{Seq, Map, Set}
 import java.awt.Image
-import java.awt.image.BufferedImage
-import java.awt.image.BufferedImage.{TYPE_INT_RGB => nonAlphaImage, TYPE_INT_ARGB => alphaImage}
-import java.net.URL
-import javax.swing.{Icon, ImageIcon}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
 
-import scala.runtime.{AbstractFunction2 => Function2}
 
 
 
@@ -64,7 +57,7 @@ class RectangularVisualziationRuleBuilder[A](
 final case class ParamaterizedRectangularVisualizationRule[A] (
 	iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
 	tileRand:Int = 1,
-	indexEquation:String = "true",
+	indexEquation:String = "true", // TODO: string? really?
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]
 ) extends RectangularVisualizationRule[A] {
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
@@ -93,8 +86,7 @@ final case class ParamaterizedRectangularVisualizationRule[A] (
 	
 	final override def priority:Int = {
 		@tailrec def countMatches(m:Matcher, total:Int = 0):Int = {
-			if (! m.hitEnd) {
-				m.find
+			if (m.find()) {
 				countMatches(m, total + 1)
 			} else {total}
 		}
@@ -105,15 +97,12 @@ final case class ParamaterizedRectangularVisualizationRule[A] (
 				1000 / {
 					countMatches( divisionPattern.matcher(indexEquation) ) + 1
 				} * {
-					countMatches( andPattern.matcher(indexEquation) )
+					countMatches( andPattern.matcher(indexEquation) ) + 1
 				} + {
 					import JSONRectangularVisualizationRule.numberPattern
 					
-					@tailrec def sumMatches(m:Matcher, total:Int = 0):Int =
-					{
-						m.find()
-						if (! m.hitEnd)
-						{
+					@tailrec def sumMatches(m:Matcher, total:Int = 0):Int = {
+						if (m.find()) {
 							val number = Integer.parseInt(m.group)
 							sumMatches(m, total + number)
 						} else {total}
@@ -135,7 +124,7 @@ object JSONRectangularVisualizationRule
 {
 	val divisionPattern = Pattern.compile("[%//]")
 	val numberPattern = Pattern.compile("\\d+")
-	val andPattern = Pattern.compile("&")
+	val andPattern = Pattern.compile("&+")
 	
 	val scriptEngine = {
 		val retVal = new ScriptEngineManager(null).getEngineByName("JavaScript")
