@@ -36,16 +36,14 @@ import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, 
 import scala.runtime.{AbstractFunction2 => Function2}
 
 /**
- * @author Raymond Dodge
  * @version 3.0.0
  */
-// class VisualizationRuleBasedRectangularTilesheet extends RectangularTilesheet
-class JSONRectangularTilesheet[A](
-		val name:String,
-		val visualizationRules:Seq[JSONRectangularVisualizationRule[A]]
+final case class VisualizationRuleBasedRectangularTilesheet[A](
+		override val name:String,
+		val visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[A]]
 ) extends RectangularTilesheet[A] {
 	
-	def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon) =
+	override def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon) =
 	{
 		type ImageFrames = Seq[Image]
 		
@@ -131,87 +129,3 @@ class JSONRectangularTilesheet[A](
 	}
 }
 
-/**
- * @author Raymond Dodge
- * @version 3.0.0
- */
-object JSONRectangularTilesheet
-{
-	import java.nio.charset.StandardCharsets.UTF_8
-	import javax.imageio.ImageIO
-	import java.io.InputStreamReader
-	import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
-	import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
-	import scala.collection.JavaConversions.mapAsScalaMap
-
-	def apply[A](baseURL:URL, classMap:SpaceClassMatcherFactory[A]):JSONRectangularTilesheet[A] = {
-		
-		val baseMap = {
-			val fileReader = new InputStreamReader(baseURL.openStream(), UTF_8)
-			val listener = ToScalaCollection()
-			JSONParser.parse(listener, fileReader)
-			fileReader.close()
-			listener.resultMap
-		}
-		
-		val frameImage = {
-			val sheetURL:URL = new URL(baseURL, baseMap("tiles").toString)
-			val sheetImage:BufferedImage = ImageIO.read(sheetURL)
-			val tileWidth:Int = baseMap("tileWidth").toString.toInt
-			val tileHeight:Int = baseMap("tileHeight").toString.toInt
-			val tilesX = sheetImage.getWidth / tileWidth
-			val tilesY = sheetImage.getHeight / tileHeight
-			
-			new BlitzAnimImage(sheetImage, tileWidth, tileHeight, 0, tilesX * tilesY)
-		}
-		
-		val rulesJSON = {
-			val rulesURL:URL = new URL(baseURL, baseMap("rules").toString)
-			val fileReader = new InputStreamReader(rulesURL.openStream(), UTF_8)
-			val listener = ToScalaCollection()
-			JSONParser.parse(listener, fileReader)
-			fileReader.close()
-			
-			val rules1:Seq[Map[_,_]] = Seq.empty ++ listener.resultSeq.map{_ match {
-				case x:scala.collection.Map[_,_] => Map.empty ++ x
-				case x:Any => Map.empty
-			}}.filterNot{_.isEmpty}
-			
-			rules1.map{_.map{pair:(Any,Any) => (pair._1.toString, pair._2)}}
-		}
-		
-		
-		this.apply(
-			baseMap("name").toString,
-			frameImage,
-			classMap,
-			rulesJSON
-		)
-	}
-	
-	def apply[A](
-			name:String,
-			frameImage:BlitzAnimImage,
-			classMap:SpaceClassMatcherFactory[A],
-			rulesJSON:Seq[Map[String,Any]]
-	):JSONRectangularTilesheet[A] = {
-		
-		val rules:Seq[JSONRectangularVisualizationRule[A]] = {
-			val rulesJSON2:Seq[Map[String,_]] = rulesJSON.map{_.map{
-				pair:(Any,Any) => (pair._1.toString, pair._2)
-			}}
-			
-			rulesJSON2.map{new JSONRectangularVisualizationRule(_, Seq.empty ++ frameImage.getImages, classMap)}
-		}
-		
-		this.apply(name, rules)
-	}
-	
-	def apply[A](
-			name:String,
-			rules:Seq[JSONRectangularVisualizationRule[A]]
-	):JSONRectangularTilesheet[A] = {
-		new JSONRectangularTilesheet(name, rules)
-	}
-	
-}

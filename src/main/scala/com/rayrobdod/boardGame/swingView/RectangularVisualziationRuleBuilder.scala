@@ -66,7 +66,7 @@ final case class ParamaterizedRectangularVisualizationRule[A] (
 	tileRand:Int = 1,
 	indexEquation:String = "true",
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]
-) {
+) extends RectangularVisualizationRule[A] {
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
 		import JSONRectangularVisualizationRule.{scriptEngine, buildBindings, executeScript}
 		
@@ -212,8 +212,8 @@ object JSONRectangularVisualizationRule
 	
 	def PriorityOrdering = Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
 
-	object FullOrdering extends Ordering[JSONRectangularVisualizationRule[_]] {
-		def compare(x:JSONRectangularVisualizationRule[_], y:JSONRectangularVisualizationRule[_]):Int = {
+	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_]] {
+		def compare(x:ParamaterizedRectangularVisualizationRule[_], y:ParamaterizedRectangularVisualizationRule[_]):Int = {
 			(x.tileRand compareTo y.tileRand) match {
 				case 0 => (x.indexEquation compareTo y.indexEquation) match {
 					case 0 => IterableIntOrdering.compare(x.iconParts.keys, y.iconParts.keys) match {
