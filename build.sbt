@@ -14,7 +14,7 @@ exportJars := true
 
 mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "1.0.0")
+libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC1")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
 

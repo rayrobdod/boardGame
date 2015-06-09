@@ -21,6 +21,7 @@ package com.rayrobdod.boardGame
  * 
  */
 package object swingView {
+	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 }
 
 package swingView {
