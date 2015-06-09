@@ -18,8 +18,6 @@
 package com.rayrobdod.boardGame.swingView
 
 import com.rayrobdod.boardGame._
-import com.rayrobdod.util.BlitzAnimImage
-import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import scala.util.Random
 import scala.{Function0 => Future}
 import scala.annotation.tailrec
@@ -38,7 +36,6 @@ import scala.runtime.{AbstractFunction2 => Function2}
 
 
 /**
- * @author Raymond Dodge
  * @version 3.0.0
  */
 class JSONRectangularVisualizationRule[A](

@@ -22,8 +22,8 @@ import javax.swing.Icon
 import com.rayrobdod.boardGame.RectangularField
 
 /**
- * This takes a space in a RectangularField and converts it to images for
- * display in a user interface
+ * A class that contains a method to create an image appropriate for representing
+ * a particular space in a rectangular field 
  * 
  * @author Raymond Dodge
  * @version 3.0.0
@@ -34,6 +34,7 @@ trait RectangularTilesheet[A]
 	def name:String
 	
 	/**
+	 * Finds the icon for a particular space on a RectangularField
 	 * @param field the field on the space to lookup
 	 * @param x the x coordinate of the space to lookup
 	 * @param y the y coordinate of the space to lookup
@@ -41,5 +42,5 @@ trait RectangularTilesheet[A]
 	 * @return # the part of the image that goes below the movable controlled tokens
 			# the part of the image that goes above the movable controlled tokens
 	 */
-	def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon) 
+	def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon)
 }

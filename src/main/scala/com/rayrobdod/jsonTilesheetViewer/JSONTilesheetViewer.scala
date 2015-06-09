@@ -24,7 +24,6 @@ import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
-import com.rayrobdod.swing.GridBagConstraintsFactory
 
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
@@ -32,8 +31,6 @@ import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.swingView._
-import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
-import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
 
 
 /**
