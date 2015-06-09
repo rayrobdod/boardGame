@@ -6,9 +6,9 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 version := "3.0.0-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.5"
 
-crossScalaVersions ++= Seq("2.9.1", "2.9.2", "2.9.3", "2.10.4", "2.11.4")
+crossScalaVersions ++= Seq("2.10.5", "2.11.6")
 
 exportJars := true
 
@@ -57,9 +57,7 @@ ProguardKeys.inputFilter in Proguard := { file =>
 }
 
 // scalaTest
-scalaVersion in Test := "2.10.4"
-
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.2.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 testOptions in Test += Tests.Argument("-oS")
 

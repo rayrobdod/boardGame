@@ -51,7 +51,7 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 		sheetUrl:URL = new URL("http://localhost:80/"),
 		tileWidth:Int = 1,
 		tileHeight:Int = 1,
-		rules:URL = new URL("data", "", "{}"),
+		rules:URL = new URL("http://localhost:80/"),
 		name:String = "???"
 	) {
 		def apply():VisualizationRuleBasedRectangularTilesheet[A] = {
