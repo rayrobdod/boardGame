@@ -20,6 +20,8 @@ package com.rayrobdod.boardGame.swingView
 import scala.collection.immutable.Iterable
 import java.util.ServiceConfigurationError;
 import com.rayrobdod.util.services.Services.readServices;
+import java.nio.charset.StandardCharsets.UTF_8
+import com.rayrobdod.json.parser.JsonParser
 
 /**
  * Like {@link java.util.ServiceLoader}, but for Tilesheets.
@@ -66,7 +68,14 @@ final class RectangularTilesheetLoader[SpaceClass](
 				
 				current = current + 1;
 				if (lineURL != null) {
-					JSONRectangularTilesheet(lineURL, matchers)
+					val b = new VisualizationRuleBasedRectangularTilesheetBuilder(lineURL, matchers)
+					var r:java.io.Reader = new java.io.StringReader("{}")
+					try {
+						r = new java.io.InputStreamReader(lineURL.openStream(), UTF_8)
+						new JsonParser(b).parse(r).apply
+					} finally {
+						r.close()
+					}
 				} else {
 					val clazz = {
 						if (loader == null) {

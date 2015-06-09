@@ -22,7 +22,9 @@ import java.net.URLConnection;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.InputStreamReader;
-import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import com.rayrobdod.json.parser.JsonParser;
+import com.rayrobdod.boardGame.swingView.*;
 
 /**
  * A contentHandler that will compose a JSONTilesheet from a json and linked documents 
@@ -34,9 +36,16 @@ public final class JsonRectangularTilesheetHandler extends ContentHandler {
 	 * Reads data from a URLConnection's input stream and puts
 	 * that data into a string.
 	 */
-	public JSONRectangularTilesheet<String> getContent(URLConnection urlc) throws IOException {
+	public RectangularTilesheet<String> getContent(URLConnection urlc) throws IOException {
 		
-		return JSONRectangularTilesheet.apply(urlc.getURL(), StringSpaceClassMatcher$.MODULE$);
+		VisualizationRuleBasedRectangularTilesheetBuilder<String> b = new VisualizationRuleBasedRectangularTilesheetBuilder<String>(urlc.getURL(), StringSpaceClassMatcher$.MODULE$);
+		java.io.Reader r = new java.io.StringReader("{}");
+		try {
+			r = new java.io.InputStreamReader(urlc.getInputStream(), UTF_8);
+			return new JsonParser<VisualizationRuleBasedRectangularTilesheetBuilder.Delayed<String>>(b).parse(r).apply();
+		} finally {
+			r.close();
+		}
 	}
 	
 	@Override
@@ -48,7 +57,7 @@ public final class JsonRectangularTilesheetHandler extends ContentHandler {
 	public Object getContent(final URLConnection urlc, final Class[] classes) throws IOException {
 		
 		for (Class<?> c : classes) {
-			if (c.isAssignableFrom(JSONRectangularTilesheet.class)) {
+			if (c.isAssignableFrom(VisualizationRuleBasedRectangularTilesheet.class)) {
 				return this.getContent(urlc);
 			}
 		}

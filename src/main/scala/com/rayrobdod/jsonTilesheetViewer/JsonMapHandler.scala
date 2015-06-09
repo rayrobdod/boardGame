@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.InputStreamReader;
 import com.rayrobdod.boardGame.RectangularField
-import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet;
 
 /**
  * A contentHandler that will compose a map from a JSON and linked documents
@@ -40,8 +39,8 @@ class JsonMapHandler extends ContentHandler {
 		import java.io.File
 		import java.nio.charset.StandardCharsets.UTF_8
 		import java.nio.file.{Path, Paths, Files}
-		import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
-		import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
+		import com.rayrobdod.json.parser.JsonParser
+		import com.rayrobdod.json.builder.MapBuilder
 		import au.com.bytecode.opencsv.CSVReader;
 
 		val mapURI = urlc.getURL.toURI;
@@ -49,9 +48,7 @@ class JsonMapHandler extends ContentHandler {
 		val metadataPath = Paths.get(mapURI)
 		val metadataReader = Files.newBufferedReader(metadataPath, UTF_8);
 		val metadataMap:Map[String,String] = {
-			val listener = ToScalaCollection()
-			JSONParser.parse(listener, metadataReader)
-			listener.resultMap.mapValues{_.toString}
+			new JsonParser(new MapBuilder).parse(metadataReader).map{x => ((x._1.toString, x._2.toString))}
 		}
 
 		

@@ -132,13 +132,13 @@ object JSONTilesheetViewer extends App
 	
 	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
-		import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet
-		import com.rayrobdod.boardGame.swingView.JSONRectangularVisualizationRule
+		import com.rayrobdod.boardGame.swingView.ParamaterizedRectangularVisualizationRule
+		import com.rayrobdod.boardGame.swingView.VisualizationRuleBasedRectangularTilesheet
 		import StringSpaceClassMatcher.EqualsMatcher
 		
 		val a = f match {
-			case x:JSONRectangularTilesheet[SpaceClass] => {
-				val a:Seq[JSONRectangularVisualizationRule[SpaceClass]] = x.visualizationRules
+			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
+				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
 				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten

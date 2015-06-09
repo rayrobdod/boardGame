@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import javax.imageio.ImageIO
 import scala.collection.immutable.Seq
 import com.rayrobdod.util.BlitzAnimImage
-import com.rayrobdod.json.parser.{JsonParser}
+import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 
 class VisualizationRuleBasedRectangularTilesheetBuilder[A](

@@ -31,8 +31,7 @@ class JsonRectangularVisualizationRuleTest extends FunSpec {
 	// TODO: equivalance partition to improve speed
 	describe ("Default Json visualization rule") {
 		// json = "{}"
-		val jsonMap = Map.empty[String, Any]
-		val dut:RectangularVisualizationRule[String] = new JSONRectangularVisualizationRule(jsonMap, mockImageSeq, new MySCMF)
+		val dut:RectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule()
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
