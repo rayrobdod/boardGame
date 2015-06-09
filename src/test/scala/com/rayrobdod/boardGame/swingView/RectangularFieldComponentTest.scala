@@ -17,27 +17,27 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import scala.util.Random
 import javax.swing.Icon
+import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
 
+import org.scalatest.{FunSuite, FunSpec}
+import org.scalatest.prop.PropertyChecks
 
-
-
-/**
- * @version 3.0.0
- */
-object RectangularFieldLayer {
-	def apply[A](
-			field:RectangularField[A],
-			tilesheet:RectangularTilesheet[A],
-			rng:Random = Random
-	):(RectangularTilemapLayer, RectangularTilemapLayer) = {
+class RectangularFieldComponentTest extends FunSpec {
+	
+	
+	describe ("4x4 field using a default CheckerboardTilesheet") {
+		val uut = RectangularFieldComponent[Any](
+			RectangularField[Any]((0 to 3).map{x => (0 to 3).map{y => x * y}}),
+			new CheckerboardTilesheet
+		)._1
 		
-		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
-		val top = a.mapValues{_._1}
-		val bot = a.mapValues{_._2}
-		
-		(( new RectangularTilemapLayer(top), new RectangularTilemapLayer(bot) ))
+		it ("MaxSize.width is (16 * 4)"){
+			assertResult(4 * 16){uut.getMaximumSize.width}
+		}
+		it ("MaxSize.height is (16 * 4)"){
+			assertResult(4 * 16){uut.getMaximumSize.height}
+		}
 	}
 }

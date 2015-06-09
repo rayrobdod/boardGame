@@ -25,9 +25,9 @@ import scala.util.Random
 import com.rayrobdod.boardGame.RectangularFieldIndex
 
 /**
- * A [[Layer]] which consists of a 2d sequence of icons.
+ * A [[JComponent]] which, when painted, paints a grid of icons
  */
-final class RectangularTilemapLayer(
+final class RectangularTilemapComponent(
 		tiles:Map[RectangularFieldIndex, Icon]
 ) extends JComponent {
 	

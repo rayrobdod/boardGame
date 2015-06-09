@@ -24,7 +24,7 @@ import com.rayrobdod.swing.SolidColorIcon
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 
-class RectangularTilemapLayerTest extends FunSpec {
+class RectangularTilemapComponentTest extends FunSpec {
 	val icon32 = new SolidColorIcon(java.awt.Color.cyan, 32, 32)
 	val icon1632 = new SolidColorIcon(java.awt.Color.cyan, 16, 32)
 	
@@ -35,8 +35,8 @@ class RectangularTilemapLayerTest extends FunSpec {
 	
 	
 	describe ("Bounds checking") {
-	describe ("RectangularTilemapLayer with icon32 and map(0,0)to(3,3)") {
-		val uut = new RectangularTilemapLayer(tiles(0 to 3, 0 to 3, icon32))
+	describe ("RectangularTilemapComponent with icon32 and map(0,0)to(3,3)") {
+		val uut = new RectangularTilemapComponent(tiles(0 to 3, 0 to 3, icon32))
 		
 		it ("getWest is (32 * 4)"){
 			assertResult(4 * 32){uut.getMaximumSize.width}
@@ -45,8 +45,8 @@ class RectangularTilemapLayerTest extends FunSpec {
 			assertResult(4 * 32){uut.getMaximumSize.height}
 		}
 	}
-	describe ("RectangularTilemapLayer with icon32 and map(-2,-2)to(1,1)") {
-		val uut = new RectangularTilemapLayer(tiles(-2 to 1, -2 to 1, icon32))
+	describe ("RectangularTilemapComponent with icon32 and map(-2,-2)to(1,1)") {
+		val uut = new RectangularTilemapComponent(tiles(-2 to 1, -2 to 1, icon32))
 		
 		it ("getWest is (32 * 4)"){
 			assertResult(4 * 32){uut.getMaximumSize.width}
@@ -55,8 +55,8 @@ class RectangularTilemapLayerTest extends FunSpec {
 			assertResult(4 * 32){uut.getMaximumSize.height}
 		}
 	}
-	describe ("RectangularTilemapLayer with icon32 and map(0,2)to(0,5)") {
-		val uut = new RectangularTilemapLayer(tiles(0 to 0, 2 to 5, icon32))
+	describe ("RectangularTilemapComponent with icon32 and map(0,2)to(0,5)") {
+		val uut = new RectangularTilemapComponent(tiles(0 to 0, 2 to 5, icon32))
 		
 		it ("getWest is (32 * 1)"){
 			assertResult(1 * 32){uut.getMaximumSize.width}
@@ -65,8 +65,8 @@ class RectangularTilemapLayerTest extends FunSpec {
 			assertResult(4 * 32){uut.getMaximumSize.height}
 		}
 	}
-	describe ("RectangularTilemapLayer with icon1632 and map(-2,-2)to(1,1)") {
-		val uut = new RectangularTilemapLayer(tiles(-2 to 1, -2 to 1, icon1632))
+	describe ("RectangularTilemapComponent with icon1632 and map(-2,-2)to(1,1)") {
+		val uut = new RectangularTilemapComponent(tiles(-2 to 1, -2 to 1, icon1632))
 		
 		it ("getWest is (16 * 4)"){
 			assertResult(4 * 16){uut.getMaximumSize.width}

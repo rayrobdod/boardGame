@@ -88,7 +88,7 @@ object JSONTilesheetViewer extends App
 				RectangularField(Seq.fill(14, 12){currentRotationRotation.head})
 			}
 			
-			val a = RectangularFieldLayer(
+			val a = RectangularFieldComponent(
 				currentRotationState,
 				inputFields.tilesheet,
 				inputFields.rng
@@ -106,7 +106,7 @@ object JSONTilesheetViewer extends App
 			}
 			
 		} else {
-			val a = RectangularFieldLayer(
+			val a = RectangularFieldComponent(
 				inputFields.field,
 				inputFields.tilesheet,
 				inputFields.rng
@@ -176,7 +176,7 @@ object JSONTilesheetViewer extends App
 			
 			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)
 			
-			val a = RectangularFieldLayer(
+			val a = RectangularFieldComponent(
 				nextRotationState,
 				inputFields.tilesheet,
 				inputFields.rng
