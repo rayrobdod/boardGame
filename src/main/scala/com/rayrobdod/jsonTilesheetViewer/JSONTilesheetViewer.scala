@@ -67,7 +67,7 @@ object JSONTilesheetViewer extends App
 		}
 	})
 	
-	val fieldComp = new LayeredComponent 
+	val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
 	
 	frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
 	frame.getContentPane.add(fieldComp)
@@ -94,9 +94,9 @@ object JSONTilesheetViewer extends App
 				inputFields.rng
 			)
 			
-			fieldComp.removeAllLayers()
-			fieldComp.addLayer(a._1)
-			fieldComp.addLayer(a._2)
+			fieldComp.removeAll()
+			fieldComp.add(a._1)
+			fieldComp.add(a._2)
 			
 			
 			currentRotationState.toSeq.map{_._1}.foreach{index =>
@@ -112,9 +112,9 @@ object JSONTilesheetViewer extends App
 				inputFields.rng
 			)
 			
-			fieldComp.removeAllLayers()
-			fieldComp.addLayer(a._1)
-			fieldComp.addLayer(a._2)
+			fieldComp.removeAll()
+			fieldComp.add(a._1)
+			fieldComp.add(a._2)
 		}
 		
 		frame.pack()
@@ -182,9 +182,9 @@ object JSONTilesheetViewer extends App
 				inputFields.rng
 			)
 			
-			fieldComp.removeAllLayers()
-			fieldComp.addLayer(a._1)
-			fieldComp.addLayer(a._2)
+			fieldComp.removeAll()
+			fieldComp.add(a._1)
+			fieldComp.add(a._2)
 			
 			
 			nextRotationState.toSeq.map{_._1}.foreach{index =>

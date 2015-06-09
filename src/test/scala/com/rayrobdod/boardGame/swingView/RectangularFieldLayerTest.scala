@@ -33,17 +33,11 @@ class RectangularFieldLayerTest extends FunSpec {
 			new CheckerboardTilesheet
 		)._1
 		
-		it ("getEast is zero"){
-			assertResult(0){uut.getEast}
+		it ("MaxSize.width is (16 * 4)"){
+			assertResult(4 * 16){uut.getMaximumSize.width}
 		}
-		it ("getNorth is zero"){
-			assertResult(0){uut.getNorth}
-		}
-		it ("getWest is (16 * 4)"){
-			assertResult(4 * 16){uut.getWest}
-		}
-		it ("getSouth is (16 * 4)"){
-			assertResult(4 * 16){uut.getSouth}
+		it ("MaxSize.height is (16 * 4)"){
+			assertResult(4 * 16){uut.getMaximumSize.height}
 		}
 	}
 }

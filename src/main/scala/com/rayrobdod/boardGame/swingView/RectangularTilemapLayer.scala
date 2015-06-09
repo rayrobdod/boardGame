@@ -17,9 +17,9 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import java.awt.{Component, Graphics}
+import java.awt.{Component, Graphics, Dimension}
 import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
-import javax.swing.Icon
+import javax.swing.{JComponent, Icon}
 import scala.collection.immutable.Map
 import scala.util.Random
 import com.rayrobdod.boardGame.RectangularFieldIndex
@@ -29,7 +29,7 @@ import com.rayrobdod.boardGame.RectangularFieldIndex
  */
 final class RectangularTilemapLayer(
 		tiles:Map[RectangularFieldIndex, Icon]
-) extends Layer {
+) extends JComponent {
 	
 	private val mapX = tiles.map{_._1._1}.min
 	private val mapY = tiles.map{_._1._2}.min
@@ -39,20 +39,31 @@ final class RectangularTilemapLayer(
 	private val tileHeight = tiles.map{_._2.getIconHeight}.max
 	
 	
-	override def getEast:Int  = tileWidth * -mapX
-	override def getNorth:Int = tileHeight * -mapY
-	override def getWest:Int  = tileWidth * mapWidth - getEast
-	override def getSouth:Int = tileHeight * mapHeight - getNorth
 	
-	
-	override def paintLayer(c:Component, g:Graphics, offsetX:Int, offsetY:Int):Unit = {
+	override def paintComponent(g:Graphics):Unit = {
 		// tiles should not overlap
 		tiles.foreach({(index:RectangularFieldIndex, icon:Icon) =>
 			val iconX = index._1 * tileWidth
 			val iconY = index._2 * tileHeight
 			
-			icon.paintIcon(c, g, iconX + offsetX, iconY + offsetY)
+			icon.paintIcon(this, g, iconX, iconY)
 		}.tupled)
+	}
+	
+	override def getMaximumSize():Dimension = {
+		if (this.isMaximumSizeSet) {
+			super.getMaximumSize()
+		} else {
+			return new Dimension(mapWidth * tileWidth, mapHeight * tileHeight)
+		}
+	}
+	
+	override def getPreferredSize():Dimension = {
+		if (this.isPreferredSizeSet) {
+			super.getPreferredSize()
+		} else {
+			return this.getMaximumSize()
+		}
 	}
 	
 	
@@ -69,30 +80,47 @@ final class RectangularTilemapLayer(
 	def addMouseListener(index:RectangularFieldIndex, ml:MouseListener) {
 		mouseListeners = mouseListeners + ((index, mouseListeners(index) :+ ml))
 	}
-	override def clicked(e:MouseEvent) {
-		// tiles should not overlap
-		mouseListeners.foreach({(index:RectangularFieldIndex, ml:Seq[MouseListener]) =>
-			val iconX = index._1 * tileWidth
-			val iconY = index._2 * tileHeight
-			
-			val translatedE = new MouseEvent(
-				e.getSource.asInstanceOf[Component],
-				e.getID,
-				e.getWhen,
-				e.getModifiers,
-				e.getX - iconX,
-				e.getY - iconY,
-				e.getXOnScreen,
-				e.getYOnScreen,
-				e.getClickCount,
-				e.isPopupTrigger,
-				e.getButton
-			)
-			
-			if (0 <= translatedE.getX && translatedE.getX < tileWidth &&
-					0 <= translatedE.getY && translatedE.getY < tileHeight) {
-				ml.foreach{_.mouseClicked(translatedE)}
-			}
-		}.tupled)
-	}
+	this.addMouseListener(new MouseListener() {
+		def mouseClicked(e:MouseEvent):Unit = {
+			this.translate(e, {(a,b) => a.mouseClicked(b)})
+		}
+		def mouseEntered(e:MouseEvent):Unit = {
+			// can't really do this for inner tiles, so don't bother at all
+		}
+		def mouseExited(e:MouseEvent):Unit = {
+			// can't really do this for inner tiles, so don't bother at all
+		}
+		def mousePressed(e:MouseEvent):Unit = {
+			this.translate(e, {(a,b) => a.mousePressed(b)})
+		}
+		def mouseReleased(e:MouseEvent):Unit = {
+			this.translate(e, {(a,b) => a.mouseReleased(b)})
+		}
+		private def translate(e:MouseEvent, f:Function2[MouseListener, MouseEvent, Unit]):Unit = {
+			// tiles should not overlap
+			mouseListeners.foreach({(index:RectangularFieldIndex, ml:Seq[MouseListener]) =>
+				val iconX = index._1 * tileWidth
+				val iconY = index._2 * tileHeight
+				
+				val translatedE = new MouseEvent(
+					e.getSource.asInstanceOf[Component],
+					e.getID,
+					e.getWhen,
+					e.getModifiers,
+					e.getX - iconX,
+					e.getY - iconY,
+					e.getXOnScreen,
+					e.getYOnScreen,
+					e.getClickCount,
+					e.isPopupTrigger,
+					e.getButton
+				)
+				
+				if (0 <= translatedE.getX && translatedE.getX < tileWidth &&
+						0 <= translatedE.getY && translatedE.getY < tileHeight) {
+					ml.foreach{x => f(x, translatedE)}
+				}
+			}.tupled)
+		}
+	})
 }
