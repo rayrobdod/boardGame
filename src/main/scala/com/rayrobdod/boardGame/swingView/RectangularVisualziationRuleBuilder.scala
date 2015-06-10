@@ -57,7 +57,7 @@ class RectangularVisualziationRuleBuilder[A](
  * @version 3.0.0
  */
 final case class ParamaterizedRectangularVisualizationRule[A] (
-	iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
+	override val iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
 	tileRand:Int = 1,
 	indexEquation:String = "true", // TODO: string? really?
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]

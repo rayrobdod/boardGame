@@ -138,7 +138,7 @@ object JSONTilesheetViewer extends App
 		
 		val a = f match {
 			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
-				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules
+				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass]]}
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
 				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten

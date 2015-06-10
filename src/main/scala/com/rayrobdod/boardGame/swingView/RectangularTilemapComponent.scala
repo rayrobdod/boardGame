@@ -27,7 +27,7 @@ import com.rayrobdod.boardGame.RectangularFieldIndex
 /**
  * A [[JComponent]] which, when painted, paints a grid of icons
  */
-final class RectangularTilemapComponent(
+class RectangularTilemapComponent(
 		tiles:Map[RectangularFieldIndex, Icon]
 ) extends JComponent {
 	

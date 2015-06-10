@@ -30,7 +30,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	
 	// TODO: equivalance partition to improve speed
 	describe ("Default Paramaterized visualization rule") {
-		val dut:RectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule()
+		val dut:ParamaterizedRectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule()
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
@@ -67,7 +67,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("tileRand = 2") {
-		val dut:RectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule(tileRand = 2)
+		val dut = new ParamaterizedRectangularVisualizationRule(tileRand = 2)
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
@@ -106,7 +106,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("tileRand = 5") {
-		val dut:RectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule(tileRand = 5)
+		val dut = new ParamaterizedRectangularVisualizationRule(tileRand = 5)
 		
 		it ("rands") {
 			val seed = Random.nextInt()

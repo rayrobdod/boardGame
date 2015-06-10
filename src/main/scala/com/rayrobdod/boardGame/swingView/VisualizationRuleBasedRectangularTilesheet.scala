@@ -39,7 +39,7 @@ import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, 
  */
 final case class VisualizationRuleBasedRectangularTilesheet[A](
 		override val name:String,
-		val visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[A]]
+		val visualizationRules:Seq[RectangularVisualizationRule[A]]
 ) extends RectangularTilesheet[A] {
 	
 	override def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon) =
