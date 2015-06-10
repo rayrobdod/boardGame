@@ -19,52 +19,39 @@ package com.rayrobdod.boardGame.swingView
 
 import org.scalatest.{FunSuite, FunSpec}
 import scala.collection.immutable.{Seq, Map}
+import java.net.URL
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame.SpaceClassMatcher
 
-class RectangularVisualizationRuleBuilderTest extends FunSpec {
+class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 	
-	describe("RectangularVisualizationRuleBuilder + JsonParser") {
+	describe("VisualizationRuleBasedRectangularTilesheetBuilder + JsonParser") {
 		it ("do a thing") {
+			val expected = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
+				classMap = MySpaceClassMatcherFactory,
+				sheetUrl = new URL("http://localhost/tiles"),
+				tileWidth = 32,
+				tileHeight = 48,
+				rules = new URL("http://localhost/rules"),
+				name = "name"
+			)
 			val src = """{
-				"tileRand":5,
-				"indexies":"(x + y) % 2 == 0",
-				"surroundingTiles":{
-					"(0,0)":"a",
-					"(1,1)":"b"
-				}
+				"tiles":"tiles",
+				"tileWidth":32,
+				"tileHeight":48,
+				"rules":"rules",
+				"name":"name"
 			}"""
-			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
+			val result = new JsonParser(new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), MySpaceClassMatcherFactory)).parse(src)
 			
-			assert (res match {
-				case ParamaterizedRectangularVisualizationRule(
-						MapUnapplyer(),
-						5,
-						"(x + y) % 2 == 0",
-						MapUnapplyer(
-							Tuple2(IndexConverter(0,0), MySpaceClassMatcher("a")),
-							Tuple2(IndexConverter(1,1), MySpaceClassMatcher("b"))
-						)
-				) => true
-				case _ => false
-			})
+			assertResult(expected){result}
 		}
 	}
+	
 	
 	object MySpaceClassMatcherFactory extends SpaceClassMatcherFactory[String] {
 		def apply(ref:String):SpaceClassMatcher[String] = {
-			new MySpaceClassMatcher(ref)
+			throw new UnsupportedOperationException("")
 		}
-	}
-	case class MySpaceClassMatcher(ref:String) extends SpaceClassMatcher[String] {
-		def unapply(sc:String):Boolean = {ref == sc}
-	}
-	object IndexConverter {
-		def unapply(f:Function1[(Int, Int), (Int, Int)]):Option[(Int, Int)] = {
-			Option(f((0,0)))
-		}
-	}
-	object MapUnapplyer {
-		def unapplySeq[A,B](m:Map[A,B]):Option[Seq[(A,B)]] = Option(m.to[Seq])
 	}
 }
