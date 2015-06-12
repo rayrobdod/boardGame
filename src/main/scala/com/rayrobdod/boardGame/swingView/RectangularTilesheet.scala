@@ -28,7 +28,7 @@ import com.rayrobdod.boardGame.RectangularField
  * @author Raymond Dodge
  * @version 3.0.0
  */
-trait RectangularTilesheet[A]
+trait RectangularTilesheet[-A]
 {
 	/** a name for the tilesheet */
 	def name:String

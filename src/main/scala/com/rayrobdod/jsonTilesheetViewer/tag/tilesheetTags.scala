@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Collections.emptyMap;
 import com.rayrobdod.boardGame.swingView.IndexesTilesheet;
 import com.rayrobdod.boardGame.swingView.RandomColorTilesheet;
+import com.rayrobdod.boardGame.swingView.HashcodeColorTilesheet;
 
 /** 
  */ 
@@ -37,6 +38,13 @@ final class IndexiesTilesheetTagResource extends TagResource {
 final class RandomColorTilesheetTagResource extends TagResource {
 	val name:String = "rayrobdod.name,2013-08:tilesheet-randcolor"
 	def getContent:RandomColorTilesheet = new RandomColorTilesheet
+	val getInputStream:InputStream = null
+	val getHeaderFields:Map[String,List[String]] = emptyMap[String,List[String]]
+}
+
+final class HashcodeColorTilesheetTagResource extends TagResource {
+	val name:String = "rayrobdod.name,2015-06-12:tilesheet-hashcolor"
+	def getContent:HashcodeColorTilesheet = new HashcodeColorTilesheet
 	val getInputStream:InputStream = null
 	val getHeaderFields:Map[String,List[String]] = emptyMap[String,List[String]]
 }

@@ -134,6 +134,7 @@ object JSONTilesheetViewer extends App
 		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.swingView.ParamaterizedRectangularVisualizationRule
 		import com.rayrobdod.boardGame.swingView.VisualizationRuleBasedRectangularTilesheet
+		import com.rayrobdod.boardGame.swingView.HashcodeColorTilesheet
 		import StringSpaceClassMatcher.EqualsMatcher
 		
 		val a = f match {
@@ -150,7 +151,10 @@ object JSONTilesheetViewer extends App
 				val f:Seq[SpaceClass] = e.flatten.distinct
 				
 				f
-				}
+			}
+			// designed to be one of each color // green, blue, red, white
+			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
+			case x:HashcodeColorTilesheet => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		
