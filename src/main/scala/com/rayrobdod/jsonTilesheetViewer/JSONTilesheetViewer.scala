@@ -95,8 +95,8 @@ object JSONTilesheetViewer extends App
 			)
 			
 			fieldComp.removeAll()
-			fieldComp.add(a._1)
 			fieldComp.add(a._2)
+			fieldComp.add(a._1)
 			
 			
 			currentRotationState.toSeq.map{_._1}.foreach{index =>
@@ -113,8 +113,8 @@ object JSONTilesheetViewer extends App
 			)
 			
 			fieldComp.removeAll()
-			fieldComp.add(a._1)
 			fieldComp.add(a._2)
+			fieldComp.add(a._1)
 		}
 		
 		frame.pack()
@@ -183,8 +183,8 @@ object JSONTilesheetViewer extends App
 			)
 			
 			fieldComp.removeAll()
-			fieldComp.add(a._1)
 			fieldComp.add(a._2)
+			fieldComp.add(a._1)
 			
 			
 			nextRotationState.toSeq.map{_._1}.foreach{index =>
