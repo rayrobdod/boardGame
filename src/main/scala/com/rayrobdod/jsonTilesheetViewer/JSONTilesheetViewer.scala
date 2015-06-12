@@ -132,13 +132,14 @@ object JSONTilesheetViewer extends App
 	
 	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
-		import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet
-		import com.rayrobdod.boardGame.swingView.JSONRectangularVisualizationRule
+		import com.rayrobdod.boardGame.swingView.ParamaterizedRectangularVisualizationRule
+		import com.rayrobdod.boardGame.swingView.VisualizationRuleBasedRectangularTilesheet
+		import com.rayrobdod.boardGame.swingView.HashcodeColorTilesheet
 		import StringSpaceClassMatcherFactory.EqualsMatcher
 		
 		val a = f match {
-			case x:JSONRectangularTilesheet[SpaceClass] => {
-				val a:Seq[JSONRectangularVisualizationRule[SpaceClass]] = x.visualizationRules
+			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
+				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass]]}
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
 				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
@@ -150,7 +151,10 @@ object JSONTilesheetViewer extends App
 				val f:Seq[SpaceClass] = e.flatten.distinct
 				
 				f
-				}
+			}
+			// designed to be one of each color // green, blue, red, white
+			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
+			case x:HashcodeColorTilesheet => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		

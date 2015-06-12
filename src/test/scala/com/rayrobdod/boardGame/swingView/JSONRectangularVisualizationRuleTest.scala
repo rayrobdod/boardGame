@@ -26,13 +26,11 @@ import scala.util.Random
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.RectangularField
 
-class JsonRectangularVisualizationRuleTest extends FunSpec {
+class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	
 	// TODO: equivalance partition to improve speed
-	describe ("Default Json visualization rule") {
-		// json = "{}"
-		val jsonMap = Map.empty[String, Any]
-		val dut:RectangularVisualizationRule[String] = new JSONRectangularVisualizationRule(jsonMap, mockImageSeq, new MySCMF)
+	describe ("Default Paramaterized visualization rule") {
+		val dut:ParamaterizedRectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule()
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
@@ -68,15 +66,213 @@ class JsonRectangularVisualizationRuleTest extends FunSpec {
 			assertResult(1){dut.priority}
 		}
 	}
-	
-	
-	
-	
-	final class MySCMF extends SpaceClassMatcherFactory[String] {
-		def apply(reference:String):SpaceClassMatcher[String] = {
-			new EqualitySpaceClassMatcher[String](reference)
+	describe ("tileRand = 2") {
+		val dut = new ParamaterizedRectangularVisualizationRule(tileRand = 2)
+		
+		it ("indexies always match") {
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+			(x to 10).foreach{width => (y to 10).foreach{height =>
+				assert( dut.indexiesMatch(x, y, width, height) )
+			}}
+			}}
+		}
+		it ("rands") {
+			val seed = Random.nextInt()
+			val rng1 = new Random(seed)
+			val rng2 = new Random(seed)
+			val expected = (0 to 10).map{x => rng1.nextInt(2) == 0}
+			val actual = (0 to 10).map{x => dut.randsMatch(rng2)}
+			
+			assertResult(expected){actual}
+		}
+		it ("surroundingTilesMatch always match") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => rng.nextString(rng.nextInt(10))}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				assert( dut.surroundingTilesMatch(map, x, y) )
+			}}
+		}
+		it ("overall always match") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => rng.nextString(rng.nextInt(10))}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				dut.matches(map, x, y, rng)
+			}}
+		}
+		it ("has a priority of 2") {
+			assertResult(2){dut.priority}
 		}
 	}
+	describe ("tileRand = 5") {
+		val dut = new ParamaterizedRectangularVisualizationRule(tileRand = 5)
+		
+		it ("rands") {
+			val seed = Random.nextInt()
+			val rng1 = new Random(seed)
+			val rng2 = new Random(seed)
+			val expected = (0 to 20).map{x => rng1.nextInt(5) == 0}
+			val actual = (0 to 20).map{x => dut.randsMatch(rng2)}
+			
+			assertResult(expected){actual}
+		}
+		it ("has a priority of 5") {
+			assertResult(5){dut.priority}
+		}
+	}
+	describe ("surroundingTiles = Map(identity -> \"a\")") {
+		val surroundingTiles = Map(surroundingTilePart(0, 0, "a"))
+		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		
+		it ("surroundingTilesMatch match when current tile is 'a'") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				val expected = map((x, y)).typeOfSpace == "a"
+				
+				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+			}}
+		}
+		it ("has a priority of 10001") {
+			assertResult(10001){dut.priority}
+		}
+	}
+	describe ("surroundingTiles = Map(above -> \"a\")") {
+		val surroundingTiles = Map(surroundingTilePart(0, -1, "a"))
+		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		
+		it ("surroundingTilesMatch match when above tile is 'a'") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				val expected = map.get((x, y - 1)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				
+				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+			}}
+		}
+		it ("has a priority of 10001") {
+			assertResult(10001){dut.priority}
+		}
+	}
+	describe ("surroundingTiles = Map(below -> \"a\")") {
+		val surroundingTiles = Map(surroundingTilePart(0, 1, "a"))
+		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		
+		it ("surroundingTilesMatch match when below tile is 'a'") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				val expected = map.get((x, y + 1)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				
+				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+			}}
+		}
+		it ("has a priority of 10001") {
+			assertResult(10001){dut.priority}
+		}
+	}
+	describe ("surroundingTiles = Map(left -> \"a\")") {
+		val surroundingTiles = Map(surroundingTilePart(-1, 0, "a"))
+		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		
+		it ("surroundingTilesMatch match when left tile is 'a'") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				val expected = map.get((x - 1, y)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				
+				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+			}}
+		}
+		it ("has a priority of 10001") {
+			assertResult(10001){dut.priority}
+		}
+	}
+	describe ("surroundingTiles = Map(left -> \"a\", this -> 'a')") {
+		val surroundingTiles = Map(surroundingTilePart(-1, 0, "a"), surroundingTilePart(0, 0, "a"))
+		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		
+		it ("surroundingTilesMatch match when current tile is 'a' and left tile is 'a'") {
+			val rng = new Random()
+			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
+			
+			(0 to 10).foreach{x => (0 to 10).foreach{y =>
+				val expected = map.get((x - 1, y)).map{_.typeOfSpace}.getOrElse("a") == "a" &&
+				               map.get((x, y)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				
+				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+			}}
+		}
+		it ("has a priority of 20001") {
+			assertResult(20001){dut.priority}
+		}
+	}
+	describe ("indexEquation = 'x == 0'") {
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "x == 0")
+		
+		it ("indexiesMatch is true when x is 0") {
+			assert(dut.indexiesMatch(0, -1, -1, -1))
+		}
+		it ("indexiesMatch is true when x is 0 (2)") {
+			assert(dut.indexiesMatch(0, 1, 1, 1))
+		}
+		it ("indexiesMatch is false when x is 1") {
+			assert(! dut.indexiesMatch(1, -1, -1, -1))
+		}
+		it ("has a priority of 1001") {
+			assertResult(1001){dut.priority}
+		}
+	}
+	describe ("indexEquation = 'x % 2 == 0'") {
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "x % 2 == 0")
+		
+		it ("indexiesMatch is true when x is 0") {
+			assert(dut.indexiesMatch(0, -1, -1, -1))
+		}
+		it ("indexiesMatch is false when x is 1") {
+			assert(! dut.indexiesMatch(1, -1, -1, -1))
+		}
+		it ("indexiesMatch is true when x is 2") {
+			assert(dut.indexiesMatch(2, -1, -1, -1))
+		}
+		it ("has a priority of 503") {
+			assertResult(503){dut.priority}
+		}
+	}
+	describe ("indexEquation = 'x == 2 && y == 4'") {
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "x == 2 && y == 4")
+		
+		it ("indexiesMatch is true when x is 2 and y is 4") {
+			assert(dut.indexiesMatch(2, 4, -1, -1))
+		}
+		it ("indexiesMatch is false otherwise x is 1") {
+			assert(! dut.indexiesMatch(-1, -1, -1, -1))
+		}
+		it ("has a priority of 2007") {
+			assertResult(2007){dut.priority}
+		}
+	}
+	describe ("indexEquation = 'w == 2 && h == 4'") {
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "w == 2 && h == 4")
+		
+		it ("indexiesMatch is true when w is 2 and h is 4") {
+			assert(dut.indexiesMatch(-1, -1, 2, 4))
+		}
+		it ("indexiesMatch is false otherwise x is 1") {
+			assert(! dut.indexiesMatch(-1, -1, -1, -1))
+		}
+		it ("has a priority of 2007") {
+			assertResult(2007){dut.priority}
+		}
+	}
+	
+	
+	
 	
 	final class EqualitySpaceClassMatcher[-SpaceClass](s:SpaceClass) extends SpaceClassMatcher[SpaceClass] {
 		def unapply(sc:SpaceClass):Boolean = {s == sc}
@@ -104,5 +300,13 @@ class JsonRectangularVisualizationRuleTest extends FunSpec {
 		} 
 	}
 	
-	val mockImageSeq:Seq[Image] = (0 to 63).map{new MockImage(_)}
+	def mockImageSeq:Seq[Image] = (0 to 63).map{new MockImage(_)}
+	
+	def surroundingTilePart(deltaX:Int, deltaY:Int, spaceClass:String):Tuple2[IndexConverter, SpaceClassMatcher[String]] = {
+		val f = new Function1[(Int, Int), (Int, Int)] {
+			def apply(xy:(Int, Int)) = ((xy._1 + deltaX), (xy._2 + deltaY))
+		}
+		val m = new EqualitySpaceClassMatcher(spaceClass)
+		(f -> m)
+	}
 }

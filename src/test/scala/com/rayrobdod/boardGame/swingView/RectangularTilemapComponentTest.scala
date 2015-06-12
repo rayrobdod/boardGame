@@ -18,6 +18,7 @@
 package com.rayrobdod.boardGame.swingView
 
 import java.awt.{Component, Graphics}
+import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
 import javax.swing.Icon
 import com.rayrobdod.swing.SolidColorIcon
 
@@ -76,6 +77,49 @@ class RectangularTilemapComponentTest extends FunSpec {
 		}
 	}
 	}
+	describe ("mouse events") {
+	describe ("with icon size 32x32") {
+		class afsd extends RectangularTilemapComponent(tiles(0 to 3, 0 to 3, icon32)) {
+			override def processMouseEvent(e:MouseEvent):Unit = super.processMouseEvent(e)
+		}
+		
+		it ("click at 0,0 is inside tile 0,0") {
+			val uut = new afsd()
+			val mock = new MockMouseListener()
+			uut.addMouseListener(((0,0)), mock)
+			uut.processMouseEvent(new MouseEvent(uut, MouseEvent.MOUSE_CLICKED, -1, -1, 0, 0, 1, false))
+			assertResult(1){mock.mouseClickCount}
+		}
+		it ("click at 0,0 is not inside tile 1,0") {
+			val uut = new afsd()
+			val mock = new MockMouseListener()
+			uut.addMouseListener(((1,0)), mock)
+			uut.processMouseEvent(new MouseEvent(uut, MouseEvent.MOUSE_CLICKED, -1, -1, 0, 0, 1, false))
+			assertResult(0){mock.mouseClickCount}
+		}
+		it ("click at 31,31 is inside tile 0,0") {
+			val uut = new afsd()
+			val mock = new MockMouseListener()
+			uut.addMouseListener(((0,0)), mock)
+			uut.processMouseEvent(new MouseEvent(uut, MouseEvent.MOUSE_CLICKED, -1, -1, 31, 31, 1, false))
+			assertResult(1){mock.mouseClickCount}
+		}
+		it ("click at 32,32 is inside tile 1,1") {
+			val uut = new afsd()
+			val mock = new MockMouseListener()
+			uut.addMouseListener(((1,1)), mock)
+			uut.processMouseEvent(new MouseEvent(uut, MouseEvent.MOUSE_CLICKED, -1, -1, 32, 32, 1, false))
+			assertResult(1){mock.mouseClickCount}
+		}
+		it ("click at 33,33 is inside tile 1,1") {
+			val uut = new afsd()
+			val mock = new MockMouseListener()
+			uut.addMouseListener(((1,1)), mock)
+			uut.processMouseEvent(new MouseEvent(uut, MouseEvent.MOUSE_CLICKED, -1, -1, 33, 33, 1, false))
+			assertResult(1){mock.mouseClickCount}
+		}
+	}
+	}
 	
 	
 	
@@ -86,6 +130,28 @@ class RectangularTilemapComponentTest extends FunSpec {
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int) = {
 			assertResult(expectedX){x}
 			assertResult(expectedY){y}
+		}
+	}
+	class MockMouseListener extends MouseListener {
+		var mouseClickCount = 0
+		def mouseClicked(e:MouseEvent):Unit = {
+			mouseClickCount = mouseClickCount + 1
+		}
+		var mouseEnteredCount = 0
+		def mouseEntered(e:MouseEvent):Unit = {
+			mouseEnteredCount = mouseEnteredCount + 1
+		}
+		var mouseExitedCount = 0
+		def mouseExited(e:MouseEvent):Unit = {
+			mouseExitedCount = mouseExitedCount + 1
+		}
+		var mousePressedCount = 0
+		def mousePressed(e:MouseEvent):Unit = {
+			mousePressedCount = mousePressedCount + 1
+		}
+		var mouseReleasedCount = 0
+		def mouseReleased(e:MouseEvent):Unit = {
+			mouseReleasedCount = mouseReleasedCount + 1
 		}
 	}
 }
