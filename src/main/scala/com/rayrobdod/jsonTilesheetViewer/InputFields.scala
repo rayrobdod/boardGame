@@ -88,7 +88,7 @@ final class InputFields(
 	private val randBox = new JTextField(initialRand, 5)
 	private val goButton = new JButton("->")
 	
-	private val label = GridBagConstraintsFactory(insets = new java.awt.Insets(0,5,0,5))
+	private val label = GridBagConstraintsFactory(insets = new java.awt.Insets(0,5,0,5), fill = GridBagConstraints.BOTH)
 	private val endOfLine = GridBagConstraintsFactory(gridwidth = GridBagConstraints.REMAINDER, weightx = 1, fill = GridBagConstraints.BOTH)
 	
 	panel.add(new JLabel("tilesheet: "), label)

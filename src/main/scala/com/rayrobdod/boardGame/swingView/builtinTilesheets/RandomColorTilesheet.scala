@@ -28,9 +28,8 @@ import com.rayrobdod.boardGame.RectangularField
  * A tilesheet for testing randoms. Isolating the problem.
  * 
  * @author Raymond Dodge
- * @version 2013 Mar 04
  */
-class RandomColorTilesheet(
+final class RandomColorTilesheet(
 		val dim:Dimension = new Dimension(64,24)
 ) extends RectangularTilesheet[Any] {
 	override def name:String = "Random Color";
@@ -39,11 +38,29 @@ class RandomColorTilesheet(
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
 		val color = new Color(rng.nextInt)
 		
-		(( new SolidColorIcon(color, dim.width, dim.height), new ColorStringIcon(color) ))
+		(( new SolidColorIcon(color, dim.width, dim.height), new RandomColorTilesheet.ColorStringIcon(color, dim) ))
 	}
 	
-	
-	class ColorStringIcon(color:Color) extends javax.swing.Icon {
+	protected def canEquals(other:Any):Boolean = {
+		other.isInstanceOf[RandomColorTilesheet]
+	}
+	override def equals(other:Any):Boolean = {
+		if (this.canEquals(other)) {
+			val other2 = other.asInstanceOf[RandomColorTilesheet]
+			if (other2.canEquals(this)) {
+				other2.dim == this.dim
+			} else {
+				false
+			}
+		} else {
+			false
+		}
+	}
+	override def hashCode:Int = dim.hashCode
+}
+
+object RandomColorTilesheet {
+	final class ColorStringIcon(val color:Color, val dim:Dimension) extends javax.swing.Icon {
 		override def getIconWidth = dim.width
 		override def getIconHeight = dim.height
 		
@@ -51,7 +68,7 @@ class RandomColorTilesheet(
 		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int)
 		{
 			g.setColor(foreground)
-			g.drawString("" + color.getRGB.toHexString , x+2, y + dim.height - 5)
+			g.drawString("" + color.getRGB.toHexString, x + 2, y + dim.height - 5)
 		}
 		
 		@inline private lazy val foreground = {
@@ -59,5 +76,24 @@ class RandomColorTilesheet(
 				Color.white
 			} else {Color.black}
 		}
+		
+		
+		protected def canEquals(other:Any):Boolean = {
+			other.isInstanceOf[ColorStringIcon]
+		}
+		override def equals(other:Any):Boolean = {
+			if (this.canEquals(other)) {
+				val other2 = other.asInstanceOf[ColorStringIcon]
+				if (other2.canEquals(this)) {
+					other2.color == this.color &&
+					other2.dim == this.dim
+				} else {
+					false
+				}
+			} else {
+				false
+			}
+		}
+		override def hashCode:Int = color.hashCode
 	}
 }
