@@ -134,7 +134,7 @@ object JSONTilesheetViewer extends App
 		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.swingView.JSONRectangularTilesheet
 		import com.rayrobdod.boardGame.swingView.JSONRectangularVisualizationRule
-		import StringSpaceClassMatcher.EqualsMatcher
+		import StringSpaceClassMatcherFactory.EqualsMatcher
 		
 		val a = f match {
 			case x:JSONRectangularTilesheet[SpaceClass] => {

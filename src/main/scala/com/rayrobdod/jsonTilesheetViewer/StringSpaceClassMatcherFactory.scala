@@ -28,7 +28,7 @@ import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
  * 
  * @since 3.0.0
  */
-object StringSpaceClassMatcher extends SpaceClassMatcherFactory[SpaceClass] {
+object StringSpaceClassMatcherFactory extends SpaceClassMatcherFactory[SpaceClass] {
 	
 	def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
 		if (reference == "*") {ConstTrueSpaceClassMatcher}
