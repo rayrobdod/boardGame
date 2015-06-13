@@ -17,11 +17,24 @@
 */
 package com.rayrobdod.boardGame
 
+import scala.annotation.tailrec
+
 /**
  * 
  */
 package object swingView {
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
+	
+	def lcm(x:Int, y:Int) = x / gcd(x,y) * y
+	
+	@tailrec def gcd(x:Int, y:Int):Int = {
+		System.out.println(x,y)
+		if (y == 1) {1} else
+		if (x == 1) {1} else
+		if (x == y) {x} else
+		if (x > y) {gcd(x - y, y)} else
+		{gcd(x, y - x)}
+	}
 }
 
 package swingView {

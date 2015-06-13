@@ -64,20 +64,6 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 			val layers2:Map[Int, ImageFrames] = layers
 			val layersInOrder:Seq[ImageFrames] = Vector.empty ++ layers2.toSeq.sortBy{_._1}.map{_._2}.filter{_.length > 0}
 			
-			object lcm extends Function2[Int, Int, Int]{
-				def apply(x:Int, y:Int):Int = {
-					x / gcdApply(x,y) * y	
-				}
-				
-				@tailrec def gcdApply(x:Int, y:Int):Int = {
-					if (y == 1) {x} else
-					if (x == 1) {y} else
-					if (x == y) {x} else
-					if (x > y) {gcdApply(x, x - y)} else
-					{gcdApply(y - x, x)}
-				}
-			}
-			
 			val leastCommonFrameNumber:Int = layersInOrder.map{_.length}.fold(1){lcm}
 			
 			// after this, all layers will have the same number of frames
