@@ -26,7 +26,7 @@ import com.rayrobdod.json.parser.JsonParser
 /**
  * Like {@link java.util.ServiceLoader}, but for Tilesheets.
  *
- * Is willing to load either files using 'path/to/file' or scala objects 'package.name.object'
+ * Is willing to load either resources using 'path/to/file' or scala objects 'package.name.object'
  * 
  * @author Raymond Dodge
  * @version 3.0.0
@@ -68,6 +68,7 @@ final class RectangularTilesheetLoader[SpaceClass](
 				
 				current = current + 1;
 				if (lineURL != null) {
+					// then the line refers to a resource; read from the resource
 					val b = new VisualizationRuleBasedRectangularTilesheetBuilder(lineURL, matchers)
 					var r:java.io.Reader = new java.io.StringReader("{}")
 					try {
@@ -77,6 +78,7 @@ final class RectangularTilesheetLoader[SpaceClass](
 						r.close()
 					}
 				} else {
+					// then the line refers to a class; find that class
 					val clazz = {
 						if (loader == null) {
 							Class.forName(line + "$");
