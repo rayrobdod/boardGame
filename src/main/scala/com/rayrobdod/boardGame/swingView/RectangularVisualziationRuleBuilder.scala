@@ -163,10 +163,12 @@ object JSONRectangularVisualizationRule
 	
 	def asMapOfFrameIndexies(frameIndexies:Any):Map[Int, Seq[Int]] =
 	{
+		val ARBITRARY_NEGATIVE_VALUE = -127
+		
 		val normalizedFrameIndex:Map[Int, Seq[Int]] = frameIndexies match {
-			case x:Int => Map(-127 → Seq(x) )
-			case x:Long => Map( -127 → Seq(x.intValue) )
-			case x:Seq[_] => Map( -127 → x.map{asInt(_)} )
+			case x:Int => Map(ARBITRARY_NEGATIVE_VALUE → Seq(x))
+			case x:Long => Map(ARBITRARY_NEGATIVE_VALUE → Seq(x.intValue))
+			case x:Seq[_] => Map(ARBITRARY_NEGATIVE_VALUE → x.map{asInt(_)})
 			case x:Map[_, _] => {
 				x.map{(y:Tuple2[_,_]) => (( asInt(y._1), y._2)) }
 						.mapValues{_ match {

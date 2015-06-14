@@ -39,7 +39,7 @@ object IndexesTilesheet extends RectangularTilesheet[Any] {
 	
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = {
 		((
-			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
+			if ((x + y) % 2 == 0) {lightIcon} else {darkIcon},
 			new IndexIcon(x,y)
 		))
 	}

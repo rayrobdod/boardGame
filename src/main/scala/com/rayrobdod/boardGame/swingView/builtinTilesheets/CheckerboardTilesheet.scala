@@ -50,6 +50,6 @@ case class CheckerboardTilesheet(
 	val transparentIcon = new SolidColorIcon(new Color(0,0,0,0), dim.width, dim.height)
 	
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( if ((x+y)%2 == 0) {lightIcon} else {darkIcon}, transparentIcon ))
+		(( if ((x + y) % 2 == 0) {lightIcon} else {darkIcon}, transparentIcon ))
 	}
 }

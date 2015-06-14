@@ -54,7 +54,7 @@ class RectangularTilemapComponent(
 		if (this.isMaximumSizeSet) {
 			super.getMaximumSize()
 		} else {
-			return new Dimension(mapWidth * tileWidth, mapHeight * tileHeight)
+			new Dimension(mapWidth * tileWidth, mapHeight * tileHeight)
 		}
 	}
 	
@@ -62,7 +62,7 @@ class RectangularTilemapComponent(
 		if (this.isPreferredSizeSet) {
 			super.getPreferredSize()
 		} else {
-			return this.getMaximumSize()
+			this.getMaximumSize()
 		}
 	}
 	

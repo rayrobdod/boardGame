@@ -44,10 +44,10 @@ object RectangularField
 		// RectangularSpace Implementation
 		
 		override val typeOfSpace:A = fieldClasses(myIndex)
-		override def left:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i-1,j)
-		override def up:Option[StrictRectangularSpace[A]]    = this.getSpaceAt(i,j-1)
-		override def right:Option[StrictRectangularSpace[A]] = this.getSpaceAt(i+1,j)
-		override def down:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i,j+1)
+		override def left:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i - 1, j)
+		override def up:Option[StrictRectangularSpace[A]]    = this.getSpaceAt(i, j - 1)
+		override def right:Option[StrictRectangularSpace[A]] = this.getSpaceAt(i + 1, j)
+		override def down:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i, j + 1)
 		
 		// Object Overrides
 		
