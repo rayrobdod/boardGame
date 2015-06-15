@@ -53,7 +53,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 		it ("do a thing") {
 			val source = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
-				sheetUrl = new URL("data", "image/png;base64", -1, """iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgAQAAAACK5kMpAAAAHklEQVR4Xu3GsREAAAyCQC7772y0dQYpuEcOd1ljeJXGBDtwuYtjAAAAAElFTkSuQmCC""", new DataHandler),
+				sheetUrl = this.getClass.getResource("whiteBlackTiles.png"),
 				tileWidth = 32,
 				tileHeight = 32,
 				rules = new URL("data", "text/json", -1, """[{"tiles":0, "indexies":"x == 0"},{"tiles":1}]""", new DataHandler),
