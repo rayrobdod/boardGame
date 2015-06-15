@@ -74,4 +74,7 @@ public final class JsonRectangularTilesheetHandler extends ContentHandler {
 	public boolean equals(Object other) {
 		return (this.canEquals(other) && ((JsonRectangularTilesheetHandler) other).canEquals(this));
 	}
+	
+	@Override 
+	public int hashCode() {return 16584;}
 }

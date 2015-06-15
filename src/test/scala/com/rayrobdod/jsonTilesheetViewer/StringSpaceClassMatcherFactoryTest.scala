@@ -52,10 +52,10 @@ class StringSpaceClassMatcherFactoryTest extends FunSpec {
 		}
 	}
 	describe ("StringSpaceClassMatcherFactory.UnequalsMatcher") {
-		it ("EqualsMatcher(\"a\") doesn't match \"a\""){
+		it ("UnequalsMatcher(\"a\") doesn't match \"a\""){
 			assert(! UnequalsMatcher("a").unapply("a"))
 		}
-		it ("EqualsMatcher(\"a\") matches \"c\""){
+		it ("UnequalsMatcher(\"a\") matches \"c\""){
 			assert(UnequalsMatcher("a").unapply("c"))
 		}
 	}

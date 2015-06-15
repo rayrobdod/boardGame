@@ -60,7 +60,7 @@ class JsonMapHandler extends ContentHandler {
 	 * Otherwise, returns null.
 	 * @throws IOException
 	 */
-	 override def getContent(urlc:URLConnection, classes:Array[Class[_]]):RectangularField[_] = {
+	 override def getContent(urlc:URLConnection, classes:Array[Class[_]]):RectangularField[String] = {
 		
 		classes.find{
 			_.isAssignableFrom(classOf[RectangularField[_]])
