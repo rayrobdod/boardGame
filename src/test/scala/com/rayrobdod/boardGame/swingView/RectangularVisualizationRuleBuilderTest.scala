@@ -29,7 +29,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			val src = """{
 				"tileRand":5,
 				"indexies":"(x + y) % 2 == 0",
-				"surroundingTiles":{
+				"surroundingSpaces":{
 					"(0,0)":"a",
 					"(1,1)":"b"
 				}

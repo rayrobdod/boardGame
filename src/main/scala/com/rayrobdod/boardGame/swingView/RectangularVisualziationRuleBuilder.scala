@@ -41,7 +41,7 @@ class RectangularVisualziationRuleBuilder[A](
 	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Object):ParamaterizedRectangularVisualizationRule[A] = key match {
 		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
 		case "indexies" => a.copy(indexEquation = value.toString)
-		case "surroundingTiles" => 
+		case "surroundingSpaces" => 
 			a.copy(surroundingTiles = value.asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => 
 				(( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))
 			})
