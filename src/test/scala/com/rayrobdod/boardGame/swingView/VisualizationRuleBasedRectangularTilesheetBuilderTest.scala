@@ -50,7 +50,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 		}
 	}
 	describe("VisualizationRuleBasedRectangularTilesheetBuilder.Delayed") {
-		it ("do a thing") {
+		it ("can apply() using a two-image, two-rule pair of files") {
 			val source = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
 				sheetUrl = this.getClass.getResource("whiteBlackTiles.png"),
