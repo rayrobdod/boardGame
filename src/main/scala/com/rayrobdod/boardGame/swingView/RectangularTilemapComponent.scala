@@ -78,9 +78,10 @@ class RectangularTilemapComponent(
 	
 	private var mouseListeners:Map[RectangularFieldIndex, Seq[MouseListener]] = Map.empty.withDefaultValue(Nil)
 	def addMouseListener(index:RectangularFieldIndex, ml:MouseListener) {
+		if (mouseListeners.isEmpty) {this.addMouseListener(IndexForwardMouseListener)}
 		mouseListeners = mouseListeners + ((index, mouseListeners(index) :+ ml))
 	}
-	this.addMouseListener(new MouseListener() {
+	private object IndexForwardMouseListener extends MouseListener() {
 		def mouseClicked(e:MouseEvent):Unit = {
 			this.translate(e, {(a,b) => a.mouseClicked(b)})
 		}
@@ -122,5 +123,5 @@ class RectangularTilemapComponent(
 				}
 			}.tupled)
 		}
-	})
+	}
 }
