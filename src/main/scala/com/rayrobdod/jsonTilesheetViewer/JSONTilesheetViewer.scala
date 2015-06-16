@@ -189,6 +189,7 @@ object JSONTilesheetViewer extends App
 			fieldComp.removeAll()
 			fieldComp.add(a._2)
 			fieldComp.add(a._1)
+			fieldComp.validate()
 			
 			
 			nextRotationState.toSeq.map{_._1}.foreach{index =>
