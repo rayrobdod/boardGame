@@ -32,7 +32,7 @@ class RectangularFieldTest extends FunSpec {
 	val twoByTwoCsv:Seq[Seq[String]] = {
 		import scala.collection.JavaConversions.collectionAsScalaIterable;
 		
-		val a = new au.com.bytecode.opencsv.CSVReader(
+		val a = new com.opencsv.CSVReader(
 			new java.io.StringReader("a,b\nc,d")
 		).readAll
 		

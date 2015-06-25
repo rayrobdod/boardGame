@@ -38,7 +38,7 @@ class JsonMapHandler extends ContentHandler {
 	override def getContent(urlc:URLConnection):RectangularField[String] = {
 		import java.io.InputStreamReader
 		import java.nio.charset.StandardCharsets.UTF_8
-		import au.com.bytecode.opencsv.CSVReader;
+		import com.opencsv.CSVReader
 		
 		val layoutReader = new InputStreamReader(urlc.getInputStream, UTF_8)
 		val layoutTable:Seq[Seq[String]] = {

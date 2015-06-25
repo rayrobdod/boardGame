@@ -18,7 +18,7 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC3")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
 
-libraryDependencies += ("net.sf.opencsv" % "opencsv" % "2.3")
+libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
 javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 
@@ -34,11 +34,11 @@ packageOptions in (Compile, packageBin) += {
 		attrs.putValue("Implementation-Version", scalaVersion.value)
 		attrs
 	})
-	manifest.getEntries().put("au/com/bytecode/opencsv/", {
+	manifest.getEntries().put("com/opencsv/", {
 		val attrs = new java.util.jar.Attributes()
 		attrs.putValue("Implementation-Title", "opencsv")
 		attrs.putValue("Implementation-URL", "http://opencsv.sourceforge.net/")
-		attrs.putValue("Implementation-Version", "2.3")
+		attrs.putValue("Implementation-Version", "3.4")
 		attrs
 	})
 	Package.JarManifest( manifest )
