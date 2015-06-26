@@ -15,6 +15,8 @@ fork := true
 
 mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
+resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
+
 libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC3")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
