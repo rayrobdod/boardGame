@@ -70,6 +70,9 @@ class SpaceTest extends FunSpec {
 			it ("only space within 0 move of a space is that space") {
 				assertResult(Set(uniformField(1,1))){uniformField(1,1).spacesWithin(0, Space.constantCostFunction)}
 			}
+			it ("0 spaces are within -1 move of any space") {
+				assertResult(Set.empty){uniformField(1,1).spacesWithin(-1, Space.constantCostFunction)}
+			}
 		}
 		describe ("spacesAfter (uniform cost)") {
 			it ("2 spaces after 1 move of corner") {
@@ -86,6 +89,29 @@ class SpaceTest extends FunSpec {
 			}
 			it ("only space after 0 move of a space is that space") {
 				assertResult(Set(uniformField(1,1))){uniformField(1,1).spacesAfter(0, Space.constantCostFunction)}
+			}
+			it ("0 spaces are after -1 move of any space") {
+				assertResult(Set.empty){uniformField(1,1).spacesWithin(-1, Space.constantCostFunction)}
+			}
+		}
+		describe ("rawDijkstraData (uniform cost)") {
+			it ("do a thing") {
+				val res = uniformField(0,0).rawDijkstraData(Space.constantCostFunction)
+				
+				res.foreach{x =>
+					val (target, (distance, from)) = x
+					
+					if (target == uniformField(0,0)) {
+						assertResult(null){from}
+						assertResult(0){distance}
+					} else {
+						assert(
+							(target.asInstanceOf[RectangularSpace[(Int,Int)]].up == Option(from)) ||
+							(target.asInstanceOf[RectangularSpace[(Int,Int)]].left == Option(from))
+						)
+						assertResult(uniformField(0,0).distanceTo(target, Space.constantCostFunction)){distance}
+					}
+				}
 			}
 		}
 	}
