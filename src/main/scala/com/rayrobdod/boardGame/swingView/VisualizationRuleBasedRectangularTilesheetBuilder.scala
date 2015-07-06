@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2013  Raymond Dodge
+	Copyright (C) 2012-2015  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -27,13 +27,14 @@ import scala.collection.immutable.Seq
 import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
+import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
 
 class VisualizationRuleBasedRectangularTilesheetBuilder[A](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[A]
 ) extends Builder[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A]] {
-	def init:VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A] = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A](classMap)
-	def apply(a:VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A], key:String, value:Object) = key match {
+	def init:Delayed[A] = new Delayed[A](classMap)
+	def apply(a:Delayed[A], key:String, value:Object):Delayed[A] = key match {
 		case "tiles" => a.copy(sheetUrl = new URL(baseUrl, value.toString)) 
 		case "tileWidth" => a.copy(tileWidth = value.asInstanceOf[Long].intValue)
 		case "tileHeight" => a.copy(tileHeight = value.asInstanceOf[Long].intValue)
@@ -42,7 +43,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilder[A](
 		case _ => a
 	}
 	def childBuilder(key:String):Builder[_] = new MapBuilder
-	override val resultType:Class[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A]] = classOf[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A]]
+	override val resultType:Class[Delayed[A]] = classOf[Delayed[A]]
 }
 
 object VisualizationRuleBasedRectangularTilesheetBuilder {

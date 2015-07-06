@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2013  Raymond Dodge
+	Copyright (C) 2012-2015  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -61,8 +61,8 @@ final class RandomColorTilesheet(
 
 object RandomColorTilesheet {
 	final class ColorStringIcon(val color:Color, val dim:Dimension) extends javax.swing.Icon {
-		override def getIconWidth = dim.width
-		override def getIconHeight = dim.height
+		override def getIconWidth:Int = dim.width
+		override def getIconHeight:Int = dim.height
 		
 		import java.awt.{Component, Graphics}
 		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int)
