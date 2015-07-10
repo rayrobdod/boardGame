@@ -38,7 +38,7 @@ class RectangularVisualziationRuleBuilder[A](
 		spaceClassUnapplier:SpaceClassMatcherFactory[A]
 ) extends Builder[ParamaterizedRectangularVisualizationRule[A]] {
 	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
-	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Object):ParamaterizedRectangularVisualizationRule[A] = key match {
+	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Any):ParamaterizedRectangularVisualizationRule[A] = key match {
 		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
 		case "indexies" => a.copy(indexEquation = value.toString)
 		case "surroundingSpaces" => 

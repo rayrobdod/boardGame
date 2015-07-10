@@ -8,7 +8,7 @@ version := "3.0.0-SNAPSHOT"
 
 scalaVersion := "2.10.5"
 
-crossScalaVersions := Seq("2.10.5", "2.11.6")
+crossScalaVersions := Seq("2.10.5", "2.11.7")
 
 // heavy resource use, including Services
 fork := true
@@ -17,7 +17,7 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC3")
+libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC4")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
 
@@ -74,7 +74,7 @@ ProguardKeys.inputFilter in Proguard := { file =>
 }
 
 // scalaTest
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 
 testOptions in Test += Tests.Argument("-oS")
 

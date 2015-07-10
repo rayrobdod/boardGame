@@ -41,8 +41,8 @@ class JsonMapHandlerTest extends FunSpec {
 			assertResult(expected){result}
 		}
 		it ("parses a CSV into a RectangularField (2)") {
-			val url = new URL("data", "", -1, ",\0,\n", new DataHandler)
-			val expected = RectangularField(Seq(Seq("","\0","")))
+			val url = new URL("data", "", -1, ",\u0000,\n", new DataHandler)
+			val expected = RectangularField(Seq(Seq("","\u0000","")))
 			val result = (new JsonMapHandler).getContent(url.openConnection(), Array(classOf[RectangularField[_]]))
 			assertResult(expected){result}
 		}

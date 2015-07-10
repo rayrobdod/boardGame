@@ -34,7 +34,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilder[A](
 		classMap:SpaceClassMatcherFactory[A]
 ) extends Builder[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A]] {
 	def init:Delayed[A] = new Delayed[A](classMap)
-	def apply(a:Delayed[A], key:String, value:Object):Delayed[A] = key match {
+	def apply(a:Delayed[A], key:String, value:Any):Delayed[A] = key match {
 		case "tiles" => a.copy(sheetUrl = new URL(baseUrl, value.toString)) 
 		case "tileWidth" => a.copy(tileWidth = value.asInstanceOf[Long].intValue)
 		case "tileHeight" => a.copy(tileHeight = value.asInstanceOf[Long].intValue)
