@@ -135,5 +135,15 @@ class RectangularFieldTest extends FunSpec {
 			val a = RectangularField(threeByThree)
 			assertResult(None){a(0,0).up}
 		}
+		describe ("Space") {
+			it ("is equal to itself") {
+				val a = RectangularField(threeByThree)
+				assert(a(0,0) == a(0,0))
+			}
+			it ("is not equal to a string") {
+				val a = RectangularField(threeByThree)
+				assert(! (a(0,0) equals "Hello"))
+			}
+		}
 	}
 }
