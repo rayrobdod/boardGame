@@ -25,7 +25,17 @@ libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
 javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
+scalacOptions in doc in Compile ++= Seq(
+		"-doc-title", name.value,
+		"-doc-version", version.value,
+		"-doc-root-content", ((scalaSource in Compile).value / "rootdoc.txt").toString,
+		"-diagrams",
+		"-external-urls", "scala=http://www.scala-lang.org/api/" + scalaVersion.value + "/",
+		"-sourcepath", baseDirectory.value.toString,
+		"-doc-source-url", "https://github.com/rayrobdod/boardGame/tree/" + version.value + "€{FILE_PATH}.scala"
+)
 
 
 packageOptions in (Compile, packageBin) += {
