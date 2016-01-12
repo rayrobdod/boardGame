@@ -16,6 +16,9 @@ crossScalaVersions := Seq("2.10.6", "2.11.7") ++
 // heavy resource use, including Services
 fork := true
 
+// proguard doesn't see the META-INF without this
+exportJars := true
+
 mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
