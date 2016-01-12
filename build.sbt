@@ -4,29 +4,45 @@ organization := "com.rayrobdod"
 
 organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
-version := "3.0-RC1"
+apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
 
-scalaVersion := "2.10.5"
+version := "3.0.0-RC2"
 
-crossScalaVersions := Seq("2.10.5", "2.11.7")
+scalaVersion := "2.10.6"
+
+crossScalaVersions := Seq("2.10.6", "2.11.7") ++
+    (if (System.getProperty("scoverage.disable", "") != "true") {Nil} else {Seq("2.12.0-M3")})
 
 // heavy resource use, including Services
 fork := true
+
+// proguard doesn't see the META-INF without this
+exportJars := true
 
 mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC4")
+libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC6")
 
-libraryDependencies += ("com.rayrobdod" %% "utilities" % "20140518")
+libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
-javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
+javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-target:jvm-1.7")
 
+scalacOptions in doc in Compile ++= Seq(
+		"-doc-title", name.value,
+		"-doc-version", version.value,
+		"-doc-root-content", ((scalaSource in Compile).value / "rootdoc.txt").toString,
+		"-diagrams",
+		"-sourcepath", baseDirectory.value.toString,
+		"-doc-source-url", "https://github.com/rayrobdod/boardGame/tree/" + version.value + "€{FILE_PATH}.scala"
+)
+
+autoAPIMappings in doc in Compile := true
 
 packageOptions in (Compile, packageBin) += {
 	val manifest = new java.util.jar.Manifest()
@@ -59,6 +75,8 @@ mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LIC
 
 proguardSettings
 
+ProguardKeys.proguardVersion in Proguard := "5.2.1"
+
 ProguardKeys.options in Proguard <+= (baseDirectory in Compile).map{"-include '"+_+"/viewer.proguard'"}
 
 ProguardKeys.inputFilter in Proguard := { file =>
@@ -74,7 +92,9 @@ ProguardKeys.inputFilter in Proguard := { file =>
 }
 
 // scalaTest
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % (
+      "2.2.5" + (if ((scalaVersion.value take 7) == "2.12.0-") { "-" + (scalaVersion.value drop 7) } else {""}) 
+    ) % "test"
 
 testOptions in Test += Tests.Argument("-oS")
 

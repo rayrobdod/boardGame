@@ -91,7 +91,7 @@ class SpaceTest extends FunSpec {
 				assertResult(Set(uniformField(1,1))){uniformField(1,1).spacesAfter(0, Space.constantCostFunction)}
 			}
 			it ("0 spaces are after -1 move of any space") {
-				assertResult(Set.empty){uniformField(1,1).spacesWithin(-1, Space.constantCostFunction)}
+				assertResult(Set.empty){uniformField(1,1).spacesAfter(-1, Space.constantCostFunction)}
 			}
 		}
 		describe ("rawDijkstraData (uniform cost)") {
