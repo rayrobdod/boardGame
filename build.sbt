@@ -20,15 +20,15 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC5")
+libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC6")
 
-libraryDependencies += ("com.rayrobdod" %% "utilities" % "20151216")
+libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
-javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
+javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-target:jvm-1.7")
 
 scalacOptions in doc in Compile ++= Seq(
 		"-doc-title", name.value,
