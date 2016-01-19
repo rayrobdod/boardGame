@@ -6,7 +6,7 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
 
-version := "3.0.0-RC2"
+version := "3.0.0"
 
 scalaVersion := "2.10.6"
 
@@ -23,7 +23,7 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "2.0-RC6")
+libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
@@ -96,7 +96,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % (
       "2.2.5" + (if ((scalaVersion.value take 7) == "2.12.0-") { "-" + (scalaVersion.value drop 7) } else {""}) 
     ) % "test"
 
-testOptions in Test += Tests.Argument("-oS")
+testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 
 
 scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
