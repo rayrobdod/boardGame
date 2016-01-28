@@ -91,6 +91,9 @@ class RandomColorTilesheetTest extends FunSpec {
 		it ("icon does not equal a dissimilar instance (size)") {
 			assert(icon != new RandomColorTilesheet.ColorStringIcon(Color.red, new Dimension(14,14)))
 		}
+		it ("icon does not equal a string") {
+			assert(icon != "apple")
+		}
 	}
 	
 	

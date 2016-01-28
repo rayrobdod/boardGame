@@ -41,19 +41,12 @@ final class RandomColorTilesheet(
 		(( new SolidColorIcon(color, dim.width, dim.height), new RandomColorTilesheet.ColorStringIcon(color, dim) ))
 	}
 	
-	protected def canEquals(other:Any):Boolean = {
-		other.isInstanceOf[RandomColorTilesheet]
+	protected def canEquals(other:Any):Option[RandomColorTilesheet] = {
+		Option(other).collect{case x:RandomColorTilesheet => x}
 	}
 	override def equals(other:Any):Boolean = {
-		if (this.canEquals(other)) {
-			val other2 = other.asInstanceOf[RandomColorTilesheet]
-			if (other2.canEquals(this)) {
-				other2.dim == this.dim
-			} else {
-				false
-			}
-		} else {
-			false
+		this.canEquals(other).foldLeft(false){(b, x:RandomColorTilesheet) =>
+			x.canEquals(this).foldLeft(false){(b, y) => true}
 		}
 	}
 	override def hashCode:Int = dim.hashCode
@@ -78,20 +71,15 @@ object RandomColorTilesheet {
 		}
 		
 		
-		protected def canEquals(other:Any):Boolean = {
-			other.isInstanceOf[ColorStringIcon]
+		protected def canEquals(other:Any):Option[ColorStringIcon] = {
+			Option(other).collect{case x:ColorStringIcon => x}
 		}
 		override def equals(other:Any):Boolean = {
-			if (this.canEquals(other)) {
-				val other2 = other.asInstanceOf[ColorStringIcon]
-				if (other2.canEquals(this)) {
-					other2.color == this.color &&
-					other2.dim == this.dim
-				} else {
-					false
+			this.canEquals(other).foldLeft(false){(b, x:ColorStringIcon) =>
+				x.canEquals(this).foldLeft(false){(b, y:ColorStringIcon) =>
+					y.color == x.color &&
+					y.dim == x.dim
 				}
-			} else {
-				false
 			}
 		}
 		override def hashCode:Int = color.hashCode
