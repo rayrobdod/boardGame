@@ -22,6 +22,9 @@ import javafx.scene.Node
 import com.rayrobdod.boardGame.RectangularField
 
 /**
+ * A class that contains a method to create an image appropriate for representing
+ * a particular space in a rectangular field 
+ * @since next
  */
 trait RectangularTilesheet[A]
 {

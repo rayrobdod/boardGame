@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2013  Raymond Dodge
+	Copyright (C) 2012-2015  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,43 +15,53 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.scalafxView
+package com.rayrobdod.boardGame
+package scalafxView
 
-import com.rayrobdod.boardGame._
-import com.rayrobdod.boardGame.swingView.{
-		SpaceClassMatcherFactory, RectangularVisualizationRule
-}
+import scalafx.scene.Node
 import scala.util.Random
 import scala.annotation.tailrec
-import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
-import java.net.URL
+import scala.collection.immutable.{Seq, Map, Set}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
-import javafx.scene.image.{ImageView, Image, WritableImage}
+import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
+import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
 
-import scala.runtime.{AbstractFunction2 => Function2}
 
 
 
 /**
- * @author Raymond Dodge
+ * @version next
+ */
+class RectangularVisualziationRuleBuilder[A](
+		tileSeq:Seq[Node],
+		spaceClassUnapplier:SpaceClassMatcherFactory[A]
+) extends Builder[ParamaterizedRectangularVisualizationRule[A]] {
+	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
+	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Any):ParamaterizedRectangularVisualizationRule[A] = key match {
+		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
+		case "indexies" => a.copy(indexEquation = value.toString)
+		case "surroundingSpaces" => 
+			a.copy(surroundingTiles = value.asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => 
+				(( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))
+			})
+		case "tiles" => a.copy(iconParts = asMapOfFrameIndexies(value).mapValues{_.map{tileSeq}})
+		case _ => a
+	}
+	def childBuilder(key:String):Builder[_] = new MapBuilder
+	override val resultType:Class[ParamaterizedRectangularVisualizationRule[A]] = classOf[ParamaterizedRectangularVisualizationRule[A]]
+}
+
+
+/**
  * @version 3.0.0
  */
-class JSONRectangularVisualizationRule[A](
-		jsonMap:Map[String, Any],
-		tileSeq:Seq[Image],
-		spaceClassUnapplier:SpaceClassMatcherFactory[A]
+final case class ParamaterizedRectangularVisualizationRule[A] (
+	override val iconParts:Map[Int, Seq[Node]] = Map.empty[Int, Seq[Node]],
+	tileRand:Int = 1,
+	indexEquation:String = "true", // TODO: string? really?
+	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]
 ) extends RectangularVisualizationRule[A] {
-	import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
-	type IndexConverter = Function1[(Int, Int), (Int, Int)]
-	
-	// Map[layer, frames]
-	def iconParts:Map[Int, Seq[Image]] = asMapOfFrameIndexies(jsonMap("tiles")).mapValues{_.map{tileSeq}}
-	def surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] =
-		jsonMap.getOrElse("surroundingSpaces", Map.empty).asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => (( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))}
-	def tileRand:Int = asInt(jsonMap.getOrElse("tileRand", 1))
-	def indexEquation:String = jsonMap.getOrElse("indexies", true).toString
-	
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
 		import JSONRectangularVisualizationRule.{scriptEngine, buildBindings, executeScript}
 		
@@ -59,7 +69,7 @@ class JSONRectangularVisualizationRule[A](
 		asBoolean( executeScript(indexEquation, buildBindings(x, y, width, height)) )
 	}
 	
-	override def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int) = {
+	override def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean = {
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[A]) =>
 			val newIndexies = conversion( ((x,y)) )
@@ -78,8 +88,7 @@ class JSONRectangularVisualizationRule[A](
 	
 	final override def priority:Int = {
 		@tailrec def countMatches(m:Matcher, total:Int = 0):Int = {
-			if (! m.hitEnd) {
-				m.find
+			if (m.find()) {
 				countMatches(m, total + 1)
 			} else {total}
 		}
@@ -90,15 +99,12 @@ class JSONRectangularVisualizationRule[A](
 				1000 / {
 					countMatches( divisionPattern.matcher(indexEquation) ) + 1
 				} * {
-					countMatches( andPattern.matcher(indexEquation) )
+					countMatches( andPattern.matcher(indexEquation) ) + 1
 				} + {
 					import JSONRectangularVisualizationRule.numberPattern
 					
-					@tailrec def sumMatches(m:Matcher, total:Int = 0):Int =
-					{
-						m.find()
-						if (! m.hitEnd)
-						{
+					@tailrec def sumMatches(m:Matcher, total:Int = 0):Int = {
+						if (m.find()) {
 							val number = Integer.parseInt(m.group)
 							sumMatches(m, total + number)
 						} else {total}
@@ -107,7 +113,7 @@ class JSONRectangularVisualizationRule[A](
 					val m = numberPattern.matcher(indexEquation)
 					sumMatches(m)
 				}
-			} else 0)
+			} else {0})
 	}
 }
 
@@ -120,9 +126,13 @@ object JSONRectangularVisualizationRule
 {
 	val divisionPattern = Pattern.compile("[%//]")
 	val numberPattern = Pattern.compile("\\d+")
-	val andPattern = Pattern.compile("&")
+	val andPattern = Pattern.compile("&+")
 	
-	val scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript")
+	val scriptEngine = {
+		val retVal = new ScriptEngineManager(null).getEngineByName("JavaScript")
+		if (retVal == null) throw new NullPointerException("scriptEngine not found")
+		retVal
+	}
 	
 	def buildBindings(x:Int, y:Int, width:Int, height:Int):Bindings = {
 		val binding = new SimpleBindings
@@ -133,7 +143,7 @@ object JSONRectangularVisualizationRule
 		binding
 	}
 	
-	def executeScript(script:String, bindings:Bindings) = {
+	def executeScript(script:String, bindings:Bindings):Any = {
 		scriptEngine.eval(script, bindings)
 	}
 	
@@ -151,12 +161,14 @@ object JSONRectangularVisualizationRule
 		case y:String => java.lang.Boolean.parseBoolean(y)
 	}
 	
-	def asMapOfFrameIndexies(frameIndexies:Any) =
+	def asMapOfFrameIndexies(frameIndexies:Any):Map[Int, Seq[Int]] =
 	{
+		val ARBITRARY_NEGATIVE_VALUE = -127
+		
 		val normalizedFrameIndex:Map[Int, Seq[Int]] = frameIndexies match {
-			case x:Int => Map(-127 → Seq(x) )
-			case x:Long => Map( -127 → Seq(x.intValue) )
-			case x:Seq[_] => Map( -127 → x.map{asInt(_)} )
+			case x:Int => Map(ARBITRARY_NEGATIVE_VALUE → Seq(x))
+			case x:Long => Map(ARBITRARY_NEGATIVE_VALUE → Seq(x.intValue))
+			case x:Seq[_] => Map(ARBITRARY_NEGATIVE_VALUE → x.map{asInt(_)})
 			case x:Map[_, _] => {
 				x.map{(y:Tuple2[_,_]) => (( asInt(y._1), y._2)) }
 						.mapValues{_ match {
@@ -170,14 +182,15 @@ object JSONRectangularVisualizationRule
 		normalizedFrameIndex
 	}
 	
-	def asIndexTranslationFunction(s:String) =
+	def asIndexTranslationFunction(s:String):Function1[(Int, Int), (Int, Int)] =
 	{
 		import java.util.regex.{Pattern, Matcher}
 		
 		val pairPattern = Pattern.compile("""\(([\+\-]?\d+),([\+\-]?\d+)\)""")
 		val matcher = pairPattern.matcher(s)
-		if (!matcher.matches())
+		if (!matcher.matches()) {
 			throw new IllegalArgumentException(s + " does not match pair pattern.")
+		}
 		val firstStr = matcher.group(1)
 		val secondStr = matcher.group(2)
 		val firstInt = asInt(firstStr)
@@ -185,16 +198,18 @@ object JSONRectangularVisualizationRule
 		
 		new Function1[(Int, Int), (Int, Int)]
 		{
-			def apply(x:(Int, Int)) = 
+			def apply(x:(Int, Int)):(Int, Int) = 
 				((x._1 + firstInt, x._2 + secondInt))
 		}
 	}
 	
 	
-	def PriorityOrdering = Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
+	def PriorityOrdering:Ordering[RectangularVisualizationRule[_]] = {
+		Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
+	}
 
-	object FullOrdering extends Ordering[JSONRectangularVisualizationRule[_]] {
-		def compare(x:JSONRectangularVisualizationRule[_], y:JSONRectangularVisualizationRule[_]):Int = {
+	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_]] {
+		def compare(x:ParamaterizedRectangularVisualizationRule[_], y:ParamaterizedRectangularVisualizationRule[_]):Int = {
 			(x.tileRand compareTo y.tileRand) match {
 				case 0 => (x.indexEquation compareTo y.indexEquation) match {
 					case 0 => IterableIntOrdering.compare(x.iconParts.keys, y.iconParts.keys) match {

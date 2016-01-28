@@ -29,20 +29,21 @@ import com.rayrobdod.boardGame.RectangularField
  * A tilesheet that prints indexies on a tile
  * 
  * @author Raymond Dodge
+ * @version next
  */
 object IndexesTilesheet extends RectangularTilesheet[Any] {
-	override def name = "IndexesTilesheet"
-	case class Dimension(val width:Int, val height:Int)
-	val dim = new Dimension(32,32)
+	override def name:String = "IndexesTilesheet"
+	final case class Dimension(val width:Int, val height:Int)
+	private val dim = new Dimension(32,32)
 	
-	def lightIcon = {
+	private def lightIcon = {
 		val retVal = new scalafx.scene.shape.Rectangle
 		retVal.width = dim.width
 		retVal.height = dim.height
 		retVal.fill = Color.MAGENTA
 		retVal
 	}
-	def darkIcon  = {
+	private def darkIcon  = {
 		val retVal = new scalafx.scene.shape.Rectangle
 		retVal.width = dim.width
 		retVal.height = dim.height
@@ -50,17 +51,14 @@ object IndexesTilesheet extends RectangularTilesheet[Any] {
 		retVal
 	}
 	
-	def getImageFor(f:RectangularField[_], x:Int, y:Int, rng:Random):(Node, Node) = {
+	override def getImageFor(f:RectangularField[_], x:Int, y:Int, rng:Random):(Node, Node) = {
 		((
 			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
 			IndexImage(x,y)
 		))
 	}
 	
-	def IndexImage(xIndex:Int, yIndex:Int):Node = {
+	private def IndexImage(xIndex:Int, yIndex:Int):Node = {
 		new Text("(" + xIndex + "," + yIndex + ")")
 	}
 }
-
-
-

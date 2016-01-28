@@ -21,9 +21,6 @@ import scala.util.Random
 import javax.swing.Icon
 import com.rayrobdod.boardGame.RectangularField
 
-
-
-
 /**
  * @version 3.0.0
  */

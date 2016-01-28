@@ -43,8 +43,7 @@ import com.rayrobdod.boardGame.scalafxView.{
 import com.rayrobdod.boardGame.{
 		RectangularField, RectangularSpace
 }
-import com.rayrobdod.javaScriptObjectNotation.parser.JSONParser
-import com.rayrobdod.javaScriptObjectNotation.parser.listeners.ToScalaCollection
+import com.rayrobdod.json.parser.JsonParser
 
 
 /**
