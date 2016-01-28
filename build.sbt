@@ -27,6 +27,10 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
+libraryDependencies += ("org.scalafx" %% "scalafx" % "1.0.0-M7")
+
+javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
+
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
 javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
@@ -95,6 +99,15 @@ ProguardKeys.inputFilter in Proguard := { file =>
 libraryDependencies += "org.scalatest" %% "scalatest" % (
       "2.2.5" + (if ((scalaVersion.value take 7) == "2.12.0-") { "-" + (scalaVersion.value drop 7) } else {""}) 
     ) % "test"
+
+jfxSettings
+
+JFX.mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer2")
+
+JFX.devKit := JFX.jdk("C:/Program Files/Java/jdk1.7.0_51")
+
+JFX.addJfxrtToClasspath := true
+
 
 testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 
