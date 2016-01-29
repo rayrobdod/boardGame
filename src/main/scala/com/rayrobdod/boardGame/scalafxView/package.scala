@@ -22,7 +22,7 @@ import scala.annotation.tailrec
 /**
  * 
  */
-package object scalafxView {
+package object javafxView {
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 	
 	def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
@@ -36,7 +36,7 @@ package object scalafxView {
 	}
 }
 
-package scalafxView {
+package javafxView {
 	trait SpaceClassMatcherFactory[-SpaceClass] {
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}

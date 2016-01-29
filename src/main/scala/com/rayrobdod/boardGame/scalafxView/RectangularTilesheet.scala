@@ -15,10 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.scalafxView
+package com.rayrobdod.boardGame.javafxView
 
 import scala.util.Random
-import scalafx.scene.Node
+import javafx.scene.Node
 import com.rayrobdod.boardGame.RectangularField
 
 /**

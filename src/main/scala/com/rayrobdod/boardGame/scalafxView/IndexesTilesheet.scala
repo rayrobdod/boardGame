@@ -15,13 +15,13 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.scalafxView
+package com.rayrobdod.boardGame.javafxView
 
-import scalafx.scene.Node
-import scalafx.scene.canvas.{Canvas, GraphicsContext}
-import scalafx.scene.image.{PixelReader, WritableImage, Image}
-import scalafx.scene.paint.Color
-import scalafx.scene.text.Text
+import javafx.scene.Node
+import javafx.scene.canvas.{Canvas, GraphicsContext}
+import javafx.scene.image.{PixelReader, WritableImage, Image}
+import javafx.scene.paint.Color
+import javafx.scene.text.Text
 import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
 
@@ -37,17 +37,17 @@ object IndexesTilesheet extends RectangularTilesheet[Any] {
 	private val dim = new Dimension(32,32)
 	
 	private def lightIcon = {
-		val retVal = new scalafx.scene.shape.Rectangle
-		retVal.width = dim.width
-		retVal.height = dim.height
-		retVal.fill = Color.MAGENTA
+		val retVal = new javafx.scene.shape.Rectangle
+		retVal.setWidth(dim.width)
+		retVal.setHeight(dim.height)
+		retVal.setFill(Color.MAGENTA)
 		retVal
 	}
 	private def darkIcon  = {
-		val retVal = new scalafx.scene.shape.Rectangle
-		retVal.width = dim.width
-		retVal.height = dim.height
-		retVal.fill = Color.CYAN
+		val retVal = new javafx.scene.shape.Rectangle
+		retVal.setWidth(dim.width)
+		retVal.setHeight(dim.height)
+		retVal.setFill(Color.CYAN)
 		retVal
 	}
 	

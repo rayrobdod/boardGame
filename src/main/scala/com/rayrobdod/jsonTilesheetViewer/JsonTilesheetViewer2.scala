@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2013  Raymond Dodge
+	Copyright (C) 2012-2016  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -21,23 +21,23 @@ import scala.collection.immutable.Seq
 import scala.util.Random
 
 import java.net.{URL, URI}
-import scalafx.stage.Window
-import scalafx.scene.Scene
-import scalafx.scene.layout.GridPane
-import scalafx.scene.layout.StackPane
-import scalafx.scene.text.Text
-import scalafx.scene.control.TextField
-import scalafx.scene.control.Button
-import scalafx.beans.property.ObjectProperty
-import scalafx.application.JFXApp
-import scalafx.application.JFXApp.PrimaryStage
+import javafx.stage.Window
+import javafx.stage.Stage
+import javafx.scene.Scene
+import javafx.scene.layout.GridPane
+import javafx.scene.layout.StackPane
+import javafx.scene.text.Text
+import javafx.scene.control.TextField
+import javafx.scene.control.Button
+import javafx.beans.property.ObjectProperty
+import javafx.application.Application
 import com.rayrobdod.jsonTilesheetViewer.tags._
 
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
-import com.rayrobdod.boardGame.scalafxView.{
+import com.rayrobdod.boardGame.javafxView.{
 		RectangularFieldComponent,
 		RectangularTilesheet,
 		IndexesTilesheet
@@ -52,9 +52,9 @@ import com.rayrobdod.json.parser.JsonParser
  * @author Raymond Dodge
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
-object JSONTilesheetViewer2 extends JFXApp
-{
-	{
+class JSONTilesheetViewer2 extends Application {
+	
+	override def init():Unit = {
 		val prop:String = "java.protocol.handler.pkgs";
 		val pkg:String = "com.rayrobdod.tagprotocol";
 		
@@ -67,28 +67,38 @@ object JSONTilesheetViewer2 extends JFXApp
 				ToggleContentHandlerFactory);
 	}
 	
-	val tileUrlBox = new TextField()
-	val mapUrlBox = new TextField()
-	val randBox = new TextField()
-	val goButton = new Button("Go")
-	
-	
-	val tilesheet:RectangularTilesheet[SpaceClass] = IndexesTilesheet
-	val field:RectangularField[SpaceClass] = RectangularField(Seq.fill(14, 12){""})
-	val fieldCompParts = RectangularFieldComponent[SpaceClass](field, tilesheet)
-	val fieldComp = new StackPane()
-	fieldComp.getChildren().addAll(fieldCompParts._1, fieldCompParts._2)
-	
-	stage = new PrimaryStage {
-		title = "JSON Tilesheet Viewer"
-		scene = new Scene {
-			root = new GridPane {
-				addRow( 0, new Text("tilesheet: "), tileUrlBox )
-				addRow( 1, new Text("map: "),       mapUrlBox )
-				addRow( 2, new Text("seed: "),      randBox )
-				addRow( 3, goButton )
-				addRow( 4, fieldComp )
-			}
-		}
+	override def start(stage:Stage):Unit = {
+		val tileUrlBox = new TextField()
+		val mapUrlBox = new TextField()
+		val randBox = new TextField()
+		val goButton = new Button("Go")
+		
+		
+		val tilesheet:RectangularTilesheet[SpaceClass] = IndexesTilesheet
+		val field:RectangularField[SpaceClass] = RectangularField(Seq.fill(14, 12){""})
+		val fieldCompParts = RectangularFieldComponent[SpaceClass](field, tilesheet)
+		val fieldComp = new StackPane()
+		fieldComp.getChildren().addAll(fieldCompParts._1, fieldCompParts._2)
+		
+		stage.setTitle("JSON Tilesheet Viewer")
+		stage.setScene({
+			val a = new Scene({
+				val b = new GridPane()
+				b.addRow( 0, new Text("tilesheet: "), tileUrlBox )
+				b.addRow( 1, new Text("map: "),       mapUrlBox )
+				b.addRow( 2, new Text("seed: "),      randBox )
+				b.addRow( 3, goButton )
+				b.addRow( 4, fieldComp )
+				b
+			})
+			a
+		})
+		stage.show()
 	}
+}
+
+object JSONTilesheetViewer2 {
+	def main(args:Array[String]):Unit = {
+		Application.launch(classOf[JSONTilesheetViewer2])
+	}	
 }

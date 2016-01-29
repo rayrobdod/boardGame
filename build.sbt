@@ -27,8 +27,6 @@ libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
-libraryDependencies += ("org.scalafx" %% "scalafx" % "1.0.0-M7")
-
 javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")

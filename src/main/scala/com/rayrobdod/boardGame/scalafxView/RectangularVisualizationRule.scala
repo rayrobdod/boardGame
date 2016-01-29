@@ -15,9 +15,9 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.scalafxView
+package com.rayrobdod.boardGame.javafxView
 
-import scalafx.scene.Node
+import javafx.scene.Node
 import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.RectangularField

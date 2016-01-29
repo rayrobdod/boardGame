@@ -16,9 +16,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.rayrobdod.boardGame
-package scalafxView
+package javafxView
 
-import scalafx.scene.Node
+import javafx.scene.Node
 import scala.util.Random
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Set}
