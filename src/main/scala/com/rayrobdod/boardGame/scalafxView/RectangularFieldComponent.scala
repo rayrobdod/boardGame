@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2014  Raymond Dodge
+	Copyright (C) 2012-2015  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,27 +17,33 @@
 */
 package com.rayrobdod.boardGame.scalafxView
 
-import scala.util.Random
 import scalafx.scene.Node
+import scalafx.scene.layout.GridPane
+import scala.collection.immutable.Map
+import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.RectangularFieldIndex
 
-/**
- * A class that contains a method to create an image appropriate for representing
- * a particular space in a rectangular field 
- * @since next
- */
-trait RectangularTilesheet[-A]
-{
-	/** a name for the tilesheet */
-	def name:String
-	
-	/**
-	 * @param field the field on the space to lookup
-	 * @param x the x coordinate of the space to lookup
-	 * @param y the y coordinate of the space to lookup
-	 * @param rng the 
-	 * @return # the part of the image that goes below the movable controlled tokens
-			# the part of the image that goes above the movable controlled tokens
-	 */
-	def getImageFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Node, Node) 
+object RectangularFieldComponent {
+	def apply[A](
+			field:RectangularField[A],
+			tilesheet:RectangularTilesheet[A],
+			rng:Random = Random
+	):(Node, Node) = {
+		
+		val a:Map[(Int, Int), (Node, Node)] = field.map{x => ((x._1, tilesheet.getImageFor(field, x._1._1, x._1._2, rng) )) }
+		val top = a.mapValues{_._1}
+		val bot = a.mapValues{_._2}
+		
+		val topComp = new GridPane()
+		top.foreach{case ((x,y), node) =>
+			topComp.add(node, x, y)
+		}
+		val botComp = new GridPane()
+		bot.foreach{case ((x,y), node) =>
+			botComp.add(node, x, y)
+		}
+		
+		((topComp, botComp))
+	}
 }

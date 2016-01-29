@@ -24,6 +24,7 @@ import java.net.{URL, URI}
 import scalafx.stage.Window
 import scalafx.scene.Scene
 import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.StackPane
 import scalafx.scene.text.Text
 import scalafx.scene.control.TextField
 import scalafx.scene.control.Button
@@ -37,6 +38,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame.scalafxView.{
+		RectangularFieldComponent,
 		RectangularTilesheet,
 		IndexesTilesheet
 }
@@ -71,9 +73,11 @@ object JSONTilesheetViewer2 extends JFXApp
 	val goButton = new Button("Go")
 	
 	
-	val tilesheet:RectangularTilesheet[_] = IndexesTilesheet
-	val field:RectangularField = (new RotateMapTagResource).getContent
-	val fieldComp = new RectangularFieldComponent(tilesheet, field)
+	val tilesheet:RectangularTilesheet[SpaceClass] = IndexesTilesheet
+	val field:RectangularField[SpaceClass] = RectangularField(Seq.fill(14, 12){""})
+	val fieldCompParts = RectangularFieldComponent[SpaceClass](field, tilesheet)
+	val fieldComp = new StackPane()
+	fieldComp.getChildren().addAll(fieldCompParts._1, fieldCompParts._2)
 	
 	stage = new PrimaryStage {
 		title = "JSON Tilesheet Viewer"
