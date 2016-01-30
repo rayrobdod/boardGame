@@ -29,7 +29,7 @@ object RectangularFieldComponent {
 			field:RectangularField[A],
 			tilesheet:RectangularTilesheet[A],
 			rng:Random = Random
-	):(Node, Node) = {
+	):(GridPane, GridPane) = {
 		
 		val a:Map[(Int, Int), (Node, Node)] = field.map{x => ((x._1, tilesheet.getImageFor(field, x._1._1, x._1._2, rng) )) }
 		val top = a.mapValues{_._1}

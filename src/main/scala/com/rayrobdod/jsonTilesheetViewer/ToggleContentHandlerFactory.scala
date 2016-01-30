@@ -39,6 +39,9 @@ object ToggleContentHandlerFactory extends ContentHandlerFactory {
 	def setCurrentToTilesheet() {
 		current = new JsonRectangularTilesheetHandler;
 	}
+	def setCurrentToTilesheetFx() {
+		current = new JsonRectangularTilesheetHandler2;
+	}
 	def setCurrentToField() {
 		current = new JsonMapHandler;
 	}

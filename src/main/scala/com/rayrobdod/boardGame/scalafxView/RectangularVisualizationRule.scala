@@ -17,7 +17,7 @@
 */
 package com.rayrobdod.boardGame.javafxView
 
-import javafx.scene.Node
+import javafx.scene.image.Image
 import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.RectangularField
@@ -32,7 +32,7 @@ abstract class RectangularVisualizationRule[A] {
 	/**
 	 * Returns the images to be used if this visualization rule applies 
 	 */
-	def iconParts:Map[Int, Seq[Node]]
+	def iconParts:Map[Int, Seq[Image]]
 	
 	protected def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean
 	protected def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean

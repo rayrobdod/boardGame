@@ -24,11 +24,13 @@ import java.net.{URL, URI}
 import javafx.stage.Window
 import javafx.stage.Stage
 import javafx.scene.{Scene, Node}
-import javafx.scene.layout.{GridPane, StackPane, AnchorPane}
+import javafx.scene.layout.{GridPane, BorderPane, StackPane}
 import javafx.scene.text.Text
 import javafx.scene.control.{TextField, Button}
 import javafx.beans.property.ObjectProperty
 import javafx.application.Application
+import javafx.event.{EventHandler, ActionEvent}
+import javafx.scene.input.MouseEvent
 import com.rayrobdod.jsonTilesheetViewer.tags._
 
 import java.io.File
@@ -66,45 +68,168 @@ final class JSONTilesheetViewer2 extends Application {
 	}
 	
 	override def start(stage:Stage):Unit = {
-		val tileUrlBox = new TextField()
-		val mapUrlBox = new TextField()
-		val randBox = new TextField()
-		val goButton = new Button("Go")
+		val args = this.getParameters().getUnnamed()
 		
-		goButton.setDefaultButton(true)
-		goButton.setMaxWidth(Double.PositiveInfinity)
-		goButton.setMaxHeight(Double.PositiveInfinity)
-		
-		val tilesheet:RectangularTilesheet[SpaceClass] = IndexesTilesheet
-		val field:RectangularField[SpaceClass] = RectangularField(Seq.fill(14, 12){""})
-		val fieldCompParts = RectangularFieldComponent[SpaceClass](field, tilesheet)
+		val inputFields = new InputFields2(
+			initialTilesheetUrl = if (args.size > 0) args.get(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil",
+			initialFieldUrl     = if (args.size > 1) args.get(1) else "tag:rayrobdod.name,2013-08:map-rotate",
+			initialRand         = if (args.size > 2) args.get(2) else ""
+		)
 		val fieldComp = new StackPane()
-		fieldComp.getChildren().addAll(fieldCompParts._1, fieldCompParts._2)
+		
+		inputFields.addOkButtonActionListener(new EventHandler[ActionEvent]() {
+			override def handle(e:ActionEvent) {
+				JSONTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
+			}
+		})
+		
+		
 		
 		stage.setTitle("JSON Tilesheet Viewer")
-		stage.setScene({
-			val a = new Scene({
-				val b = new GridPane()
-				b.add(new Text("tilesheet: "), 0, 0, 1, 1)
-				b.add(tileUrlBox, 1, 0, 1, 1 )
-				b.add(new Text("map: "), 0, 1, 1, 1)
-				b.add(mapUrlBox, 1, 1, 1, 1 )
-				b.add(new Text("seed: "), 0, 2, 1, 1)
-				b.add(randBox, 1, 2, 1, 1 )
-				b.add(goButton, 0, 3, 2, 1 )
-				b.add(fieldComp, 0, 4, 2, 1 )
-				b.setPadding(new javafx.geometry.Insets(10,10,10,10));
-				
-				b
-			})
-			a
-		})
+		stage.setScene(
+			new Scene(
+				new BorderPane(
+					fieldComp,
+					inputFields.panel,
+					new Text(),
+					new Text(),
+					new Text()
+				)
+			)
+		)
+		
+		JSONTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
 		stage.show()
 	}
+	
+	
 }
 
 object JSONTilesheetViewer2 {
 	def main(args:Array[String]):Unit = {
 		Application.launch(classOf[JSONTilesheetViewer2])
-	}	
+	}
+	
+	private def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
+		import com.rayrobdod.boardGame.SpaceClassMatcher
+		import com.rayrobdod.boardGame.javafxView.ParamaterizedRectangularVisualizationRule
+		import com.rayrobdod.boardGame.javafxView.VisualizationRuleBasedRectangularTilesheet
+		import com.rayrobdod.boardGame.javafxView.HashcodeColorTilesheet
+		import StringSpaceClassMatcherFactory.EqualsMatcher
+		
+		val a = f match {
+			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
+				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass]]}
+				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
+				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
+				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
+				
+				val e:Seq[Option[SpaceClass]] = d.map{_ match {
+					case EqualsMatcher(ref) => Option(ref)
+					case _ => None
+				}}
+				val f:Seq[SpaceClass] = e.flatten.distinct
+				
+				f
+			}
+			// designed to be one of each color // green, blue, red, white
+			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
+			case x:HashcodeColorTilesheet => Seq("a", "b", "c", "d")
+			case _ => Seq("")
+		}
+		
+		a
+	}
+	
+	def loadNewTilesheet(inputFields:InputFields2, fieldComp:StackPane):Unit = {
+		if (inputFields.fieldIsRotationField) {
+			
+			val currentRotationRotation:Seq[SpaceClass] = {
+				allClassesInTilesheet(inputFields.tilesheet) :+ ""
+			}
+			val currentRotationState:RectangularField[SpaceClass] = {
+				RectangularField(Seq.fill(14, 12){currentRotationRotation.head})
+			}
+			
+			val a = RectangularFieldComponent(
+				currentRotationState,
+				inputFields.tilesheet,
+				inputFields.rng
+			)
+			
+			fieldComp.getChildren().removeAll()
+			fieldComp.getChildren().add(a._1)
+			fieldComp.getChildren().add(a._2)
+			
+			
+			currentRotationState.toSeq.map{_._1}.foreach{index =>
+				import scala.collection.JavaConversions.collectionAsScalaIterable;
+				a._2.getChildren().filter{x =>
+					GridPane.getColumnIndex(x) == index._1 &&
+					GridPane.getRowIndex(x) == index._2
+				}.foreach{x => 
+					x.setOnMouseClicked(new FieldRotationMouseListener(
+						inputFields, fieldComp,
+						index, currentRotationRotation, currentRotationState
+					))
+				}
+			}
+			
+		} else {
+			val a = RectangularFieldComponent(
+				inputFields.field,
+				inputFields.tilesheet,
+				inputFields.rng
+			)
+			
+			fieldComp.getChildren().removeAll()
+			fieldComp.getChildren().add(a._1)
+			fieldComp.getChildren().add(a._2)
+		}
+	}
+	
+	final class FieldRotationMouseListener(
+			inputFields:InputFields2,
+			fieldComp:StackPane,
+			index:(Int,Int),
+			currentRotationRotation:Seq[SpaceClass],
+			currentRotationState:RectangularField[SpaceClass]
+	) extends EventHandler[MouseEvent] {
+		override def handle(e:MouseEvent):Unit = {
+			
+			val currentSpace:SpaceClass = currentRotationState(index).typeOfSpace
+			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
+			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
+			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
+			
+			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
+					currentRotationState.map{x => ((x._1, x._2.typeOfSpace))} +
+							((index, nextSpace))
+			
+			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)
+			
+			val a = RectangularFieldComponent(
+				nextRotationState,
+				inputFields.tilesheet,
+				inputFields.rng
+			)
+			
+			fieldComp.getChildren().removeAll()
+			fieldComp.getChildren().add(a._1)
+			fieldComp.getChildren().add(a._2)
+			
+			nextRotationState.toSeq.map{_._1}.foreach{index =>
+				import scala.collection.JavaConversions.collectionAsScalaIterable;
+				a._2.getChildren().filter{x =>
+					GridPane.getColumnIndex(x) == index._1 &&
+					GridPane.getRowIndex(x) == index._2
+				}.foreach{x => 
+					x.setOnMouseClicked(new FieldRotationMouseListener(
+						inputFields, fieldComp,
+						index, currentRotationRotation, nextRotationState
+					))
+				}
+			}
+		}
+	}
 }

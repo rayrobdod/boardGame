@@ -18,7 +18,6 @@
 package com.rayrobdod.boardGame
 package javafxView
 
-import javafx.scene.Node
 import scala.util.Random
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Set}
@@ -26,6 +25,7 @@ import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
+import javafx.scene.image.Image
 
 
 
@@ -34,7 +34,7 @@ import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies,
  * @version next
  */
 class RectangularVisualziationRuleBuilder[A](
-		tileSeq:Seq[Node],
+		tileSeq:Seq[Image],
 		spaceClassUnapplier:SpaceClassMatcherFactory[A]
 ) extends Builder[ParamaterizedRectangularVisualizationRule[A]] {
 	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
@@ -57,7 +57,7 @@ class RectangularVisualziationRuleBuilder[A](
  * @version 3.0.0
  */
 final case class ParamaterizedRectangularVisualizationRule[A] (
-	override val iconParts:Map[Int, Seq[Node]] = Map.empty[Int, Seq[Node]],
+	override val iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
 	tileRand:Int = 1,
 	indexEquation:String = "true", // TODO: string? really?
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]

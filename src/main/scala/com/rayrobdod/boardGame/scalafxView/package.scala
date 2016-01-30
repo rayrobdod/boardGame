@@ -31,6 +31,20 @@ package object javafxView {
 }
 
 package javafxView {
+	final case class Dimension(val width:Int, val height:Int)
+	
+	object NilTilesheet extends RectangularTilesheet[Any] {
+		import javafx.scene.Node
+		import javafx.scene.paint.Color
+		import javafx.scene.shape.Rectangle
+
+		override val name:String = "Nil"
+		override def getImageFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:scala.util.Random):(Node,Node) = getImageFor
+		
+		private def getImageFor = ((blankIcon, blankIcon))
+		private def blankIcon = new Rectangle(16,16,Color.TRANSPARENT)
+	}
+	
 	trait SpaceClassMatcherFactory[-SpaceClass] {
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}

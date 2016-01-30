@@ -17,7 +17,6 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import com.rayrobdod.boardGame.swingView.SpaceClassMatcherFactory
 import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
 
@@ -28,7 +27,9 @@ import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
  * 
  * @since 3.0.0
  */
-object StringSpaceClassMatcherFactory extends SpaceClassMatcherFactory[SpaceClass] {
+object StringSpaceClassMatcherFactory extends 
+		com.rayrobdod.boardGame.swingView.SpaceClassMatcherFactory[SpaceClass] with
+		com.rayrobdod.boardGame.javafxView.SpaceClassMatcherFactory[SpaceClass] {
 	
 	def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
 		if (reference == "*") {ConstTrueSpaceClassMatcher}

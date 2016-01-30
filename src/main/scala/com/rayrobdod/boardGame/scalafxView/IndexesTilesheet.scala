@@ -33,7 +33,6 @@ import com.rayrobdod.boardGame.RectangularField
  */
 object IndexesTilesheet extends RectangularTilesheet[Any] {
 	override def name:String = "IndexesTilesheet"
-	final case class Dimension(val width:Int, val height:Int)
 	private val dim = new Dimension(48,24)
 	
 	private def lightIcon = {
