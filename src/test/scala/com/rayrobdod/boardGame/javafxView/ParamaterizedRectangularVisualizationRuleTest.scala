@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.javafxView
+package com.rayrobdod.boardGame.swingView
 
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks

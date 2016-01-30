@@ -25,15 +25,9 @@ import scala.annotation.tailrec
 package object javafxView {
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 	
-	def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
+	def lcm(x:Int, y:Int):Int = swingView.lcm(x,y)
 	
-	@tailrec def gcd(x:Int, y:Int):Int = {
-		if (y == 1) {1} else
-		if (x == 1) {1} else
-		if (x == y) {x} else
-		if (x > y) {gcd(x - y, y)} else
-		{gcd(x, y - x)}
-	}
+	def gcd(x:Int, y:Int):Int = swingView.gcd(x,y)
 }
 
 package javafxView {
