@@ -38,10 +38,18 @@ object RectangularFieldComponent {
 		val topComp = new GridPane()
 		top.foreach{case ((x,y), node) =>
 			topComp.add(node, x, y)
+			GridPane.setHgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setVgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setHalignment(node, javafx.geometry.HPos.CENTER)
+			GridPane.setValignment(node, javafx.geometry.VPos.CENTER)
 		}
 		val botComp = new GridPane()
 		bot.foreach{case ((x,y), node) =>
 			botComp.add(node, x, y)
+			GridPane.setHgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setVgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setHalignment(node, javafx.geometry.HPos.CENTER)
+			GridPane.setValignment(node, javafx.geometry.VPos.CENTER)
 		}
 		
 		((topComp, botComp))

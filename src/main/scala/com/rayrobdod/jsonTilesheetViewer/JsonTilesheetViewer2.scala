@@ -23,12 +23,10 @@ import scala.util.Random
 import java.net.{URL, URI}
 import javafx.stage.Window
 import javafx.stage.Stage
-import javafx.scene.Scene
-import javafx.scene.layout.GridPane
-import javafx.scene.layout.StackPane
+import javafx.scene.{Scene, Node}
+import javafx.scene.layout.{GridPane, StackPane, AnchorPane}
 import javafx.scene.text.Text
-import javafx.scene.control.TextField
-import javafx.scene.control.Button
+import javafx.scene.control.{TextField, Button}
 import javafx.beans.property.ObjectProperty
 import javafx.application.Application
 import com.rayrobdod.jsonTilesheetViewer.tags._
@@ -52,7 +50,7 @@ import com.rayrobdod.json.parser.JsonParser
  * @author Raymond Dodge
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
-class JSONTilesheetViewer2 extends Application {
+final class JSONTilesheetViewer2 extends Application {
 	
 	override def init():Unit = {
 		val prop:String = "java.protocol.handler.pkgs";
@@ -73,6 +71,9 @@ class JSONTilesheetViewer2 extends Application {
 		val randBox = new TextField()
 		val goButton = new Button("Go")
 		
+		goButton.setDefaultButton(true)
+		goButton.setMaxWidth(Double.PositiveInfinity)
+		goButton.setMaxHeight(Double.PositiveInfinity)
 		
 		val tilesheet:RectangularTilesheet[SpaceClass] = IndexesTilesheet
 		val field:RectangularField[SpaceClass] = RectangularField(Seq.fill(14, 12){""})
@@ -84,11 +85,16 @@ class JSONTilesheetViewer2 extends Application {
 		stage.setScene({
 			val a = new Scene({
 				val b = new GridPane()
-				b.addRow( 0, new Text("tilesheet: "), tileUrlBox )
-				b.addRow( 1, new Text("map: "),       mapUrlBox )
-				b.addRow( 2, new Text("seed: "),      randBox )
-				b.addRow( 3, goButton )
-				b.addRow( 4, fieldComp )
+				b.add(new Text("tilesheet: "), 0, 0, 1, 1)
+				b.add(tileUrlBox, 1, 0, 1, 1 )
+				b.add(new Text("map: "), 0, 1, 1, 1)
+				b.add(mapUrlBox, 1, 1, 1, 1 )
+				b.add(new Text("seed: "), 0, 2, 1, 1)
+				b.add(randBox, 1, 2, 1, 1 )
+				b.add(goButton, 0, 3, 2, 1 )
+				b.add(fieldComp, 0, 4, 2, 1 )
+				b.setPadding(new javafx.geometry.Insets(10,10,10,10));
+				
 				b
 			})
 			a
