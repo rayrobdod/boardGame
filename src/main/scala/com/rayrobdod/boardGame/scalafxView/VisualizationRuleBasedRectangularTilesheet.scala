@@ -28,6 +28,7 @@ import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 import javafx.scene.Node
 import javafx.scene.image.{Image, ImageView, WritableImage}
+import javafx.scene.canvas.Canvas
 
 /**
  * @version 3.0.0
@@ -54,7 +55,7 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 		val lowHighLayers = layers.partition{_._1 < 0}
 		
 		// assumes that all images are the same size
-		def mashTogetherLayers(layers:Map[Int, ImageFrames]):ImageFrames =
+		def mashTogetherLayers(layers:Map[Int, ImageFrames]):Seq[Node] =
 		{
 			val layers2:Map[Int, ImageFrames] = layers
 			val layersInOrder:Seq[ImageFrames] = Vector.empty ++ layers2.toSeq.sortBy{_._1}.map{_._2}.filter{_.length > 0}
@@ -73,16 +74,14 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 				val imageHeight = layersWithLCMFrames.head.head.getHeight.intValue
 				
 				// merge all the layers in each frame into one image per frame
-				val frames:ImageFrames = layersWithLCMFrames.foldLeft(
+				val frames:Seq[Node] = layersWithLCMFrames.foldLeft(
 						Seq.fill(leastCommonFrameNumber){
-							new WritableImage(imageWidth, imageHeight)
+							new Canvas(imageWidth, imageHeight)
 						}
-				){(newImage:Seq[WritableImage], layer:ImageFrames) =>
-						newImage.zip(layer).map({(newImage:WritableImage, layer:Image) =>
-							newImage.getPixelWriter().setPixels(
-									0, 0,
-									imageWidth, imageHeight,
-									layer.getPixelReader,
+				){(newImage:Seq[Canvas], layer:ImageFrames) =>
+						newImage.zip(layer).map({(newImage:Canvas, layer:Image) =>
+							newImage.getGraphicsContext2D().drawImage(
+									layer,
 									0, 0
 							)
 							newImage
@@ -93,16 +92,16 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 			}
 			else
 			{
-				Seq(new WritableImage(1,1))
+				Seq(new ImageView(new WritableImage(1,1)))
 			}
 		}
 		
-		def imageFramesToIcon(x:ImageFrames):Node = {
+		def imageFramesToIcon(x:Seq[Node]):Node = {
 			if (x.length == 1) {
-				new ImageView(x.head)
+				x.head
 			} else {
 				// TODO: Animation
-				new ImageView(x.headOption.getOrElse(new WritableImage(1,1)))
+				x.headOption.getOrElse(new ImageView(new WritableImage(1,1)))
 			}
 		}
 		
