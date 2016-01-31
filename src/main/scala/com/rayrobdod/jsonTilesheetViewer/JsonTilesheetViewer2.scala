@@ -26,7 +26,7 @@ import javafx.stage.Stage
 import javafx.scene.{Scene, Node}
 import javafx.scene.layout.{GridPane, BorderPane, StackPane}
 import javafx.scene.text.Text
-import javafx.scene.control.{TextField, Button}
+import javafx.scene.control.{TextField, Button, ScrollPane}
 import javafx.beans.property.ObjectProperty
 import javafx.application.Application
 import javafx.event.{EventHandler, ActionEvent}
@@ -89,7 +89,7 @@ final class JSONTilesheetViewer2 extends Application {
 		stage.setScene(
 			new Scene(
 				new BorderPane(
-					fieldComp,
+					new ScrollPane(fieldComp),
 					inputFields.panel,
 					new Text(),
 					new Text(),

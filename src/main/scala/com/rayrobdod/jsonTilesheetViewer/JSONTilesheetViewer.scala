@@ -23,7 +23,7 @@ import scala.util.Random
 import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
-import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
+import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JScrollPane}
 
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
@@ -70,7 +70,7 @@ object JSONTilesheetViewer extends App
 	val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
 	
 	frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
-	frame.getContentPane.add(fieldComp)
+	frame.getContentPane.add(new JScrollPane(fieldComp))
 	
 	
 	
