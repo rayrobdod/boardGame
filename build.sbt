@@ -100,10 +100,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % (
 
 jfxSettings
 
-JFX.mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer2")
-
-JFX.devKit := JFX.jdk("C:/Program Files/Java/jdk1.7.0_51")
-
 JFX.addJfxrtToClasspath := true
 
 

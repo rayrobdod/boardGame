@@ -87,15 +87,19 @@ final class JSONTilesheetViewer2 extends Application {
 		
 		stage.setTitle("JSON Tilesheet Viewer")
 		stage.setScene(
-			new Scene(
-				new BorderPane(
-					new ScrollPane(fieldComp),
-					inputFields.panel,
-					new Text(),
-					new Text(),
-					new Text()
-				)
-			)
+			new Scene({
+				val a = new BorderPane()
+				a.setCenter({
+					val b = new ScrollPane()
+					b.setContent(fieldComp)
+					b
+				})
+				a.setTop(inputFields.panel)
+				a.setLeft(new Text())
+				a.setBottom(new Text())
+				a.setRight(new Text())
+				a
+			})
 		)
 		
 		JSONTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
@@ -107,7 +111,7 @@ final class JSONTilesheetViewer2 extends Application {
 
 object JSONTilesheetViewer2 {
 	def main(args:Array[String]):Unit = {
-		Application.launch(classOf[JSONTilesheetViewer2])
+		Application.launch(classOf[JSONTilesheetViewer2], args:_*)
 	}
 	
 	private def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
