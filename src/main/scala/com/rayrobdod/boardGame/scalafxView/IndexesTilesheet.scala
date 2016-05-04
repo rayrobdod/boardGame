@@ -50,7 +50,7 @@ object IndexesTilesheet extends RectangularTilesheet[Any] {
 		retVal
 	}
 	
-	override def getImageFor(f:RectangularField[_], x:Int, y:Int, rng:Random):(Node, Node) = {
+	override def getIconFor(f:RectangularField[_], x:Int, y:Int, rng:Random):(Node, Node) = {
 		((
 			if ((x+y)%2 == 0) {lightIcon} else {darkIcon},
 			IndexImage(x,y)

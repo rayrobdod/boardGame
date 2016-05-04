@@ -56,7 +56,7 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 		name:String = "???"
 	) {
 		def apply():VisualizationRuleBasedRectangularTilesheet[A] = {
-			new VisualizationRuleBasedRectangularTilesheet(name, visualizationRules)
+			VisualizationRuleBasedRectangularTilesheet(name, visualizationRules)
 		}
 		
 		private def frameImages:BlitzAnimImage = {

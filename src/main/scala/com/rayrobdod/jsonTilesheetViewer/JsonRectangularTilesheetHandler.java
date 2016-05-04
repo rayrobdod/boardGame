@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.io.InputStreamReader;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import com.rayrobdod.json.parser.JsonParser;
+import com.rayrobdod.boardGame.view.*;
 import com.rayrobdod.boardGame.swingView.*;
 
 /**

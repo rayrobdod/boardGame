@@ -24,7 +24,8 @@ import java.io.StringWriter;
 import java.io.InputStreamReader;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import com.rayrobdod.json.parser.JsonParser;
-import com.rayrobdod.boardGame.javafxView.*;
+import com.rayrobdod.boardGame.view.*;
+import com.rayrobdod.boardGame.swingView.*;
 
 /**
  * A contentHandler that will compose a JSONTilesheet from a json and linked documents 
@@ -36,7 +37,7 @@ public final class JsonRectangularTilesheetHandler2 extends ContentHandler {
 	 * Reads data from a URLConnection's input stream and puts
 	 * that data into a string.
 	 */
-	public RectangularTilesheet<String> getContent(URLConnection urlc) throws IOException {
+	public RectangularTilesheet<String, javafx.scene.Node> getContent(URLConnection urlc) throws IOException {
 		
 		VisualizationRuleBasedRectangularTilesheetBuilder<String> b = new VisualizationRuleBasedRectangularTilesheetBuilder<String>(urlc.getURL(), StringSpaceClassMatcherFactory$.MODULE$);
 		java.io.Reader r = new java.io.StringReader("{}");

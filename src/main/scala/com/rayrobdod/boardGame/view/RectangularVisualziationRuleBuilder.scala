@@ -16,12 +16,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.rayrobdod.boardGame
-package swingView
+package view
 
 import scala.util.Random
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Set}
-import java.awt.Image
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
@@ -31,14 +30,15 @@ import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies,
 
 
 /**
- * @version 3.0.0
+ * @version next
  */
-class RectangularVisualziationRuleBuilder[A](
-		tileSeq:Seq[Image],
-		spaceClassUnapplier:SpaceClassMatcherFactory[A]
-) extends Builder[ParamaterizedRectangularVisualizationRule[A]] {
-	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
-	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Any):ParamaterizedRectangularVisualizationRule[A] = key match {
+class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
+		tileSeq:Seq[IconPart],
+		spaceClassUnapplier:SpaceClassMatcherFactory[SpaceClass]
+) extends Builder[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] {
+	def init:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] = new ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]()
+	
+	def apply(a:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart], key:String, value:Any):ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] = key match {
 		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
 		case "indexies" => a.copy(indexEquation = value.toString)
 		case "surroundingSpaces" => 
@@ -49,19 +49,19 @@ class RectangularVisualziationRuleBuilder[A](
 		case _ => a
 	}
 	def childBuilder(key:String):Builder[_] = new MapBuilder
-	override val resultType:Class[ParamaterizedRectangularVisualizationRule[A]] = classOf[ParamaterizedRectangularVisualizationRule[A]]
+	override val resultType:Class[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = classOf[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]]
 }
 
 
 /**
  * @version 3.0.0
  */
-final case class ParamaterizedRectangularVisualizationRule[A] (
-	override val iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
+final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] (
+	override val iconParts:Map[Int, Seq[IconPart]] = Map.empty[Int, Seq[IconPart]],
 	tileRand:Int = 1,
 	indexEquation:String = "true", // TODO: string? really?
-	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]
-) extends RectangularVisualizationRule[A] {
+	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[SpaceClass]] = Map.empty[IndexConverter, SpaceClassMatcher[SpaceClass]]
+) extends RectangularVisualizationRule[SpaceClass, IconPart] {
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
 		import JSONRectangularVisualizationRule.{scriptEngine, buildBindings, executeScript}
 		
@@ -69,9 +69,9 @@ final case class ParamaterizedRectangularVisualizationRule[A] (
 		asBoolean( executeScript(indexEquation, buildBindings(x, y, width, height)) )
 	}
 	
-	override def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean = {
+	override def surroundingTilesMatch(field:RectangularField[_ <: SpaceClass], x:Int, y:Int):Boolean = {
 		
-		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[A]) =>
+		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[SpaceClass]) =>
 			val newIndexies = conversion( ((x,y)) )
 			if (field.contains((newIndexies._1, newIndexies._2)))
 			{
@@ -204,12 +204,12 @@ object JSONRectangularVisualizationRule
 	}
 	
 	
-	def PriorityOrdering:Ordering[RectangularVisualizationRule[_]] = {
-		Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
+	def PriorityOrdering:Ordering[RectangularVisualizationRule[_,_]] = {
+		Ordering.by[RectangularVisualizationRule[_,_], Int]{(x:RectangularVisualizationRule[_,_]) => x.priority}
 	}
 
-	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_]] {
-		def compare(x:ParamaterizedRectangularVisualizationRule[_], y:ParamaterizedRectangularVisualizationRule[_]):Int = {
+	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_,_]] {
+		def compare(x:ParamaterizedRectangularVisualizationRule[_,_], y:ParamaterizedRectangularVisualizationRule[_,_]):Int = {
 			(x.tileRand compareTo y.tileRand) match {
 				case 0 => (x.indexEquation compareTo y.indexEquation) match {
 					case 0 => IterableIntOrdering.compare(x.iconParts.keys, y.iconParts.keys) match {

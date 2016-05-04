@@ -17,6 +17,8 @@
 */
 package com.rayrobdod.boardGame.javafxView
 
+import com.rayrobdod.boardGame.javafxView._
+import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame._
 import scala.util.Random
 import scala.{Function0 => Future}
@@ -35,10 +37,10 @@ import javafx.scene.canvas.Canvas
  */
 final case class VisualizationRuleBasedRectangularTilesheet[A](
 		override val name:String,
-		val visualizationRules:Seq[RectangularVisualizationRule[A]]
+		val visualizationRules:Seq[RectangularVisualizationRule[A, Image]]
 ) extends RectangularTilesheet[A] {
 	
-	override def getImageFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Node, Node) =
+	override def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Node, Node) =
 	{
 		type ImageFrames = Seq[Image]
 		

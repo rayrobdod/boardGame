@@ -54,7 +54,7 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 		name:String = "???"
 	) {
 		def apply():VisualizationRuleBasedRectangularTilesheet[A] = {
-			new VisualizationRuleBasedRectangularTilesheet(name, visualizationRules)
+			VisualizationRuleBasedRectangularTilesheet(name, visualizationRules)
 		}
 		
 		private def frameImages:Seq[Image] = {
@@ -76,8 +76,8 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 			}
 		}
 		
-		private def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[A]] = {
-			val b = new RectangularVisualziationRuleBuilder[A](Seq.empty ++ frameImages, classMap)
+		private def visualizationRules:Seq[view.ParamaterizedRectangularVisualizationRule[A, Image]] = {
+			val b = new view.RectangularVisualziationRuleBuilder[A, Image](Seq.empty ++ frameImages, classMap)
 			var r:Reader = new java.io.StringReader("{}")
 			try {
 				r = new java.io.InputStreamReader(rules.openStream(), UTF_8)

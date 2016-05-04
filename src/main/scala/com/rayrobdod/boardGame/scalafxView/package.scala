@@ -18,36 +18,83 @@
 package com.rayrobdod.boardGame
 
 import scala.annotation.tailrec
+import scala.collection.immutable.Seq
+import javafx.scene.Node
+import javafx.scene.image.{Image, ImageView, WritableImage}
+import javafx.scene.canvas.Canvas
+import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
 
 /**
  * 
  */
 package object javafxView {
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
+	type SpaceClassMatcherFactory[-SpaceClass] = view.SpaceClassMatcherFactory[SpaceClass]
+	type RectangularTilesheet[A] = view.RectangularTilesheet[A, javafx.scene.Node]
+	type VisualizationRuleBasedRectangularTilesheet[A] = view.VisualizationRuleBasedRectangularTilesheet[A, Image, Node]
+	type ParamaterizedRectangularVisualizationRule[A] = view.ParamaterizedRectangularVisualizationRule[A, Image]
+	type RectangularVisualziationRuleBuilder[A] = view.RectangularVisualziationRuleBuilder[A, Image]
 	
-	def lcm(x:Int, y:Int):Int = swingView.lcm(x,y)
+	def VisualizationRuleBasedRectangularTilesheet[A](name:String, visualizationRules:Seq[view.RectangularVisualizationRule[A, Image]]) = {
+		view.VisualizationRuleBasedRectangularTilesheet(name, visualizationRules, this.compostLayers _)
+	}
 	
-	def gcd(x:Int, y:Int):Int = swingView.gcd(x,y)
+	val NilTilesheet = new view.NilTilesheet[Node](
+		new Rectangle(16, 16, Color.TRANSPARENT)
+	)
+	def HashcodeColorTilesheet(dim:Dimension) = new view.HashcodeColorTilesheet(
+		dim.width,
+		dim.height,
+		new Rectangle(16, 16, Color.TRANSPARENT),
+		{(c:Int, w:Int, h:Int) => new Rectangle(w, h, rgbToColor(c))}
+	)
+			
+	
+	def lcm(x:Int, y:Int):Int = view.lcm(x,y)
+	def gcd(x:Int, y:Int):Int = view.gcd(x,y)
+	def rgbToColor(rgb:Int) = Color.rgb((rgb >> 16) % 256, (rgb >> 8) % 256, (rgb >> 0) % 256)
+	
+	
+	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
+		
+		val a:Seq[Node] = if (! layersWithLCMFrames.isEmpty) {
+			// FIXTHIS: assumes all images are the same size
+			val imageWidth = layersWithLCMFrames.head.head.getWidth.intValue
+			val imageHeight = layersWithLCMFrames.head.head.getHeight.intValue
+			
+			// merge all the layers in each frame into one image per frame
+			val frames:Seq[Node] = layersWithLCMFrames.foldLeft(
+				Seq.fill(layersWithLCMFrames.head.size){
+					new Canvas(imageWidth, imageHeight)
+				}
+			){(newImage:Seq[Canvas], layer:Seq[Image]) =>
+				newImage.zip(layer).map({(newImage:Canvas, layer:Image) =>
+					newImage.getGraphicsContext2D().drawImage(
+						layer,
+						0, 0
+					)
+					newImage
+				}.tupled)
+			}
+			
+			frames
+		} else {
+			Seq(new ImageView(new WritableImage(1,1)))
+		}
+	
+		if (a.length == 1) {
+			a.head
+		} else {
+			// TODO: Animation
+			a.headOption.getOrElse(new ImageView(new WritableImage(1,1)))
+		}
+	}
+
 }
 
 package javafxView {
 	final case class Dimension(val width:Int, val height:Int)
-	
-	object NilTilesheet extends RectangularTilesheet[Any] {
-		import javafx.scene.Node
-		import javafx.scene.paint.Color
-		import javafx.scene.shape.Rectangle
-
-		override val name:String = "Nil"
-		override def getImageFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:scala.util.Random):(Node,Node) = getImageFor
-		
-		private def getImageFor = ((blankIcon, blankIcon))
-		private def blankIcon = new Rectangle(16,16,Color.TRANSPARENT)
-	}
-	
-	trait SpaceClassMatcherFactory[-SpaceClass] {
-		def apply(reference:String):SpaceClassMatcher[SpaceClass]
-	}
 	
 	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
 	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {

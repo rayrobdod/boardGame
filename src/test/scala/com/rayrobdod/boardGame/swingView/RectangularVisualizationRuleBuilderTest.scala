@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
+import com.rayrobdod.boardGame.view
 import org.scalatest.{FunSuite, FunSpec}
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.JsonParser;
@@ -37,7 +38,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
 			
 			assert (res match {
-				case ParamaterizedRectangularVisualizationRule(
+				case view.ParamaterizedRectangularVisualizationRule(
 						MapUnapplyer(),
 						5,
 						"(x + y) % 2 == 0",

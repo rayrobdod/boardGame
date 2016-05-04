@@ -21,6 +21,7 @@ import org.scalatest.{FunSuite, FunSpec}
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame.{SpaceClassMatcher, RectangularField}
+import com.rayrobdod.boardGame.view
 
 class RectangularVisualizationRuleBuilderTest extends FunSpec {
 	val emptyField3x3 = RectangularField(Seq.fill(3, 3){" "})
@@ -57,7 +58,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
 			
 			assert (res match {
-				case ParamaterizedRectangularVisualizationRule(
+				case view.ParamaterizedRectangularVisualizationRule(
 						MapUnapplyer(),
 						5,
 						"(x + y) % 2 == 0",

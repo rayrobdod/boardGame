@@ -15,21 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import com.rayrobdod.boardGame._
-import com.rayrobdod.util.BlitzAnimImage
-import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import scala.util.Random
 import scala.{Function0 => Future}
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
-import scala.collection.mutable.{Map => MMap}
-import java.awt.Image
-import java.awt.image.BufferedImage
-import java.awt.image.BufferedImage.{TYPE_INT_RGB => nonAlphaImage, TYPE_INT_ARGB => alphaImage}
 import java.net.URL
-import javax.swing.{Icon, ImageIcon}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 
@@ -37,17 +30,17 @@ import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, 
 /**
  * @version 3.0.0
  */
-final case class VisualizationRuleBasedRectangularTilesheet[A](
+final case class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](
 		override val name:String,
-		val visualizationRules:Seq[RectangularVisualizationRule[A]]
-) extends RectangularTilesheet[A] {
+		val visualizationRules:Seq[view.RectangularVisualizationRule[SpaceClass, IconPart]],
+		compostLayers:Function1[Seq[Seq[IconPart]], Icon]
+) extends RectangularTilesheet[SpaceClass, Icon] {
 	
-	override def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon) =
-	{
-		type ImageFrames = Seq[Image]
+	override def getIconFor(field:RectangularField[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+		type ImageFrames = Seq[IconPart]
 		
 		val layers:Map[Int, ImageFrames] = {
-			import JSONRectangularVisualizationRule.{FullOrdering, PriorityOrdering}
+			import view.JSONRectangularVisualizationRule.{FullOrdering, PriorityOrdering}
 			
 			visualizationRules.filter{
 				_.matches(field, x, y, rng)
@@ -59,8 +52,7 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 		val lowHighLayers = layers.partition{_._1 < 0}
 		
 		// assumes that all images are the same size
-		def mashTogetherLayers(layers:Map[Int, ImageFrames]):ImageFrames =
-		{
+		def mashTogetherLayers(layers:Map[Int, ImageFrames]):Icon = {
 			val layers2:Map[Int, ImageFrames] = layers
 			val layersInOrder:Seq[ImageFrames] = Vector.empty ++ layers2.toSeq.sortBy{_._1}.map{_._2}.filter{_.length > 0}
 			
@@ -71,46 +63,14 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 				Seq.fill(leastCommonFrameNumber / x.length){x}.flatten
 			}
 			
-			if (! layersWithLCMFrames.isEmpty)
-			{
-				// FIXTHIS: assumes all images are the same size
-				val imageWidth = layersWithLCMFrames.head.head.getWidth(null)
-				val imageHeight = layersWithLCMFrames.head.head.getHeight(null)
-				
-				// merge all the layers in each frame into one image per frame
-				val frames:ImageFrames = layersWithLCMFrames.foldLeft(
-						Seq.fill(leastCommonFrameNumber){
-							new BufferedImage(imageWidth, imageHeight, alphaImage)
-						}
-				){(newImage:Seq[BufferedImage], layer:ImageFrames) =>
-						newImage.zip(layer).map({(newImage:BufferedImage, layer:Image) =>
-							newImage.getGraphics.drawImage(layer, 0, 0, null)
-							newImage
-						}.tupled)
-				}
-				
-				frames
-			}
-			else
-			{
-				Seq(new BufferedImage(1,1,alphaImage))
-			}
-		}
-		
-		def imageFramesToIcon(x:ImageFrames):Icon = {
-			if (x.length == 1) {
-				new ImageIcon(x.head)
-			} else {
-				new AnimationIcon(new ImageFrameAnimation(x, 1000/5, true))
-			}
+			compostLayers(layersWithLCMFrames)
 		}
 		
 		val lowHighImages = (
-			imageFramesToIcon(mashTogetherLayers(lowHighLayers._1)),
-			imageFramesToIcon(mashTogetherLayers(lowHighLayers._2)) 
+			mashTogetherLayers(lowHighLayers._1),
+			mashTogetherLayers(lowHighLayers._2) 
 		) 
 		
 		lowHighImages
 	}
 }
-

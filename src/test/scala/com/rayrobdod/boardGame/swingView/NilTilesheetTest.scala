@@ -29,25 +29,25 @@ class NilTilesheetTest extends FunSpec {
 			assertResult("Nil"){NilTilesheet.name}
 		}
 		it ("getIconFor(null, 0, 0, null)._1 is BlankIcon") {
-			assertResult(NilTilesheet.BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._1}
+			assertResult(BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._1}
 		}
 		it ("getIconFor(null, 0, 1, null)._1 is BlankIcon") {
-			assertResult(NilTilesheet.BlankIcon){NilTilesheet.getIconFor(null, 0, 1, null)._1}
+			assertResult(BlankIcon){NilTilesheet.getIconFor(null, 0, 1, null)._1}
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is BlankIcon") {
-			assertResult(NilTilesheet.BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._2}
+			assertResult(BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._2}
 		}
 	}
-	describe ("NilTilesheet.BlankIcon") {
+	describe ("BlankIcon") {
 		it ("getIconWidth == 16") {
-			assertResult(16){NilTilesheet.BlankIcon.getIconWidth}
+			assertResult(16){BlankIcon.getIconWidth}
 		}
 		it ("getIconHeight == 16") {
-			assertResult(16){NilTilesheet.BlankIcon.getIconHeight}
+			assertResult(16){BlankIcon.getIconHeight}
 		}
-		it ("paintIcon does nothign") {
+		it ("paintIcon does nothing") {
 			// it is incredibly hard to prove a negative...
-			NilTilesheet.BlankIcon.paintIcon(null, null, -1, -1)
+			BlankIcon.paintIcon(null, null, -1, -1)
 		}
 	}
 	

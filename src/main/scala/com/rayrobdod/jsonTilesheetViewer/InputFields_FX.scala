@@ -51,11 +51,12 @@ final class InputFields2(
 		
 		import com.rayrobdod.boardGame.swingView
 		import com.rayrobdod.boardGame.javafxView
+		import javafx.scene.Node
 		a match {
 			case swingView.NilTilesheet => javafxView.NilTilesheet
 			case swingView.IndexesTilesheet => javafxView.IndexesTilesheet
 			case swingView.HashcodeColorTilesheet(x) => javafxView.HashcodeColorTilesheet(new javafxView.Dimension(x.width, x.height))
-			case b:javafxView.RectangularTilesheet[SpaceClass] => b
+			case b:view.RectangularTilesheet[SpaceClass, Node] => b
 		}
 	}
 	def fieldIsRotationField:Boolean = {
