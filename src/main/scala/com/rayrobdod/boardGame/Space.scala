@@ -51,12 +51,10 @@ trait Space[A] {
 	 * @return a set of all spaces that can be reached from this by moving into an adjacentTile
 			using movementCost or less
 	 */
-	def spacesWithin(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] =
-	{
+	def spacesWithin(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] = {
 		if (availableCost < 0) {Set.empty}
 		else if (availableCost == 0) {Set(this)}
-		else
-		{
+		else {
 			Set(this) ++ adjacentSpaces.flatMap((space:Space[A]) => {
 				space.spacesWithin(
 					availableCost - costFunction(this, space),
@@ -74,12 +72,10 @@ trait Space[A] {
 	 * @return a set of all spaces that can be reached from this by moving into an adjacentTile
 			using exactly movementCost
 	 */
-	def spacesAfter(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] =
-	{
+	def spacesAfter(availableCost:Int, costFunction:CostFunction[A]):Set[Space[A]] = {
 		if (availableCost < 0) {Set.empty}
 		else if (availableCost == 0) {Set(this)}
-		else
-		{
+		else {
 			Set.empty ++ adjacentSpaces.flatMap((space:Space[A]) => {
 				space.spacesAfter(
 					availableCost - costFunction(this, space),
@@ -98,16 +94,14 @@ trait Space[A] {
 	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return the movementCost required to get from this space to other
 	 */
-	def distanceTo(other:Space[A], costFunction:CostFunction[A]):Int =
-	{
+	def distanceTo(other:Space[A], costFunction:CostFunction[A]):Int = {
 		val closed = MMap.empty[Space[A], Int]
 		val open = MMap.empty[Space[A], Int]
 		var checkingTile:(Space[A], Int) = ((this, 0))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
-		while (checkingTile._1 != other)
-		{
+		while (checkingTile._1 != other) {
 			open -= checkingTile._1
 			closed += checkingTile
 			
@@ -139,16 +133,14 @@ trait Space[A] {
 	 * @return the a list of spaces such that the first space is this, the last space is other, and
 	 			the movementcost between the two is minimal
 	 */
-	def pathTo(other:Space[A], costFunction:CostFunction[A]):List[Space[A]] =
-	{
+	def pathTo(other:Space[A], costFunction:CostFunction[A]):List[Space[A]] = {
 		val closed = MMap.empty[Space[A], (Int, Space[A])]
 		val open = MMap.empty[Space[A], (Int, Space[A])]
 		var checkingTile:(Space[A], (Int, Space[A])) = ((this, ((0, null )) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
-		while (checkingTile._1 != other)
-		{
+		while (checkingTile._1 != other) {
 			open -= checkingTile._1
 			closed += checkingTile
 			
@@ -169,8 +161,7 @@ trait Space[A] {
 		
 		var currentTile:Space[A] = other
 		var returnValue:List[Space[A]] = other :: Nil
-		while ((closed(currentTile)._2) != null)
-		{
+		while ((closed(currentTile)._2) != null) {
 			currentTile = closed(currentTile)._2
 			returnValue = currentTile :: returnValue
 		}
@@ -191,8 +182,7 @@ trait Space[A] {
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
-		while (! open.isEmpty || checkingTile._1 == this)
-		{
+		while (! open.isEmpty || checkingTile._1 == this) {
 			closed += checkingTile
 			
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
