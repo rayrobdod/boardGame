@@ -21,20 +21,18 @@ package view
 import scala.collection.immutable.BitSet
 import scala.util.Random
 
-class HashcodeColorTilesheet[Icon](
-	iconWidth:Int,
-	iconHeight:Int,
+final class HashcodeColorTilesheet[Icon](
 	transparentIcon:Icon,
-	colorToIcon:Function3[Int, Int, Int, Icon]
+	colorToIcon:Function1[Int, Icon]
 ) extends RectangularTilesheet[Any, Icon] {
 	override def name:String = "HashcodeColor"
-	override def toString:String = name + " (" + iconWidth + "," + iconHeight + ")"
+	override def toString:String = name
 	
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( colorToIcon(getColorFor(f,x,y), iconWidth, iconHeight), transparentIcon ))
+		(( colorToIcon(getColorFor(f,x,y)), transparentIcon ))
 	}
 	
-	private def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):Int = {
+	private[this] def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):Int = {
 		val hash = f.apply((x,y)).typeOfSpace.hashCode
 		// reorder bits to make most colors not really close to black
 		val set1 = BitSet.fromBitMask(Array(hash))

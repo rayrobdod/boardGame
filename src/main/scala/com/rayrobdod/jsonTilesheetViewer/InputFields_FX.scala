@@ -53,9 +53,9 @@ final class InputFields2(
 		case "tag:rayrobdod.name,2013-08:tilesheet-nil" => new NilTilesheet(javafxView.blankIcon(16,16))
 		case "tag:rayrobdod.name,2013-08:tilesheet-indexies" => new IndexesTilesheet(javafxView.rgbToIcon(0xFF00FF, 32, 32), javafxView.rgbToIcon(0x00FFFF, 32, 32), {s:String => javafxView.stringIcon(s, 0, 32, 32)})
 		case "tag:rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, 32, 32)
-		case "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor" => new HashcodeColorTilesheet(32, 32, javafxView.blankIcon(32, 32), javafxView.rgbToIcon)
+		case "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor" => new HashcodeColorTilesheet(javafxView.blankIcon(24, 24), {c => javafxView.rgbToIcon(c, 24, 24)})
 		case x => {
-			val url = new URL(x)
+			val url = urlOrFileStringToUrl(x)
 			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, javafxView.compostLayers, javafxView.sheeturl2images);
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
@@ -74,7 +74,7 @@ final class InputFields2(
 		import java.io.InputStreamReader
 		import com.opencsv.CSVReader
 		
-		val layoutReader = new InputStreamReader(new URL(fieldUrlBox.getText).openStream(), UTF_8)
+		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getText).openStream(), UTF_8)
 		val layoutTable:Seq[Seq[String]] = {
 			import scala.collection.JavaConversions.collectionAsScalaIterable;
 			

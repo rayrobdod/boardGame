@@ -19,11 +19,17 @@ package com.rayrobdod.boardGame.view
 
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color}
+import java.awt.{Color}
 
 class CheckerboardTilesheetTest extends FunSpec {
 	describe ("CheckerboardTilesheet()") {
 		val dut = CheckerboardTilesheet(Color.yellow, Color.red, Color.blue)
+		it ("name is \"Checkerboard\"") {
+			assertResult("Checkerboard"){dut.name}
+		}
+		it ("toString is \"Checkerboard\"") {
+			assertResult("Checkerboard"){dut.toString}
+		}
 		it ("light color is red") {
 			assertResult(Color.red){dut.lightIcon}
 		}

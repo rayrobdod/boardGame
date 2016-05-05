@@ -26,7 +26,7 @@ import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
 
-class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPart, Icon](
+final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPart, Icon](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],

@@ -24,15 +24,15 @@ import scala.collection.immutable.{Seq, Map, Set}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
-import JSONRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
+import ParamaterizedRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
 
 
 
 
 /**
- * @version next
+ * @since next
  */
-class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
+final class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
 		tileSeq:Seq[IconPart],
 		spaceClassUnapplier:SpaceClassMatcherFactory[SpaceClass]
 ) extends Builder[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] {
@@ -54,7 +54,7 @@ class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
 
 
 /**
- * @version 3.0.0
+ * @since next
  */
 final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] (
 	override val iconParts:Map[Int, Seq[IconPart]] = Map.empty[Int, Seq[IconPart]],
@@ -63,7 +63,7 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[SpaceClass]] = Map.empty[IndexConverter, SpaceClassMatcher[SpaceClass]]
 ) extends RectangularVisualizationRule[SpaceClass, IconPart] {
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
-		import JSONRectangularVisualizationRule.{scriptEngine, buildBindings, executeScript}
+		import ParamaterizedRectangularVisualizationRule.{scriptEngine, buildBindings, executeScript}
 		
 		// identified as a bottleneck
 		asBoolean( executeScript(indexEquation, buildBindings(x, y, width, height)) )
@@ -92,7 +92,7 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 				countMatches(m, total + 1)
 			} else {total}
 		}
-		import JSONRectangularVisualizationRule.{divisionPattern, andPattern}
+		import ParamaterizedRectangularVisualizationRule.{divisionPattern, andPattern}
 		
 		surroundingTiles.size * 10000 + tileRand +
 			(if (indexEquation != "true") {
@@ -101,7 +101,7 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 				} * {
 					countMatches( andPattern.matcher(indexEquation) ) + 1
 				} + {
-					import JSONRectangularVisualizationRule.numberPattern
+					import ParamaterizedRectangularVisualizationRule.numberPattern
 					
 					@tailrec def sumMatches(m:Matcher, total:Int = 0):Int = {
 						if (m.find()) {
@@ -122,7 +122,7 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
  * @author Raymond Dodge
  * @version 3.0.0
  */
-object JSONRectangularVisualizationRule
+object ParamaterizedRectangularVisualizationRule
 {
 	val divisionPattern = Pattern.compile("[%//]")
 	val numberPattern = Pattern.compile("\\d+")
@@ -206,29 +206,5 @@ object JSONRectangularVisualizationRule
 	
 	def PriorityOrdering:Ordering[RectangularVisualizationRule[_,_]] = {
 		Ordering.by[RectangularVisualizationRule[_,_], Int]{(x:RectangularVisualizationRule[_,_]) => x.priority}
-	}
-
-	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_,_]] {
-		def compare(x:ParamaterizedRectangularVisualizationRule[_,_], y:ParamaterizedRectangularVisualizationRule[_,_]):Int = {
-			(x.tileRand compareTo y.tileRand) match {
-				case 0 => (x.indexEquation compareTo y.indexEquation) match {
-					case 0 => IterableIntOrdering.compare(x.iconParts.keys, y.iconParts.keys) match {
-						case i => i
-					}
-					case i => i
-				}
-				case i => i
-			}
-		}
-	}
-	
-	private object IterableIntOrdering extends Ordering[Iterable[Int]] {
-		def compare(x:Iterable[Int], y:Iterable[Int]):Int = {
-			x.zip(y).foldLeft(0){(i:Int, xy:(Int,Int)) =>
-				if (i == 0) {
-					xy._1 compareTo xy._2
-				} else {i}
-			}
-		}
 	}
 }

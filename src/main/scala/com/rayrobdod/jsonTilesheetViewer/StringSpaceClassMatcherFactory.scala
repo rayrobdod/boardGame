@@ -21,6 +21,8 @@ import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
 
 /**
+ * A factory that produces matchers from strings, where:
+ * 
  * # "*" matches everything
  * # "!whatever" matches everything except "whatever"
  * # "whatever" matches only "whatever"

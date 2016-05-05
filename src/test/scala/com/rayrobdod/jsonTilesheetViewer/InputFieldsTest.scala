@@ -20,13 +20,10 @@ package com.rayrobdod.jsonTilesheetViewer
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 import scala.util.Random
-import com.rayrobdod.boardGame.view.IndexesTilesheet
-import com.rayrobdod.boardGame.view.RandomColorTilesheet
-import com.rayrobdod.boardGame.view.NilTilesheet
+import scala.collection.immutable.Seq
+import com.rayrobdod.boardGame.view._
 
 class InputFieldsTest extends FunSpec {
-	InitTagProtocol.apply()
-	
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
@@ -37,6 +34,9 @@ class InputFieldsTest extends FunSpec {
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
 			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_]]}
+		}
+		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
+			assert{new InputFields("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_]]}
 		}
 	}
 	describe ("InputFields.rand") {
@@ -56,6 +56,22 @@ class InputFieldsTest extends FunSpec {
 			intercept[IllegalStateException]{
 				new InputFields("","","abc").rng
 			}
+		}
+	}
+	describe ("fieldIsRotationField") {
+		it ("is true if the Field is the specified string") {
+			assertResult(true){new InputFields("", "tag:rayrobdod.name,2013-08:map-rotate", "").fieldIsRotationField}
+		}
+		it ("is false otherwise") {
+			assertResult(false){new InputFields("", "", "").fieldIsRotationField}
+		}
+	}
+	describe ("field") {
+		it ("can get a thing") {
+			import com.rayrobdod.boardGame.RectangularField
+			val exp = RectangularField(Seq(Seq("a","b","c"), Seq("d","e","f")))
+			val url = this.getClass.getResource("abc.csv")
+			assertResult(exp){new InputFields("", url.toString, "").field}
 		}
 	}
 }

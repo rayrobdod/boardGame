@@ -40,7 +40,7 @@ final case class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart
 		type ImageFrames = Seq[IconPart]
 		
 		val layers:Map[Int, ImageFrames] = {
-			import view.JSONRectangularVisualizationRule.{FullOrdering, PriorityOrdering}
+			import ParamaterizedRectangularVisualizationRule.PriorityOrdering
 			
 			visualizationRules.filter{
 				_.matches(field, x, y, rng)
