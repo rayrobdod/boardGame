@@ -28,7 +28,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 	
 	describe("RectangularVisualizationRuleBuilder + JsonParser") {
 		describe ("an empty json map input") {
-			val dut = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse("{}")
+			val dut = new JsonParser(new view.RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse("{}")
 			
 			it ("randsMatch is always true") {
 				assert( dut.randsMatch(scala.util.Random) )
@@ -55,7 +55,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 					"(1,1)":"b"
 				}
 			}"""
-			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
+			val res = new JsonParser(new view.RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
 			
 			assert (res match {
 				case view.ParamaterizedRectangularVisualizationRule(
@@ -72,7 +72,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 		}
 	}
 	
-	object MySpaceClassMatcherFactory extends SpaceClassMatcherFactory[String] {
+	object MySpaceClassMatcherFactory extends view.SpaceClassMatcherFactory[String] {
 		def apply(ref:String):SpaceClassMatcher[String] = {
 			new MySpaceClassMatcher(ref)
 		}

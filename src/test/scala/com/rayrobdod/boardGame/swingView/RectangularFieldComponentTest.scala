@@ -18,8 +18,10 @@
 package com.rayrobdod.boardGame.swingView
 
 import javax.swing.Icon
+import java.awt.Color
 import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
@@ -30,7 +32,7 @@ class RectangularFieldComponentTest extends FunSpec {
 	describe ("4x4 field using a default CheckerboardTilesheet") {
 		val uut = RectangularFieldComponent[Any](
 			RectangularField[Any]((0 to 3).map{x => (0 to 3).map{y => x * y}}),
-			new CheckerboardTilesheet
+			new CheckerboardTilesheet(blankIcon(16, 16), new SolidColorIcon(Color.white, 16, 16), new SolidColorIcon(Color.black, 16, 16))
 		)._1
 		
 		it ("MaxSize.width is (16 * 4)"){

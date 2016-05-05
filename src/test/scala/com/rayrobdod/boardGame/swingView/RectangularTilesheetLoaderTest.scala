@@ -22,6 +22,9 @@ import org.scalatest.prop.PropertyChecks
 import java.util.ServiceConfigurationError
 import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
+import com.rayrobdod.boardGame.view.ConstTrueSpaceClassMatcherFactory
+import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
+import com.rayrobdod.boardGame.view.NilTilesheet
 
 class RectangularTilesheetLoaderTest extends FunSpec {
 	describe("RectangularTilesheetLoader") {
@@ -35,7 +38,7 @@ class RectangularTilesheetLoaderTest extends FunSpec {
 				)
 			)
 			
-			assertResult(List(NilTilesheet)){dut.toList}
+			assertResult(List(new NilTilesheet(blankIcon(16, 16)))){dut.toList}
 		}
 		ignore ("can find files using slash notation") {}
 		it ("errors if service does not exist") {

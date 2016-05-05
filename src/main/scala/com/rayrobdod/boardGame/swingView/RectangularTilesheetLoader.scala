@@ -22,6 +22,7 @@ import java.util.ServiceConfigurationError;
 import com.rayrobdod.util.services.Services.readServices;
 import java.nio.charset.StandardCharsets.UTF_8
 import com.rayrobdod.json.parser.JsonParser
+import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
  * Like {@link java.util.ServiceLoader}, but for Tilesheets.
@@ -69,7 +70,7 @@ final class RectangularTilesheetLoader[SpaceClass](
 				current = current + 1;
 				if (lineURL != null) {
 					// then the line refers to a resource; read from the resource
-					val b = new VisualizationRuleBasedRectangularTilesheetBuilder(lineURL, matchers)
+					val b = VisualizationRuleBasedRectangularTilesheetBuilder(lineURL, matchers)
 					var r:java.io.Reader = new java.io.StringReader("{}")
 					try {
 						r = new java.io.InputStreamReader(lineURL.openStream(), UTF_8)

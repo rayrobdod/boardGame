@@ -23,43 +23,49 @@ import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.{TYPE_INT_RGB => nonAlphaImage, TYPE_INT_ARGB => alphaImage}
+import java.net.URL
 import javax.swing.{Icon, ImageIcon}
+import javax.imageio.ImageIO
 import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.SolidColorIcon
+import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
  * 
  */
 package object swingView {
-	type IndexConverter = Function1[(Int, Int), (Int, Int)]
-	type SpaceClassMatcherFactory[-SpaceClass] = view.SpaceClassMatcherFactory[SpaceClass]
 	type RectangularTilesheet[A] = view.RectangularTilesheet[A, javax.swing.Icon]
-	type VisualizationRuleBasedRectangularTilesheet[A] = view.VisualizationRuleBasedRectangularTilesheet[A, Image, Icon]
-	type ParamaterizedRectangularVisualizationRule[A] = view.ParamaterizedRectangularVisualizationRule[A, Image]
-	type RectangularVisualziationRuleBuilder[A] = view.RectangularVisualziationRuleBuilder[A, Image]
 	
 	def VisualizationRuleBasedRectangularTilesheet[A](name:String, visualizationRules:Seq[view.RectangularVisualizationRule[A, Image]]) = {
 		view.VisualizationRuleBasedRectangularTilesheet(name, visualizationRules, this.compostLayers _)
 	}
-	
-	val NilTilesheet = new view.NilTilesheet[Icon](BlankIcon)
-	def HashcodeColorTilesheet(dim:java.awt.Dimension) = new view.HashcodeColorTilesheet(
-		dim.width,
-		dim.height,
-		BlankIcon,
-		{(c:Int, w:Int, h:Int) => new SolidColorIcon(rgbToColor(c), dim.width, dim.height)}
-	)
+	def VisualizationRuleBasedRectangularTilesheetBuilder[A](base:URL, classMap:SpaceClassMatcherFactory[A]) = {
+		new view.VisualizationRuleBasedRectangularTilesheetBuilder(base, classMap, compostLayers, sheeturl2images)
+	}
 	
 	
 	
-	def lcm(x:Int, y:Int):Int = view.lcm(x,y)
-	def gcd(x:Int, y:Int):Int = view.gcd(x,y)
-	def rgbToColor(rgb:Int) = new Color(rgb)
-
+	def blankIcon(w:Int, h:Int):Icon = new Icon {
+		import java.awt.{Component, Graphics}
+		def getIconWidth:Int = w
+		def getIconHeight:Int = h
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
+	}
+	def rgbToColor(rgb:Int):Color = new Color(rgb)
+	def rgbToIcon(rgb:Int, w:Int, h:Int):Icon = new SolidColorIcon(rgbToColor(rgb), w, h)
+	def stringIcon(text:String, rgb:Int, w:Int, h:Int):Icon = new Icon {
+		import java.awt.{Component, Graphics}
+		def getIconWidth:Int = w
+		def getIconHeight:Int = h
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {
+			g.setColor(rgbToColor(rgb))
+			g.drawString(text, x, y + h - 5)
+		}
+	}
+	
 	
 	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Icon = {
-		
 		val a:Seq[Image] = if (! layersWithLCMFrames.isEmpty) {
 			// FIXTHIS: assumes all images are the same size
 			val imageWidth = layersWithLCMFrames.head.head.getWidth(null)
@@ -89,25 +95,49 @@ package object swingView {
 		}
 	}
 	
+	def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
+		val sheetImage:BufferedImage = ImageIO.read(sheetUrl)
+		val tilesX = sheetImage.getWidth / tileWidth
+		val tilesY = sheetImage.getHeight / tileHeight
+		
+		Seq.empty ++ new BlitzAnimImage(sheetImage, tileWidth, tileHeight, 0, tilesX * tilesY).getImages
+	}
+	
 	
 }
 
 package swingView {
 	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
-	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstTrueSpaceClassMatcher
-	}
-	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns false */
-	object ConstFalseSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstFalseSpaceClassMatcher
-	}
-	
-	private[swingView] object BlankIcon extends Icon {
+	final class ColorStringIcon(val color:Color, val dim:java.awt.Dimension) extends javax.swing.Icon {
+		override def getIconWidth:Int = dim.width
+		override def getIconHeight:Int = dim.height
+		
 		import java.awt.{Component, Graphics}
-		def getIconWidth:Int = 16
-		def getIconHeight:Int = 16
-		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
+		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int)
+		{
+			g.setColor(foreground)
+			g.drawString("" + color.getRGB.toHexString, x + 2, y + dim.height - 5)
+		}
+		
+		@inline private lazy val foreground = {
+			if ((color.getRed + color.getBlue + color.getGreen) < (128 * 3)) {
+				Color.white
+			} else {Color.black}
+		}
+		
+		
+		protected def canEquals(other:Any):Option[ColorStringIcon] = {
+			Option(other).collect{case x:ColorStringIcon => x}
+		}
+		override def equals(other:Any):Boolean = {
+			this.canEquals(other).foldLeft(false){(b, x:ColorStringIcon) =>
+				x.canEquals(this).foldLeft(false){(b, y:ColorStringIcon) =>
+					y.color == x.color &&
+					y.dim == x.dim
+				}
+			}
+		}
+		override def hashCode:Int = color.hashCode
 	}
+	
 }

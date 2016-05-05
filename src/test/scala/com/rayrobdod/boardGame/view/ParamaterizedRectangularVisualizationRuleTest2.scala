@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.javafxView
+package com.rayrobdod.boardGame.view
 
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
@@ -26,11 +26,11 @@ import scala.util.Random
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.RectangularField
 
-class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
+class ParamaterizedRectangularVisualizationRuleTest2 extends FunSpec {
 	
 	// TODO: equivalance partition to improve speed
 	describe ("Default Paramaterized visualization rule") {
-		val dut:ParamaterizedRectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule()
+		val dut:ParamaterizedRectangularVisualizationRule[String, _] = new ParamaterizedRectangularVisualizationRule()
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>

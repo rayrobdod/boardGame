@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
+import java.net.URL
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 import javafx.scene.Node
@@ -24,37 +25,24 @@ import javafx.scene.image.{Image, ImageView, WritableImage}
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
  * 
  */
 package object javafxView {
-	type IndexConverter = Function1[(Int, Int), (Int, Int)]
-	type SpaceClassMatcherFactory[-SpaceClass] = view.SpaceClassMatcherFactory[SpaceClass]
 	type RectangularTilesheet[A] = view.RectangularTilesheet[A, javafx.scene.Node]
-	type VisualizationRuleBasedRectangularTilesheet[A] = view.VisualizationRuleBasedRectangularTilesheet[A, Image, Node]
-	type ParamaterizedRectangularVisualizationRule[A] = view.ParamaterizedRectangularVisualizationRule[A, Image]
-	type RectangularVisualziationRuleBuilder[A] = view.RectangularVisualziationRuleBuilder[A, Image]
 	
 	def VisualizationRuleBasedRectangularTilesheet[A](name:String, visualizationRules:Seq[view.RectangularVisualizationRule[A, Image]]) = {
 		view.VisualizationRuleBasedRectangularTilesheet(name, visualizationRules, this.compostLayers _)
 	}
+	def VisualizationRuleBasedRectangularTilesheetBuilder[A](base:URL, classMap:SpaceClassMatcherFactory[A]) = {
+		new view.VisualizationRuleBasedRectangularTilesheetBuilder(base, classMap, compostLayers, sheeturl2images)
+	}
 	
-	val NilTilesheet = new view.NilTilesheet[Node](
-		new Rectangle(16, 16, Color.TRANSPARENT)
-	)
-	def HashcodeColorTilesheet(dim:Dimension) = new view.HashcodeColorTilesheet(
-		dim.width,
-		dim.height,
-		new Rectangle(16, 16, Color.TRANSPARENT),
-		{(c:Int, w:Int, h:Int) => new Rectangle(w, h, rgbToColor(c))}
-	)
-			
-	
-	def lcm(x:Int, y:Int):Int = view.lcm(x,y)
-	def gcd(x:Int, y:Int):Int = view.gcd(x,y)
+	def blankIcon(w:Int, h:Int):Rectangle = new Rectangle(w, h, Color.TRANSPARENT)
 	def rgbToColor(rgb:Int) = Color.rgb((rgb >> 16) % 256, (rgb >> 8) % 256, (rgb >> 0) % 256)
-	
+	def rgbToIcon(rgb:Int, w:Int, h:Int):Rectangle = new Rectangle(w, h, rgbToColor(rgb))
 	
 	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
 		
@@ -82,7 +70,7 @@ package object javafxView {
 		} else {
 			Seq(new ImageView(new WritableImage(1,1)))
 		}
-	
+		
 		if (a.length == 1) {
 			a.head
 		} else {
@@ -90,19 +78,29 @@ package object javafxView {
 			a.headOption.getOrElse(new ImageView(new WritableImage(1,1)))
 		}
 	}
-
+	
+	private def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
+		val sheetImage:Image = new Image(sheetUrl.toString)
+		val tilesX = sheetImage.getWidth.intValue / tileWidth
+		val tilesY = sheetImage.getHeight.intValue / tileHeight
+		
+		(0 to (sheetImage.getWidth.intValue - tileWidth) by tileWidth).flatMap{x:Int =>
+			(0 to (sheetImage.getHeight.intValue - tileHeight) by tileHeight).map{y:Int =>
+				val retVal = new WritableImage(tileWidth, tileHeight)
+				retVal.getPixelWriter().setPixels(
+					0, 0,
+					tileWidth, tileHeight,
+					sheetImage.getPixelReader,
+					x, y
+				)
+				retVal
+			}
+		}
+	}
+	
 }
 
 package javafxView {
 	final case class Dimension(val width:Int, val height:Int)
 	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
-	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstTrueSpaceClassMatcher
-	}
-	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns false */
-	object ConstFalseSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstFalseSpaceClassMatcher
-	}
 }

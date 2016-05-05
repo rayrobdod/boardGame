@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import com.rayrobdod.boardGame.view
 import org.scalatest.{FunSuite, FunSpec}
@@ -38,7 +38,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
 			
 			assert (res match {
-				case view.ParamaterizedRectangularVisualizationRule(
+				case ParamaterizedRectangularVisualizationRule(
 						MapUnapplyer(),
 						5,
 						"(x + y) % 2 == 0",

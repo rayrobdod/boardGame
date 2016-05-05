@@ -25,8 +25,10 @@ import scala.annotation.tailrec
 package object view {
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 	
+	/** Least Common Multiple */
 	def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
 	
+	/** Greatest Common Denominator */
 	@tailrec def gcd(x:Int, y:Int):Int = {
 		if (y == 1) {1} else
 		if (x == 1) {1} else
@@ -52,7 +54,8 @@ package view {
 	}
 	
 	
-	class NilTilesheet[Icon](val tile:Icon) extends RectangularTilesheet[Any, Icon] {
+	/** A tilesheet which will always return the Icon specified in the constructor */
+	final case class NilTilesheet[Icon](val tile:Icon) extends RectangularTilesheet[Any, Icon] {
 		override val name:String = "Nil"
 		override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:scala.util.Random):(Icon, Icon) = ((tile, tile))
 	}

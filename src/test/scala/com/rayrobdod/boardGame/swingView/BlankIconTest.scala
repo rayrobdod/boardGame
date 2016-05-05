@@ -21,34 +21,18 @@ import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 import java.awt.{Dimension, Color}
 import javax.swing.Icon;
-import com.rayrobdod.swing.SolidColorIcon
 
-class NilTilesheetTest extends FunSpec {
-	describe ("NilTilesheet") {
-		it ("name is 'Nil'") {
-			assertResult("Nil"){NilTilesheet.name}
-		}
-		it ("getIconFor(null, 0, 0, null)._1 is BlankIcon") {
-			assertResult(BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._1}
-		}
-		it ("getIconFor(null, 0, 1, null)._1 is BlankIcon") {
-			assertResult(BlankIcon){NilTilesheet.getIconFor(null, 0, 1, null)._1}
-		}
-		it ("getIconFor(null, 0, 0, null)._2 is BlankIcon") {
-			assertResult(BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._2}
-		}
-	}
+class BlankIconTest extends FunSpec {
 	describe ("BlankIcon") {
 		it ("getIconWidth == 16") {
-			assertResult(16){BlankIcon.getIconWidth}
+			assertResult(16){blankIcon(16, 16).getIconWidth}
 		}
 		it ("getIconHeight == 16") {
-			assertResult(16){BlankIcon.getIconHeight}
+			assertResult(16){blankIcon(16, 16).getIconHeight}
 		}
 		it ("paintIcon does nothing") {
 			// it is incredibly hard to prove a negative...
-			BlankIcon.paintIcon(null, null, -1, -1)
+			blankIcon(16, 16).paintIcon(null, null, -1, -1)
 		}
 	}
-	
 }
