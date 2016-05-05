@@ -22,6 +22,7 @@ import scala.collection.immutable.{Seq, Map}
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.net.URL
+import java.nio.charset.StandardCharsets.UTF_8
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.swingView
@@ -64,7 +65,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 				sheetUrl = this.getClass.getResource("/com/rayrobdod/boardGame/swingView/whiteBlackTiles.png"),
 				tileWidth = 32,
 				tileHeight = 32,
-				rules = new URL("data", "text/json", -1, """[{"tiles":0, "indexies":"x == 0"},{"tiles":1}]""", new swingView.DataHandler),
+				rules = new URL("data", "text/json", -1, """[{"tiles":0, "indexies":"x == 0"},{"tiles":1}]""", new DataHandler),
 				name = "name"
 			)
 			val result = source.apply()
@@ -83,5 +84,18 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 		def apply(ref:String):SpaceClassMatcher[String] = {
 			throw new UnsupportedOperationException("")
 		}
+	}
+}
+
+class DataHandler extends java.net.URLStreamHandler {
+	override def openConnection(u:URL):java.net.URLConnection = {
+		new DataConnection(u)
+	}
+}
+
+class DataConnection(u:URL) extends java.net.URLConnection(u) {
+	override def connect():Unit = {}
+	override def getInputStream():java.io.InputStream = {
+		new java.io.ByteArrayInputStream(u.getFile.getBytes(UTF_8))
 	}
 }
