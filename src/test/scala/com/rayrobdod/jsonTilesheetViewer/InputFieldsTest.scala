@@ -20,9 +20,9 @@ package com.rayrobdod.jsonTilesheetViewer
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 import scala.util.Random
-import com.rayrobdod.boardGame.swingView.IndexesTilesheet
-import com.rayrobdod.boardGame.swingView.RandomColorTilesheet
-import com.rayrobdod.boardGame.swingView.NilTilesheet
+import com.rayrobdod.boardGame.view.IndexesTilesheet
+import com.rayrobdod.boardGame.view.RandomColorTilesheet
+import com.rayrobdod.boardGame.view.NilTilesheet
 
 class InputFieldsTest extends FunSpec {
 	InitTagProtocol.apply()
@@ -30,13 +30,13 @@ class InputFieldsTest extends FunSpec {
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
-			assertResult(IndexesTilesheet){new InputFields("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet}
+			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet.isInstanceOf[IndexesTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
-			assertResult(new RandomColorTilesheet){new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet}
+			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
-			assertResult(NilTilesheet){new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet}
+			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_]]}
 		}
 	}
 	describe ("InputFields.rand") {

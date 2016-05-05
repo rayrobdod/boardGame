@@ -35,16 +35,6 @@ import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
  * 
  */
 package object swingView {
-	type RectangularTilesheet[A] = view.RectangularTilesheet[A, javax.swing.Icon]
-	
-	def VisualizationRuleBasedRectangularTilesheet[A](name:String, visualizationRules:Seq[view.RectangularVisualizationRule[A, Image]]) = {
-		view.VisualizationRuleBasedRectangularTilesheet(name, visualizationRules, this.compostLayers _)
-	}
-	def VisualizationRuleBasedRectangularTilesheetBuilder[A](base:URL, classMap:SpaceClassMatcherFactory[A]) = {
-		new view.VisualizationRuleBasedRectangularTilesheetBuilder(base, classMap, compostLayers, sheeturl2images)
-	}
-	
-	
 	
 	def blankIcon(w:Int, h:Int):Icon = new Icon {
 		import java.awt.{Component, Graphics}
@@ -103,41 +93,5 @@ package object swingView {
 		Seq.empty ++ new BlitzAnimImage(sheetImage, tileWidth, tileHeight, 0, tilesX * tilesY).getImages
 	}
 	
-	
-}
-
-package swingView {
-	
-	final class ColorStringIcon(val color:Color, val dim:java.awt.Dimension) extends javax.swing.Icon {
-		override def getIconWidth:Int = dim.width
-		override def getIconHeight:Int = dim.height
-		
-		import java.awt.{Component, Graphics}
-		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int)
-		{
-			g.setColor(foreground)
-			g.drawString("" + color.getRGB.toHexString, x + 2, y + dim.height - 5)
-		}
-		
-		@inline private lazy val foreground = {
-			if ((color.getRed + color.getBlue + color.getGreen) < (128 * 3)) {
-				Color.white
-			} else {Color.black}
-		}
-		
-		
-		protected def canEquals(other:Any):Option[ColorStringIcon] = {
-			Option(other).collect{case x:ColorStringIcon => x}
-		}
-		override def equals(other:Any):Boolean = {
-			this.canEquals(other).foldLeft(false){(b, x:ColorStringIcon) =>
-				x.canEquals(this).foldLeft(false){(b, y:ColorStringIcon) =>
-					y.color == x.color &&
-					y.dim == x.dim
-				}
-			}
-		}
-		override def hashCode:Int = color.hashCode
-	}
 	
 }

@@ -31,18 +31,12 @@ import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
  * 
  */
 package object javafxView {
-	type RectangularTilesheet[A] = view.RectangularTilesheet[A, javafx.scene.Node]
 	
-	def VisualizationRuleBasedRectangularTilesheet[A](name:String, visualizationRules:Seq[view.RectangularVisualizationRule[A, Image]]) = {
-		view.VisualizationRuleBasedRectangularTilesheet(name, visualizationRules, this.compostLayers _)
-	}
-	def VisualizationRuleBasedRectangularTilesheetBuilder[A](base:URL, classMap:SpaceClassMatcherFactory[A]) = {
-		new view.VisualizationRuleBasedRectangularTilesheetBuilder(base, classMap, compostLayers, sheeturl2images)
-	}
-	
-	def blankIcon(w:Int, h:Int):Rectangle = new Rectangle(w, h, Color.TRANSPARENT)
+	def blankIcon(w:Int, h:Int):Node = new Rectangle(w, h, Color.TRANSPARENT)
 	def rgbToColor(rgb:Int) = Color.rgb((rgb >> 16) % 256, (rgb >> 8) % 256, (rgb >> 0) % 256)
-	def rgbToIcon(rgb:Int, w:Int, h:Int):Rectangle = new Rectangle(w, h, rgbToColor(rgb))
+	def rgbToIcon(rgb:Int, w:Int, h:Int):Node = new Rectangle(w, h, rgbToColor(rgb))
+	def stringIcon(text:String, rgb:Int, w:Int, h:Int):Node = new javafx.scene.text.Text(text)
+	
 	
 	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
 		
@@ -79,7 +73,7 @@ package object javafxView {
 		}
 	}
 	
-	private def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
+	def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
 		val sheetImage:Image = new Image(sheetUrl.toString)
 		val tilesX = sheetImage.getWidth.intValue / tileWidth
 		val tilesY = sheetImage.getHeight.intValue / tileHeight
@@ -97,10 +91,4 @@ package object javafxView {
 			}
 		}
 	}
-	
-}
-
-package javafxView {
-	final case class Dimension(val width:Int, val height:Int)
-	
 }

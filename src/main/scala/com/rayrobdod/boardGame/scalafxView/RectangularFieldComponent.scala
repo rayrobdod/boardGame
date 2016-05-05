@@ -23,11 +23,12 @@ import scala.collection.immutable.Map
 import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularFieldIndex
+import com.rayrobdod.boardGame.view.RectangularTilesheet
 
 object RectangularFieldComponent {
 	def apply[A](
 			field:RectangularField[A],
-			tilesheet:RectangularTilesheet[A],
+			tilesheet:RectangularTilesheet[A, javafx.scene.Node],
 			rng:Random = Random
 	):(GridPane, GridPane) = {
 		

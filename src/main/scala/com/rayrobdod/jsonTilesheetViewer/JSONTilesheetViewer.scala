@@ -30,54 +30,44 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame._
+import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.swingView._
 
 
 /**
  * @version 3.0.0
  */
-object JSONTilesheetViewer extends App
-{
-	{
-		val prop:String = "java.protocol.handler.pkgs";
-		val pkg:String = "com.rayrobdod.tagprotocol";
+object JsonTilesheetViewer {
+	def main(args:Array[String]):Unit = {
 		
-		var value:String = System.getProperty(prop);
-		value = if (value == null) {pkg} else {value + "|" + pkg};
-		System.setProperty(prop, value);
+		val frame = new JFrame("JSON Tilesheet Viewer")
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 		
+		val inputFields = new InputFields(
+				initialTilesheetUrl = if (args.size > 0) args(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil",
+				initialFieldUrl     = if (args.size > 1) args(1) else "tag:rayrobdod.name,2013-08:map-rotate",
+				initialRand         = if (args.size > 2) args(2) else ""
+		)
+		val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
 		
-		java.net.URLConnection.setContentHandlerFactory(
-				ToggleContentHandlerFactory);
+		inputFields.addOkButtonActionListener(new ActionListener() {
+			override def actionPerformed(e:ActionEvent) {
+				loadNewTilesheet(frame, fieldComp, inputFields)
+			}
+		})
+		
+		frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
+		frame.getContentPane.add(new JScrollPane(fieldComp))
+		
+		loadNewTilesheet(frame, fieldComp, inputFields)
+		frame.setVisible(true)
 	}
 	
-	
-	val frame = new JFrame("JSON Tilesheet Viewer")
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-	
-	val inputFields = new InputFields(
-			initialTilesheetUrl = if (args.size > 0) args(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil",
-			initialFieldUrl     = if (args.size > 1) args(1) else "tag:rayrobdod.name,2013-08:map-rotate",
-			initialRand         = if (args.size > 2) args(2) else ""
-	)
-	
-	inputFields.addOkButtonActionListener(new ActionListener() {
-		override def actionPerformed(e:ActionEvent) {
-			loadNewTilesheet()
-		}
-	})
-	
-	val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
-	
-	frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
-	frame.getContentPane.add(new JScrollPane(fieldComp))
-	
-	
-	
-	loadNewTilesheet()
-	frame.setVisible(true)
-	
-	def loadNewTilesheet():Unit = {
+	def loadNewTilesheet(
+			frame:JFrame,
+			fieldComp:JPanel,
+			inputFields:InputFields
+	):Unit = {
 		
 		if (inputFields.fieldIsRotationField) {
 			
@@ -101,7 +91,7 @@ object JSONTilesheetViewer extends App
 			
 			currentRotationState.toSeq.map{_._1}.foreach{index =>
 				a._1.addMouseListener(index, new FieldRotationMouseListener(
-						index, currentRotationRotation, currentRotationState
+						index, currentRotationRotation, currentRotationState, fieldComp, inputFields
 				))
 			}
 			
@@ -122,23 +112,15 @@ object JSONTilesheetViewer extends App
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
+	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.view.ParamaterizedRectangularVisualizationRule
-		import com.rayrobdod.boardGame.swingView.VisualizationRuleBasedRectangularTilesheet
-		import com.rayrobdod.boardGame.swingView.HashcodeColorTilesheet
+		import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheet
+		import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
 		import StringSpaceClassMatcherFactory.EqualsMatcher
 		
 		val a = f match {
-			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
+			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass, _, _] => {
 				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass, _]]}
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
@@ -154,7 +136,7 @@ object JSONTilesheetViewer extends App
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet => Seq("a", "b", "c", "d")
+			case x:HashcodeColorTilesheet[_] => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		
@@ -165,7 +147,9 @@ object JSONTilesheetViewer extends App
 	final class FieldRotationMouseListener(
 			index:(Int,Int),
 			currentRotationRotation:Seq[SpaceClass],
-			currentRotationState:RectangularField[SpaceClass]
+			currentRotationState:RectangularField[SpaceClass],
+			fieldComp:JPanel,
+			inputFields:InputFields
 	) extends MouseAdapter {
 		override def mouseClicked(e:MouseEvent):Unit = {
 			
@@ -194,7 +178,7 @@ object JSONTilesheetViewer extends App
 			
 			nextRotationState.toSeq.map{_._1}.foreach{index =>
 				a._1.addMouseListener(index, new FieldRotationMouseListener(
-						index, currentRotationRotation, nextRotationState
+						index, currentRotationRotation, nextRotationState, fieldComp, inputFields
 				))
 			}
 		}

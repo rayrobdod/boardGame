@@ -23,6 +23,8 @@ import com.rayrobdod.util.services.Services.readServices;
 import java.nio.charset.StandardCharsets.UTF_8
 import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
+import com.rayrobdod.boardGame.view.RectangularTilesheet
+import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheetBuilder
 
 /**
  * Like {@link java.util.ServiceLoader}, but for Tilesheets.
@@ -36,11 +38,11 @@ final class RectangularTilesheetLoader[SpaceClass](
 		val service:String,
 		val matchers:SpaceClassMatcherFactory[SpaceClass],
 		val loader:ClassLoader = Thread.currentThread().getContextClassLoader()
-) extends Iterable[RectangularTilesheet[SpaceClass]] {
+) extends Iterable[RectangularTilesheet[SpaceClass, javax.swing.Icon]] {
 	
-	def iterator:Iterator[RectangularTilesheet[SpaceClass]] = new MyIterator()
+	def iterator:Iterator[RectangularTilesheet[SpaceClass, javax.swing.Icon]] = new MyIterator()
 	
-	private class MyIterator() extends Iterator[RectangularTilesheet[SpaceClass]]
+	private class MyIterator() extends Iterator[RectangularTilesheet[SpaceClass, javax.swing.Icon]]
 	{
 		private var current:Int = 0;
 		private val readLines = try {
@@ -54,7 +56,7 @@ final class RectangularTilesheetLoader[SpaceClass](
 		def remove:Nothing = throw new UnsupportedOperationException("Cannot remove from a Service");
 		
 		
-		def next():RectangularTilesheet[SpaceClass] = {
+		def next():RectangularTilesheet[SpaceClass, javax.swing.Icon] = {
 			if (!hasNext) throw new java.util.NoSuchElementException();
 			
 			val line = readLines(current);
@@ -70,7 +72,7 @@ final class RectangularTilesheetLoader[SpaceClass](
 				current = current + 1;
 				if (lineURL != null) {
 					// then the line refers to a resource; read from the resource
-					val b = VisualizationRuleBasedRectangularTilesheetBuilder(lineURL, matchers)
+					val b = new VisualizationRuleBasedRectangularTilesheetBuilder(lineURL, matchers, compostLayers, sheeturl2images)
 					var r:java.io.Reader = new java.io.StringReader("{}")
 					try {
 						r = new java.io.InputStreamReader(lineURL.openStream(), UTF_8)
@@ -88,9 +90,10 @@ final class RectangularTilesheetLoader[SpaceClass](
 						}
 					}
 					val module = clazz.getField("MODULE$")
+					import javax.swing.Icon
 					module.get(null) match {
 						// stupid type erasure...
-						case x:RectangularTilesheet[SpaceClass] => x
+						case x:RectangularTilesheet[SpaceClass, Icon] => x
 						case _ => throw new ServiceConfigurationError(line + " is not a RectangularTilesheet")
 					}
 				}
