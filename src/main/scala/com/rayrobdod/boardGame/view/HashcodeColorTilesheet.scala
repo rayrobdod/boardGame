@@ -23,7 +23,7 @@ import scala.util.Random
 
 final class HashcodeColorTilesheet[Icon](
 	transparentIcon:Icon,
-	colorToIcon:Function1[Int, Icon]
+	colorToIcon:Function1[java.awt.Color, Icon]
 ) extends RectangularTilesheet[Any, Icon] {
 	override def name:String = "HashcodeColor"
 	override def toString:String = name
@@ -32,7 +32,7 @@ final class HashcodeColorTilesheet[Icon](
 		(( colorToIcon(getColorFor(f,x,y)), transparentIcon ))
 	}
 	
-	private[this] def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):Int = {
+	private[this] def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):java.awt.Color = {
 		val hash = f.apply((x,y)).typeOfSpace.hashCode
 		// reorder bits to make most colors not really close to black
 		val set1 = BitSet.fromBitMask(Array(hash))
@@ -41,6 +41,6 @@ final class HashcodeColorTilesheet[Icon](
 			set1(1), set1(4), set1(7), set1(10), false,false,false,false,
 			set1(2), set1(5), set1(8), set1(11), false,false,false,false
 		).reverse.zipWithIndex.filter{_._1}.map{_._2}.foldLeft(BitSet.empty){_ + _}.toBitMask.head.intValue
-		color
+		new java.awt.Color(color)
 	}
 }

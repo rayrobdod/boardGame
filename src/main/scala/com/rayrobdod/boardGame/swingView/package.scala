@@ -19,6 +19,7 @@ package com.rayrobdod.boardGame
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
+import java.awt.Dimension
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -36,21 +37,21 @@ import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
  */
 package object swingView {
 	
-	def blankIcon(w:Int, h:Int):Icon = new Icon {
+	def blankIcon(size:Dimension):Icon = new Icon {
 		import java.awt.{Component, Graphics}
-		def getIconWidth:Int = w
-		def getIconHeight:Int = h
+		def getIconWidth:Int = size.width
+		def getIconHeight:Int = size.height
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
 	}
-	def rgbToColor(rgb:Int):Color = new Color(rgb)
-	def rgbToIcon(rgb:Int, w:Int, h:Int):Icon = new SolidColorIcon(rgbToColor(rgb), w, h)
-	def stringIcon(text:String, rgb:Int, w:Int, h:Int):Icon = new Icon {
+	def rgbToColor(rgb:Color):Color = rgb
+	def rgbToIcon(rgb:Color, size:Dimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	def stringIcon(text:String, rgb:Color, size:Dimension):Icon = new Icon {
 		import java.awt.{Component, Graphics}
-		def getIconWidth:Int = w
-		def getIconHeight:Int = h
+		def getIconWidth:Int = size.width
+		def getIconHeight:Int = size.height
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {
 			g.setColor(rgbToColor(rgb))
-			g.drawString(text, x, y + h - 5)
+			g.drawString(text, x, y + size.height - 5)
 		}
 	}
 	
@@ -85,12 +86,12 @@ package object swingView {
 		}
 	}
 	
-	def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
+	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
 		val sheetImage:BufferedImage = ImageIO.read(sheetUrl)
-		val tilesX = sheetImage.getWidth / tileWidth
-		val tilesY = sheetImage.getHeight / tileHeight
+		val tilesX = sheetImage.getWidth / tileDimension.width
+		val tilesY = sheetImage.getHeight / tileDimension.height
 		
-		Seq.empty ++ new BlitzAnimImage(sheetImage, tileWidth, tileHeight, 0, tilesX * tilesY).getImages
+		Seq.empty ++ new BlitzAnimImage(sheetImage, tileDimension.width, tileDimension.height, 0, tilesX * tilesY).getImages
 	}
 	
 	

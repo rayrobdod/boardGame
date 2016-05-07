@@ -33,19 +33,18 @@ object CheckerboardURIMatcher {
 	}
 	
 	final case class CheckerboardTilesheetDelay(
-		tileWidth:Int = 24,
-		tileHeight:Int = 24,
-		light:Int = 0xFFFFFF,
-		dark:Int = 0
+		tileDimension:java.awt.Dimension = new java.awt.Dimension(24, 24),
+		light:java.awt.Color = java.awt.Color.white,
+		dark:java.awt.Color = java.awt.Color.black
 	) {
 		def apply[Icon](
-			transparentIcon:Function2[Int, Int, Icon],
-			rgbToIcon:Function3[Int, Int, Int, Icon]
+			transparentIcon:Function1[java.awt.Dimension, Icon],
+			rgbToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon]
 		):CheckerboardTilesheet[Icon] = {
 			CheckerboardTilesheet(
-				transparentIcon(tileWidth, tileHeight),
-				rgbToIcon(light, tileWidth, tileHeight),
-				rgbToIcon(dark, tileWidth, tileHeight)
+				transparentIcon(tileDimension),
+				rgbToIcon(light, tileDimension),
+				rgbToIcon(dark, tileDimension)
 			)
 		}
 	}
@@ -59,18 +58,20 @@ object CheckerboardURIMatcher {
 			splitParam(0) match {
 				case "size" => {
 					returnValue = returnValue.copy(
-						tileWidth = splitParam(1).toInt,
-						tileHeight = splitParam(1).toInt
+						tileDimension = new java.awt.Dimension(
+							splitParam(1).toInt,
+							splitParam(1).toInt
+						)
 					)
 				}
 				case "light" => {
 					returnValue = returnValue.copy(
-						light = splitParam(1).toInt
+						light = new java.awt.Color(splitParam(1).toInt)
 					)
 				}
 				case "dark" => {
 					returnValue = returnValue.copy(
-						dark = splitParam(1).toInt
+						dark = new java.awt.Color(splitParam(1).toInt)
 					)
 				}
 				case _ => {}

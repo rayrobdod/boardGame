@@ -25,14 +25,14 @@ import javax.swing.Icon;
 class BlankIconTest extends FunSpec {
 	describe ("BlankIcon") {
 		it ("getIconWidth == 16") {
-			assertResult(16){blankIcon(16, 16).getIconWidth}
+			assertResult(16){blankIcon(new java.awt.Dimension(16, 16)).getIconWidth}
 		}
 		it ("getIconHeight == 16") {
-			assertResult(16){blankIcon(16, 16).getIconHeight}
+			assertResult(16){blankIcon(new java.awt.Dimension(16, 16)).getIconHeight}
 		}
 		it ("paintIcon does nothing") {
 			// it is incredibly hard to prove a negative...
-			blankIcon(16, 16).paintIcon(null, null, -1, -1)
+			blankIcon(new java.awt.Dimension(16, 16)).paintIcon(null, null, -1, -1)
 		}
 	}
 }

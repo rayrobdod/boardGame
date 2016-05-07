@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
+import java.awt.{Dimension, Color}
 import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
@@ -50,10 +51,10 @@ final class InputFields(
 	
 	
 	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getSelectedItem match {
-		case TAG_SHEET_NIL => new NilTilesheet(swingView.blankIcon(16,16))
-		case TAG_SHEET_INDEX => new IndexesTilesheet(swingView.rgbToIcon(0xFF00FF, 64, 24), swingView.rgbToIcon(0x00FFFF, 64, 24), {s:String => swingView.stringIcon(s, 0, 64, 24)})
-		case TAG_SHEET_RAND => new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, 64, 24)
-		case TAG_SHEET_HASH => new HashcodeColorTilesheet(swingView.blankIcon(24, 24), {c:Int => swingView.rgbToIcon(c, 24, 24)})
+		case TAG_SHEET_NIL => new NilTilesheet(swingView.blankIcon(new Dimension(16,16)))
+		case TAG_SHEET_INDEX => new IndexesTilesheet(swingView.rgbToIcon(Color.cyan, new Dimension(64, 24)), swingView.rgbToIcon(Color.magenta, new Dimension(64, 24)), {s:String => swingView.stringIcon(s, Color.black, new Dimension(64, 24))})
+		case TAG_SHEET_RAND => new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, new Dimension(64, 24))
+		case TAG_SHEET_HASH => new HashcodeColorTilesheet(swingView.blankIcon(new Dimension(24, 24)), {c:Color => swingView.rgbToIcon(c, new Dimension(24, 24))})
 		case CheckerboardURIMatcher(x) => x.apply(swingView.blankIcon, swingView.rgbToIcon)
 		case x:String => {
 			val url = urlOrFileStringToUrl(x)

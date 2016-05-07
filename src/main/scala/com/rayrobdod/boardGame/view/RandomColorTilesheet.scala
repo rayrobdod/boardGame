@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.boardGame.view
 
+import java.awt.Color
 import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
 
@@ -25,28 +26,27 @@ import com.rayrobdod.boardGame.RectangularField
  * 
  */
 final class RandomColorTilesheet[Icon](
-		colorToIcon:Function3[Int, Int, Int, Icon],
-		colorToStrIcon:Function4[String, Int, Int, Int, Icon],
-		iconWidth:Int = 64,
-		iconHeight:Int = 24
+		colorToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon],
+		stringIcon:Function3[String, java.awt.Color, java.awt.Dimension, Icon],
+		iconDimension:java.awt.Dimension = new java.awt.Dimension(64, 24)
 ) extends RectangularTilesheet[Any, Icon] {
 	override def name:String = "Random Color";
 	override def toString:String = name;
 	
 	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		val background = rng.nextInt
+		val background = new java.awt.Color(rng.nextInt)
 		val foreground = this.foreground(background)
-		val text = ("000000" + background.toHexString).takeRight(6)
+		val text = ("000000" + background.getRGB.toHexString).takeRight(6)
 		
-		(( colorToIcon(background, iconWidth, iconHeight), colorToStrIcon(text, foreground, iconWidth, iconHeight) ))
+		(( colorToIcon(background, iconDimension), stringIcon(text, foreground, iconDimension) ))
 	}
 	
 	/** Find a color that contrasts with the specified background color */
-	@inline private[this] def foreground(background:Int):Int = {
-		if (((background >> 16) & 0xFF) + ((background >> 8) & 0xFF) + ((background >> 0) & 0xFF) < (128 * 3)) {
-			0xFFFFFF // white
+	@inline private[this] def foreground(background:Color):Color = {
+		if ((background.getRed + background.getGreen + background.getBlue) < (128 * 3)) {
+			Color.white
 		} else {
-			0 // black
+			Color.black
 		}
 	}
 }

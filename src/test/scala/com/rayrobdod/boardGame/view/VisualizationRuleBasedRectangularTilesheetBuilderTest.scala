@@ -32,7 +32,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 	describe("VisualizationRuleBasedRectangularTilesheetBuilder + JsonParser") {
 		it ("do a thing") {
 			val compostLayersFun = {x:Seq[Seq[Float]] => "apple"}
-			val urlToFrameImagesFun = {(u:URL, w:Int, h:Int) => Seq(0.5f)}
+			val urlToFrameImagesFun = {(u:URL, d:java.awt.Dimension) => Seq(0.5f)}
 			
 			val expected = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,

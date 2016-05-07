@@ -18,6 +18,7 @@
 package com.rayrobdod.boardGame
 
 import java.net.URL
+import java.awt.{Dimension, Color => AwtColor}
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 import javafx.scene.Node
@@ -32,10 +33,10 @@ import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
  */
 package object javafxView {
 	
-	def blankIcon(w:Int, h:Int):Node = new Rectangle(w, h, Color.TRANSPARENT)
-	def rgbToColor(rgb:Int) = Color.rgb((rgb >> 16) % 256, (rgb >> 8) % 256, (rgb >> 0) % 256)
-	def rgbToIcon(rgb:Int, w:Int, h:Int):Node = new Rectangle(w, h, rgbToColor(rgb))
-	def stringIcon(text:String, rgb:Int, w:Int, h:Int):Node = new javafx.scene.text.Text(text)
+	def blankIcon(size:Dimension):Node = new Rectangle(size.width, size.height, Color.TRANSPARENT)
+	def rgbToColor(rgb:AwtColor):Color = Color.rgb(rgb.getRed, rgb.getGreen, rgb.getBlue)
+	def rgbToIcon(rgb:AwtColor, size:Dimension):Node = new Rectangle(size.width, size.height, rgbToColor(rgb))
+	def stringIcon(text:String, rgb:AwtColor, size:Dimension):Node = new javafx.scene.text.Text(text)
 	
 	
 	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
@@ -73,17 +74,17 @@ package object javafxView {
 		}
 	}
 	
-	def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
+	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
 		val sheetImage:Image = new Image(sheetUrl.toString)
-		val tilesX = sheetImage.getWidth.intValue / tileWidth
-		val tilesY = sheetImage.getHeight.intValue / tileHeight
+		val tilesX = sheetImage.getWidth.intValue / tileDimension.width
+		val tilesY = sheetImage.getHeight.intValue / tileDimension.height
 		
-		(0 to (sheetImage.getWidth.intValue - tileWidth) by tileWidth).flatMap{x:Int =>
-			(0 to (sheetImage.getHeight.intValue - tileHeight) by tileHeight).map{y:Int =>
-				val retVal = new WritableImage(tileWidth, tileHeight)
+		(0 to (sheetImage.getWidth.intValue - tileDimension.width) by tileDimension.width).flatMap{x:Int =>
+			(0 to (sheetImage.getHeight.intValue - tileDimension.height) by tileDimension.height).map{y:Int =>
+				val retVal = new WritableImage(tileDimension.width, tileDimension.height)
 				retVal.getPixelWriter().setPixels(
 					0, 0,
-					tileWidth, tileHeight,
+					tileDimension.width, tileDimension.height,
 					sheetImage.getPixelReader,
 					x, y
 				)

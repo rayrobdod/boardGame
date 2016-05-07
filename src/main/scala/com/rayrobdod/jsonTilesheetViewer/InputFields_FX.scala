@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
+import java.awt.{Dimension, Color}
 import java.net.{URL, URI}
 import java.nio.charset.StandardCharsets.UTF_8
 import javafx.scene.layout.GridPane
@@ -50,10 +51,10 @@ final class InputFields2(
 	
 	
 	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getText match {
-		case TAG_SHEET_NIL => new NilTilesheet(javafxView.blankIcon(16,16))
-		case TAG_SHEET_INDEX => new IndexesTilesheet(javafxView.rgbToIcon(0xFF00FF, 32, 32), javafxView.rgbToIcon(0x00FFFF, 32, 32), {s:String => javafxView.stringIcon(s, 0, 32, 32)})
-		case TAG_SHEET_RAND => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, 32, 32)
-		case TAG_SHEET_HASH => new HashcodeColorTilesheet(javafxView.blankIcon(24, 24), {c => javafxView.rgbToIcon(c, 24, 24)})
+		case TAG_SHEET_NIL => new NilTilesheet(javafxView.blankIcon(new Dimension(16,16)))
+		case TAG_SHEET_INDEX => new IndexesTilesheet(javafxView.rgbToIcon(Color.cyan, new Dimension(32, 32)), javafxView.rgbToIcon(Color.magenta, new Dimension(32, 32)), {s:String => javafxView.stringIcon(s, Color.black, new Dimension(32, 32))})
+		case TAG_SHEET_RAND => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, new Dimension(32, 32))
+		case TAG_SHEET_HASH => new HashcodeColorTilesheet(javafxView.blankIcon(new Dimension(24, 24)), {c => javafxView.rgbToIcon(c, new Dimension(24, 24))})
 		case x => {
 			val url = urlOrFileStringToUrl(x)
 			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, javafxView.compostLayers, javafxView.sheeturl2images);

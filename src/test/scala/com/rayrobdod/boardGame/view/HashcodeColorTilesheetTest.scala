@@ -25,7 +25,7 @@ import com.rayrobdod.boardGame.RectangularField
 
 class HashcodeColorTilesheetTest extends FunSpec {
 	describe ("HashcodeColorTilesheet()") {
-		val dut = new HashcodeColorTilesheet[Int](-1, {x:Int => x})
+		val dut = new HashcodeColorTilesheet[Int](-1, {x:Color => x.getRGB & 0xFFFFFF})
 		it ("name is \"HashcodeColor\"") {
 			assertResult("HashcodeColor"){dut.name}
 		}

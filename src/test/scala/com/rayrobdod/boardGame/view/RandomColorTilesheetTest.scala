@@ -38,8 +38,8 @@ class RandomColorTilesheetTest extends FunSpec {
 			
 			val exp = (( (("", 0, 64, 24)), (("000000", 0xFFFFFF, 64, 24)) ))
 			val dut = new RandomColorTilesheet(
-					{(a,b,c) => (("", a,b,c))},
-					{(a,b,c,d) => ((a,b,c,d))}
+					{(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))},
+					{(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 			)
 			val res = dut.getIconFor(null, -1, -1, rng)
 			assertResult(exp){res}
@@ -49,8 +49,8 @@ class RandomColorTilesheetTest extends FunSpec {
 			
 			val exp = (( (("", 0x123456, 64, 24)), (("123456", 0xFFFFFF, 64, 24)) ))
 			val dut = new RandomColorTilesheet(
-					{(a,b,c) => (("", a,b,c))},
-					{(a,b,c,d) => ((a,b,c,d))}
+					{(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))},
+					{(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 			)
 			val res = dut.getIconFor(null, -1, -1, rng)
 			assertResult(exp){res}
@@ -60,15 +60,15 @@ class RandomColorTilesheetTest extends FunSpec {
 			
 			val exp = (( (("", 0xFFFFFF, 64, 24)), (("ffffff", 0, 64, 24)) ))
 			val dut = new RandomColorTilesheet(
-					{(a,b,c) => (("", a,b,c))},
-					{(a,b,c,d) => ((a,b,c,d))}
+					{(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))},
+					{(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 			)
 			val res = dut.getIconFor(null, -1, -1, rng)
 			assertResult(exp){res}
 		}
 	}
 	describe ("RandomColorTilesheet(13,21)") {
-		val dut = new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, 13, 21)
+		val dut = new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, new java.awt.Dimension(13, 21))
 		
 		it ("name is 'Random Color'") {
 			assertResult("Random Color"){dut.name}

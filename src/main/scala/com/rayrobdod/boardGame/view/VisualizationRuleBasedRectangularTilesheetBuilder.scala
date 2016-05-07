@@ -30,7 +30,7 @@ final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPa
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],
-		urlToFrameImages:Function3[URL, Int, Int, Seq[IconPart]]
+		urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]]
 ) extends Builder[Delayed[SpaceClass, IconPart, Icon]] {
 	def init:Delayed[SpaceClass, IconPart, Icon] = new Delayed[SpaceClass, IconPart, Icon](classMap, compostLayers, urlToFrameImages)
 	def apply(a:Delayed[SpaceClass, IconPart, Icon], key:String, value:Any):Delayed[SpaceClass, IconPart, Icon] = key match {
@@ -50,7 +50,7 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 	case class Delayed[SpaceClass, IconPart, Icon] (
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],
-		urlToFrameImages:Function3[URL, Int, Int, Seq[IconPart]],
+		urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]],
 		sheetUrl:URL = new URL("http://localhost:80/"),
 		tileWidth:Int = 1,
 		tileHeight:Int = 1,
@@ -62,7 +62,7 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 		}
 		
 		private def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = {
-			val b = new RectangularVisualziationRuleBuilder[SpaceClass, IconPart](urlToFrameImages(sheetUrl, tileWidth, tileHeight), classMap)
+			val b = new RectangularVisualziationRuleBuilder[SpaceClass, IconPart](urlToFrameImages(sheetUrl, new java.awt.Dimension(tileWidth, tileHeight)), classMap)
 			var r:Reader = new java.io.StringReader("{}")
 			try {
 				r = new java.io.InputStreamReader(rules.openStream(), UTF_8)
