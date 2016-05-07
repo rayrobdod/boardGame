@@ -51,33 +51,26 @@ object CheckerboardURIMatcher {
 	
 	
 	private def build(params:Seq[String]) = {
-		var returnValue = new CheckerboardTilesheetDelay()
 		
-		params.foreach{(param:String) =>
+		params.foldLeft[Option[CheckerboardTilesheetDelay]](Option(new CheckerboardTilesheetDelay())){(foldingOpt, param:String) => foldingOpt.flatMap{folding =>
 			val splitParam = param.split("=");
 			splitParam(0) match {
 				case "size" => {
-					returnValue = returnValue.copy(
+					scala.util.Try( folding.copy(
 						tileDimension = new java.awt.Dimension(
 							splitParam(1).toInt,
 							splitParam(1).toInt
 						)
-					)
+					)).toOption
 				}
 				case "light" => {
-					returnValue = returnValue.copy(
-						light = new java.awt.Color(splitParam(1).toInt)
-					)
+					scala.util.Try( folding.copy( light = new java.awt.Color(splitParam(1).toInt) ) ).toOption
 				}
 				case "dark" => {
-					returnValue = returnValue.copy(
-						dark = new java.awt.Color(splitParam(1).toInt)
-					)
+					scala.util.Try( folding.copy( dark = new java.awt.Color(splitParam(1).toInt) ) ).toOption
 				}
-				case _ => {}
+				case _ => { foldingOpt }
 			}
-		}
-		
-		Some(returnValue)
+		}}
 	}
 }
