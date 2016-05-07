@@ -50,10 +50,10 @@ final class InputFields2(
 	
 	
 	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getText match {
-		case "tag:rayrobdod.name,2013-08:tilesheet-nil" => new NilTilesheet(javafxView.blankIcon(16,16))
-		case "tag:rayrobdod.name,2013-08:tilesheet-indexies" => new IndexesTilesheet(javafxView.rgbToIcon(0xFF00FF, 32, 32), javafxView.rgbToIcon(0x00FFFF, 32, 32), {s:String => javafxView.stringIcon(s, 0, 32, 32)})
-		case "tag:rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, 32, 32)
-		case "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor" => new HashcodeColorTilesheet(javafxView.blankIcon(24, 24), {c => javafxView.rgbToIcon(c, 24, 24)})
+		case TAG_SHEET_NIL => new NilTilesheet(javafxView.blankIcon(16,16))
+		case TAG_SHEET_INDEX => new IndexesTilesheet(javafxView.rgbToIcon(0xFF00FF, 32, 32), javafxView.rgbToIcon(0x00FFFF, 32, 32), {s:String => javafxView.stringIcon(s, 0, 32, 32)})
+		case TAG_SHEET_RAND => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, 32, 32)
+		case TAG_SHEET_HASH => new HashcodeColorTilesheet(javafxView.blankIcon(24, 24), {c => javafxView.rgbToIcon(c, 24, 24)})
 		case x => {
 			val url = urlOrFileStringToUrl(x)
 			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, javafxView.compostLayers, javafxView.sheeturl2images);
@@ -67,8 +67,7 @@ final class InputFields2(
 		}
 	}
 	def fieldIsRotationField:Boolean = {
-		// not quite sure how to do this without hardcoding anymore
-		fieldUrlBox.getText startsWith "tag:rayrobdod.name,2013-08:map-rotate"
+		fieldUrlBox.getText startsWith TAG_MAP_ROTATE
 	}
 	def field:RectangularField[SpaceClass] = {
 		import java.io.InputStreamReader

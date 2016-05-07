@@ -25,6 +25,7 @@ import scala.util.Random
  * @constructor
  * @param lightIcon the icon that is returned for even `getIconFor(...)._1`
  * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
+ * @param stringIcon a function that produces an icon that displays a string
  */
 final case class IndexesTilesheet[Icon](
 	lightIcon:Icon,

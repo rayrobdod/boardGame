@@ -21,56 +21,56 @@ import java.awt.{Color, Dimension}
 import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 
 object CheckerboardURIMatcher {
-	/*
-	def unapply(ssp:String):Option[CheckerboardTilesheet] = {
+	
+	def unapply(ssp:String):Option[CheckerboardTilesheetDelay] = {
 		val split = ssp.split("[\\?\\&]");
 		
-		if ("rayrobdod.name,2013-08:tilesheet-checker" == split.head)
-		{
+		if (TAG_SHEET_CHECKER == split.head) {
 			build(split.tail)
 		} else {
 			None;
 		}
 	}
 	
-	def unapply(ssp:java.net.URI):Option[CheckerboardTilesheet] = {
-		this.unapply(ssp.getSchemeSpecificPart())
-	}
-	
-	def unapply(ssp:java.net.URL):Option[CheckerboardTilesheet] = {
-		if (ssp.getProtocol == "tag" &&
-				ssp.getAuthority == "rayrobdod.name,2013-08" &&
-				ssp.getPath == "tilesheet-checker") {
-			
-			val split = ssp.getQuery.split("\\&");
-			
-			build(split);
-		} else {
-			None
+	final case class CheckerboardTilesheetDelay(
+		tileWidth:Int = 24,
+		tileHeight:Int = 24,
+		light:Int = 0xFFFFFF,
+		dark:Int = 0
+	) {
+		def apply[Icon](
+			transparentIcon:Function2[Int, Int, Icon],
+			rgbToIcon:Function3[Int, Int, Int, Icon]
+		):CheckerboardTilesheet[Icon] = {
+			CheckerboardTilesheet(
+				transparentIcon(tileWidth, tileHeight),
+				rgbToIcon(light, tileWidth, tileHeight),
+				rgbToIcon(dark, tileWidth, tileHeight)
+			)
 		}
 	}
 	
 	
 	private def build(params:Seq[String]) = {
-		var returnValue = new CheckerboardTilesheet()
+		var returnValue = new CheckerboardTilesheetDelay()
 		
 		params.foreach{(param:String) =>
 			val splitParam = param.split("=");
 			splitParam(0) match {
 				case "size" => {
 					returnValue = returnValue.copy(
-						dim = new Dimension(splitParam(1).toInt,
-								splitParam(1).toInt)
+						tileWidth = splitParam(1).toInt,
+						tileHeight = splitParam(1).toInt
 					)
 				}
 				case "light" => {
 					returnValue = returnValue.copy(
-						light = new Color(splitParam(1).toInt)
+						light = splitParam(1).toInt
 					)
 				}
 				case "dark" => {
 					returnValue = returnValue.copy(
-						dark = new Color(splitParam(1).toInt)
+						dark = splitParam(1).toInt
 					)
 				}
 				case _ => {}
@@ -79,5 +79,4 @@ object CheckerboardURIMatcher {
 		
 		Some(returnValue)
 	}
-	*/
 }

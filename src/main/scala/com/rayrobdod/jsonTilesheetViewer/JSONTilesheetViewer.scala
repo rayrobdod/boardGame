@@ -44,8 +44,8 @@ object JsonTilesheetViewer {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 		
 		val inputFields = new InputFields(
-				initialTilesheetUrl = if (args.size > 0) args(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil",
-				initialFieldUrl     = if (args.size > 1) args(1) else "tag:rayrobdod.name,2013-08:map-rotate",
+				initialTilesheetUrl = if (args.size > 0) args(0) else TAG_SHEET_NIL,
+				initialFieldUrl     = if (args.size > 1) args(1) else TAG_MAP_ROTATE,
 				initialRand         = if (args.size > 2) args(2) else ""
 		)
 		val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)

@@ -54,8 +54,8 @@ final class JsonTilesheetViewer2 extends Application {
 		val args = this.getParameters().getUnnamed()
 		
 		val inputFields = new InputFields2(
-			initialTilesheetUrl = if (args.size > 0) args.get(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil",
-			initialFieldUrl     = if (args.size > 1) args.get(1) else "tag:rayrobdod.name,2013-08:map-rotate",
+			initialTilesheetUrl = if (args.size > 0) args.get(0) else TAG_SHEET_NIL,
+			initialFieldUrl     = if (args.size > 1) args.get(1) else TAG_MAP_ROTATE,
 			initialRand         = if (args.size > 2) args.get(2) else ""
 		)
 		val fieldComp = new StackPane()

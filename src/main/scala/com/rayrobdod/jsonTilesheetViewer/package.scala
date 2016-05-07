@@ -23,4 +23,11 @@ package com.rayrobdod
 package object jsonTilesheetViewer {
 	type SpaceClass = String
 	
+	val TAG_MAP_ROTATE:String = "tag:rayrobdod.name,2013-08:map-rotate"
+	
+	val TAG_SHEET_NIL:String = "tag:rayrobdod.name,2013-08:tilesheet-nil"
+	val TAG_SHEET_INDEX:String = "tag:rayrobdod.name,2013-08:tilesheet-indexies"
+	val TAG_SHEET_RAND:String = "tag:rayrobdod.name,2013-08:tilesheet-randcolor"
+	val TAG_SHEET_HASH:String = "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor"
+	val TAG_SHEET_CHECKER:String = "tag:rayrobdod.name,2013-08:tilesheet-checker"
 }

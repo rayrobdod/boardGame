@@ -21,7 +21,7 @@ import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import java.nio.charset.StandardCharsets.UTF_8
-import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
+import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JComboBox}
 import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.swing.GridBagConstraintsFactory
@@ -49,12 +49,13 @@ final class InputFields(
 	}
 	
 	
-	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getText match {
-		case "tag:rayrobdod.name,2013-08:tilesheet-nil" => new NilTilesheet(swingView.blankIcon(16,16))
-		case "tag:rayrobdod.name,2013-08:tilesheet-indexies" => new IndexesTilesheet(swingView.rgbToIcon(0xFF00FF, 64, 24), swingView.rgbToIcon(0x00FFFF, 64, 24), {s:String => swingView.stringIcon(s, 0, 64, 24)})
-		case "tag:rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, 64, 24)
-		case "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor" => new HashcodeColorTilesheet(swingView.blankIcon(24, 24), {c:Int => swingView.rgbToIcon(c, 24, 24)})
-		case x => {
+	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getSelectedItem match {
+		case TAG_SHEET_NIL => new NilTilesheet(swingView.blankIcon(16,16))
+		case TAG_SHEET_INDEX => new IndexesTilesheet(swingView.rgbToIcon(0xFF00FF, 64, 24), swingView.rgbToIcon(0x00FFFF, 64, 24), {s:String => swingView.stringIcon(s, 0, 64, 24)})
+		case TAG_SHEET_RAND => new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, 64, 24)
+		case TAG_SHEET_HASH => new HashcodeColorTilesheet(swingView.blankIcon(24, 24), {c:Int => swingView.rgbToIcon(c, 24, 24)})
+		case CheckerboardURIMatcher(x) => x.apply(swingView.blankIcon, swingView.rgbToIcon)
+		case x:String => {
 			val url = urlOrFileStringToUrl(x)
 			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, swingView.compostLayers, swingView.sheeturl2images);
 			var r:java.io.Reader = new java.io.StringReader("{}");
@@ -67,14 +68,13 @@ final class InputFields(
 		}
 	}
 	def fieldIsRotationField:Boolean = {
-		// not quite sure how to do this without hardcoding anymore
-		fieldUrlBox.getText startsWith "tag:rayrobdod.name,2013-08:map-rotate"
+		fieldUrlBox.getSelectedItem.toString startsWith TAG_MAP_ROTATE
 	}
 	def field:RectangularField[SpaceClass] = {
 		import java.io.InputStreamReader
 		import com.opencsv.CSVReader
 		
-		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getText).openStream(), UTF_8)
+		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getSelectedItem.toString).openStream(), UTF_8)
 		val layoutTable:Seq[Seq[String]] = {
 			import scala.collection.JavaConversions.collectionAsScalaIterable;
 			
@@ -113,8 +113,25 @@ final class InputFields(
 	
 	
 	val panel = new JPanel(new GridBagLayout)
-	private val tilesheetUrlBox = new JTextField(initialTilesheetUrl)
-	private val fieldUrlBox = new JTextField(initialFieldUrl)
+	private val tilesheetUrlBox = {
+		val a = new JComboBox[String]()
+		a.addItem(TAG_SHEET_NIL)
+		a.addItem(TAG_SHEET_INDEX)
+		a.addItem(TAG_SHEET_RAND)
+		a.addItem(TAG_SHEET_HASH)
+		a.addItem(TAG_SHEET_CHECKER)
+		a.addItem(TAG_SHEET_CHECKER + "?size=32&light=16711680&dark=255")
+		a.setEditable(true)
+		a.setSelectedItem(initialTilesheetUrl)
+		a
+	}
+	private val fieldUrlBox = {
+		val a = new JComboBox[String]()
+		a.addItem(TAG_MAP_ROTATE)
+		a.setEditable(true)
+		a.setSelectedItem(initialFieldUrl)
+		a
+	}
 	private val randBox = new JTextField(initialRand, 5)
 	private val goButton = new JButton("->")
 	
@@ -129,5 +146,3 @@ final class InputFields(
 	panel.add(randBox, endOfLine)
 	panel.add(goButton, endOfLine)
 }
-
-
