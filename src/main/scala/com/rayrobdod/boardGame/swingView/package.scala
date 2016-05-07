@@ -19,6 +19,7 @@ package com.rayrobdod.boardGame
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
+import scala.util.Random
 import java.awt.Dimension
 import java.awt.Color
 import java.awt.Image
@@ -30,6 +31,7 @@ import javax.imageio.ImageIO
 import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.SolidColorIcon
+import com.rayrobdod.boardGame.view.RectangularTilesheet
 import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
@@ -95,4 +97,16 @@ package object swingView {
 	}
 	
 	
+	def RectangularFieldComponent[A](
+			field:RectangularField[A],
+			tilesheet:RectangularTilesheet[A, Icon],
+			rng:Random = Random
+	):(RectangularTilemapComponent, RectangularTilemapComponent) = {
+		
+		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
+		val top = a.mapValues{_._1}
+		val bot = a.mapValues{_._2}
+		
+		(( new RectangularTilemapComponent(top), new RectangularTilemapComponent(bot) ))
+	}
 }

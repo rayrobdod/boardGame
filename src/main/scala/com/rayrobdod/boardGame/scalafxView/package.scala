@@ -20,12 +20,15 @@ package com.rayrobdod.boardGame
 import java.net.URL
 import java.awt.{Dimension, Color => AwtColor}
 import scala.annotation.tailrec
-import scala.collection.immutable.Seq
+import scala.collection.immutable.{Seq, Map}
+import scala.util.Random
 import javafx.scene.Node
+import javafx.scene.layout.GridPane
 import javafx.scene.image.{Image, ImageView, WritableImage}
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import com.rayrobdod.boardGame.view.RectangularTilesheet
 import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
@@ -92,4 +95,38 @@ package object javafxView {
 			}
 		}
 	}
+	
+	
+	
+	
+	def RectangularFieldComponent[A](
+			field:RectangularField[A],
+			tilesheet:RectangularTilesheet[A, javafx.scene.Node],
+			rng:Random = Random
+	):(GridPane, GridPane) = {
+		
+		val a:Map[(Int, Int), (Node, Node)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
+		val top = a.mapValues{_._1}
+		val bot = a.mapValues{_._2}
+		
+		val topComp = new GridPane()
+		top.foreach{case ((x,y), node) =>
+			topComp.add(node, x, y)
+			GridPane.setHgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setVgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setHalignment(node, javafx.geometry.HPos.CENTER)
+			GridPane.setValignment(node, javafx.geometry.VPos.CENTER)
+		}
+		val botComp = new GridPane()
+		bot.foreach{case ((x,y), node) =>
+			botComp.add(node, x, y)
+			GridPane.setHgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setVgrow(node, javafx.scene.layout.Priority.ALWAYS)
+			GridPane.setHalignment(node, javafx.geometry.HPos.CENTER)
+			GridPane.setValignment(node, javafx.geometry.VPos.CENTER)
+		}
+		
+		((topComp, botComp))
+	}
+	
 }

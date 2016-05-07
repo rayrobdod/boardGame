@@ -43,17 +43,6 @@ package view {
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
 	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
-	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstTrueSpaceClassMatcher
-	}
-	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns false */
-	object ConstFalseSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstFalseSpaceClassMatcher
-	}
-	
-	
 	/** A tilesheet which will always return the Icon specified in the constructor */
 	final case class NilTilesheet[Icon](val tile:Icon) extends RectangularTilesheet[Any, Icon] {
 		override val name:String = "Nil"
