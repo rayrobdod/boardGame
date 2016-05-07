@@ -15,27 +15,26 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame
+package view
 
+import scala.collection.immutable.BitSet
 import scala.util.Random
-import javax.swing.Icon
-import com.rayrobdod.boardGame.RectangularField
-import com.rayrobdod.boardGame.view.RectangularTilesheet
 
 /**
- * @version 3.0.0
+ * @constructor
+ * @param lightIcon the icon that is returned for even `getIconFor(...)._1`
+ * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
  */
-object RectangularFieldComponent {
-	def apply[A](
-			field:RectangularField[A],
-			tilesheet:RectangularTilesheet[A, Icon],
-			rng:Random = Random
-	):(RectangularTilemapComponent, RectangularTilemapComponent) = {
-		
-		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
-		val top = a.mapValues{_._1}
-		val bot = a.mapValues{_._2}
-		
-		(( new RectangularTilemapComponent(top), new RectangularTilemapComponent(bot) ))
+final case class IndexesTilesheet[Icon](
+	lightIcon:Icon,
+	darkIcon:Icon,
+	stringIcon:Function1[String, Icon]
+) extends RectangularTilesheet[Any, Icon] {
+	override def name:String = "IndexesTilesheet"
+	override def toString:String = name
+	
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+		(( if ((x + y) % 2 == 0) {lightIcon} else {darkIcon}, stringIcon(s"""($x, $y)""") ))
 	}
 }

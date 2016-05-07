@@ -19,7 +19,7 @@ fork := true
 // proguard doesn't see the META-INF without this
 exportJars := true
 
-mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
+mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
@@ -107,4 +107,3 @@ testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-r
 
 
 scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
-

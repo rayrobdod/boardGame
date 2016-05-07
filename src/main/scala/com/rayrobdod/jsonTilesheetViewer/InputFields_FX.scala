@@ -18,12 +18,16 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import java.net.{URL, URI}
+import java.nio.charset.StandardCharsets.UTF_8
 import javafx.scene.layout.GridPane
 import javafx.scene.text.Text
 import javafx.scene.control.{TextField, Button}
 import javafx.event.{EventHandler, ActionEvent}
 import scala.util.Random
+import scala.collection.immutable.Seq
+import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.boardGame._
+import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.javafxView._
 
 
@@ -45,17 +49,21 @@ final class InputFields2(
 	}
 	
 	
-	def tilesheet:RectangularTilesheet[SpaceClass] = {
-		ToggleContentHandlerFactory.setCurrentToTilesheetFx();
-		val a = urlOrFileStringToUrl(tilesheetUrlBox.getText).getContent()
-		
-		import com.rayrobdod.boardGame.swingView
-		import com.rayrobdod.boardGame.javafxView
-		a match {
-			case swingView.NilTilesheet => javafxView.NilTilesheet
-			case swingView.IndexesTilesheet => javafxView.IndexesTilesheet
-			case swingView.HashcodeColorTilesheet(x) => javafxView.HashcodeColorTilesheet(new javafxView.Dimension(x.width, x.height))
-			case b:javafxView.RectangularTilesheet[SpaceClass] => b
+	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getText match {
+		case "tag:rayrobdod.name,2013-08:tilesheet-nil" => new NilTilesheet(javafxView.blankIcon(16,16))
+		case "tag:rayrobdod.name,2013-08:tilesheet-indexies" => new IndexesTilesheet(javafxView.rgbToIcon(0xFF00FF, 32, 32), javafxView.rgbToIcon(0x00FFFF, 32, 32), {s:String => javafxView.stringIcon(s, 0, 32, 32)})
+		case "tag:rayrobdod.name,2013-08:tilesheet-randcolor" => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, 32, 32)
+		case "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor" => new HashcodeColorTilesheet(javafxView.blankIcon(24, 24), {c => javafxView.rgbToIcon(c, 24, 24)})
+		case x => {
+			val url = urlOrFileStringToUrl(x)
+			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, javafxView.compostLayers, javafxView.sheeturl2images);
+			var r:java.io.Reader = new java.io.StringReader("{}");
+			try {
+				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
+				return new JsonParser[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, javafx.scene.image.Image, javafx.scene.Node]](b).parse(r).apply();
+			} finally {
+				r.close();
+			}
 		}
 	}
 	def fieldIsRotationField:Boolean = {
@@ -63,8 +71,21 @@ final class InputFields2(
 		fieldUrlBox.getText startsWith "tag:rayrobdod.name,2013-08:map-rotate"
 	}
 	def field:RectangularField[SpaceClass] = {
-		ToggleContentHandlerFactory.setCurrentToField();
-		urlOrFileStringToUrl(fieldUrlBox.getText).getContent().asInstanceOf[RectangularField[SpaceClass]]
+		import java.io.InputStreamReader
+		import com.opencsv.CSVReader
+		
+		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getText).openStream(), UTF_8)
+		val layoutTable:Seq[Seq[String]] = {
+			import scala.collection.JavaConversions.collectionAsScalaIterable;
+			
+			val reader = new CSVReader(layoutReader);
+			val letterTable3 = reader.readAll();
+			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
+			
+			letterTable
+		}
+		
+		RectangularField( layoutTable )
 	}
 	def rng:Random = randBox.getText match {
 		case "" => Random

@@ -21,6 +21,8 @@ import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
 
 /**
+ * A factory that produces matchers from strings, where:
+ * 
  * # "*" matches everything
  * # "!whatever" matches everything except "whatever"
  * # "whatever" matches only "whatever"
@@ -28,8 +30,7 @@ import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
  * @since 3.0.0
  */
 object StringSpaceClassMatcherFactory extends 
-		com.rayrobdod.boardGame.swingView.SpaceClassMatcherFactory[SpaceClass] with
-		com.rayrobdod.boardGame.javafxView.SpaceClassMatcherFactory[SpaceClass] {
+		com.rayrobdod.boardGame.view.SpaceClassMatcherFactory[SpaceClass] {
 	
 	def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
 		if (reference == "*") {ConstTrueSpaceClassMatcher}

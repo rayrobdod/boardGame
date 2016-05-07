@@ -31,17 +31,13 @@ import javafx.beans.property.ObjectProperty
 import javafx.application.Application
 import javafx.event.{EventHandler, ActionEvent}
 import javafx.scene.input.MouseEvent
-import com.rayrobdod.jsonTilesheetViewer.tags._
 
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
-import com.rayrobdod.boardGame.javafxView.{
-		RectangularFieldComponent,
-		RectangularTilesheet,
-		IndexesTilesheet
-}
+import com.rayrobdod.boardGame.view._
+import com.rayrobdod.boardGame.javafxView._
 import com.rayrobdod.boardGame.{
 		RectangularField, RectangularSpace
 }
@@ -52,20 +48,7 @@ import com.rayrobdod.json.parser.JsonParser
  * @author Raymond Dodge
  * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
  */
-final class JSONTilesheetViewer2 extends Application {
-	
-	override def init():Unit = {
-		val prop:String = "java.protocol.handler.pkgs";
-		val pkg:String = "com.rayrobdod.tagprotocol";
-		
-		var value:String = System.getProperty(prop);
-		value = if (value == null) {pkg} else {value + "|" + pkg};
-		System.setProperty(prop, value);
-		
-		
-		java.net.URLConnection.setContentHandlerFactory(
-				ToggleContentHandlerFactory);
-	}
+final class JsonTilesheetViewer2 extends Application {
 	
 	override def start(stage:Stage):Unit = {
 		val args = this.getParameters().getUnnamed()
@@ -79,7 +62,7 @@ final class JSONTilesheetViewer2 extends Application {
 		
 		inputFields.addOkButtonActionListener(new EventHandler[ActionEvent]() {
 			override def handle(e:ActionEvent) {
-				JSONTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
+				JsonTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
 			}
 		})
 		
@@ -102,28 +85,28 @@ final class JSONTilesheetViewer2 extends Application {
 			})
 		)
 		
-		JSONTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
+		JsonTilesheetViewer2.loadNewTilesheet(inputFields, fieldComp)
 		stage.show()
 	}
 	
 	
 }
 
-object JSONTilesheetViewer2 {
+object JsonTilesheetViewer2 {
 	def main(args:Array[String]):Unit = {
-		Application.launch(classOf[JSONTilesheetViewer2], args:_*)
+		Application.launch(classOf[JsonTilesheetViewer2], args:_*)
 	}
 	
-	private def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
+	private def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
-		import com.rayrobdod.boardGame.javafxView.ParamaterizedRectangularVisualizationRule
-		import com.rayrobdod.boardGame.javafxView.VisualizationRuleBasedRectangularTilesheet
-		import com.rayrobdod.boardGame.javafxView.HashcodeColorTilesheet
+		import com.rayrobdod.boardGame.view.ParamaterizedRectangularVisualizationRule
+		import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheet
+		import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
 		import StringSpaceClassMatcherFactory.EqualsMatcher
 		
 		val a = f match {
-			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
-				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass]]}
+			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass, _, _] => {
+				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass, _]]}
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
 				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
@@ -138,7 +121,7 @@ object JSONTilesheetViewer2 {
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet => Seq("a", "b", "c", "d")
+			case x:HashcodeColorTilesheet[_] => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		

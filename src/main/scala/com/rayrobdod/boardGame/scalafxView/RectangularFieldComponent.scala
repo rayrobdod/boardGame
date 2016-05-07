@@ -23,15 +23,16 @@ import scala.collection.immutable.Map
 import scala.util.Random
 import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularFieldIndex
+import com.rayrobdod.boardGame.view.RectangularTilesheet
 
 object RectangularFieldComponent {
 	def apply[A](
 			field:RectangularField[A],
-			tilesheet:RectangularTilesheet[A],
+			tilesheet:RectangularTilesheet[A, javafx.scene.Node],
 			rng:Random = Random
 	):(GridPane, GridPane) = {
 		
-		val a:Map[(Int, Int), (Node, Node)] = field.map{x => ((x._1, tilesheet.getImageFor(field, x._1._1, x._1._2, rng) )) }
+		val a:Map[(Int, Int), (Node, Node)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
 		val top = a.mapValues{_._1}
 		val bot = a.mapValues{_._2}
 		

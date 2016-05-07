@@ -15,37 +15,17 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.javafxView
+package com.rayrobdod.boardGame.view
 
+import com.rayrobdod.boardGame.view
 import org.scalatest.{FunSuite, FunSpec}
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.JsonParser;
-import com.rayrobdod.boardGame.{SpaceClassMatcher, RectangularField}
-import com.rayrobdod.boardGame.view
+import com.rayrobdod.boardGame.SpaceClassMatcher
 
 class RectangularVisualizationRuleBuilderTest extends FunSpec {
-	val emptyField3x3 = RectangularField(Seq.fill(3, 3){" "})
 	
 	describe("RectangularVisualizationRuleBuilder + JsonParser") {
-		describe ("an empty json map input") {
-			val dut = new JsonParser(new view.RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse("{}")
-			
-			it ("randsMatch is always true") {
-				assert( dut.randsMatch(scala.util.Random) )
-			}
-			it ("surroundingTilesMatch is always true") {
-				assert( dut.surroundingTilesMatch(emptyField3x3, 0, 0) )
-			}
-			it ("indexiesMatch is always true") {
-				assert( dut.indexiesMatch(0,0,0,0) )
-			}
-			it ("matches is always true") {
-				assert( dut.matches(emptyField3x3,0,0,scala.util.Random) )
-			}
-			it ("priority is 1") {
-				assertResult(1){ dut.priority }
-			}
-		}
 		it ("do a thing") {
 			val src = """{
 				"tileRand":5,
@@ -55,10 +35,10 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 					"(1,1)":"b"
 				}
 			}"""
-			val res = new JsonParser(new view.RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
+			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
 			
 			assert (res match {
-				case view.ParamaterizedRectangularVisualizationRule(
+				case ParamaterizedRectangularVisualizationRule(
 						MapUnapplyer(),
 						5,
 						"(x + y) % 2 == 0",
@@ -72,7 +52,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 		}
 	}
 	
-	object MySpaceClassMatcherFactory extends view.SpaceClassMatcherFactory[String] {
+	object MySpaceClassMatcherFactory extends SpaceClassMatcherFactory[String] {
 		def apply(ref:String):SpaceClassMatcher[String] = {
 			new MySpaceClassMatcher(ref)
 		}

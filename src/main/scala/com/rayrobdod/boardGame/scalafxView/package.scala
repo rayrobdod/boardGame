@@ -17,45 +17,78 @@
 */
 package com.rayrobdod.boardGame
 
+import java.net.URL
 import scala.annotation.tailrec
+import scala.collection.immutable.Seq
+import javafx.scene.Node
+import javafx.scene.image.{Image, ImageView, WritableImage}
+import javafx.scene.canvas.Canvas
+import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
+import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
  * 
  */
 package object javafxView {
-	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 	
-	def lcm(x:Int, y:Int):Int = swingView.lcm(x,y)
+	def blankIcon(w:Int, h:Int):Node = new Rectangle(w, h, Color.TRANSPARENT)
+	def rgbToColor(rgb:Int) = Color.rgb((rgb >> 16) % 256, (rgb >> 8) % 256, (rgb >> 0) % 256)
+	def rgbToIcon(rgb:Int, w:Int, h:Int):Node = new Rectangle(w, h, rgbToColor(rgb))
+	def stringIcon(text:String, rgb:Int, w:Int, h:Int):Node = new javafx.scene.text.Text(text)
 	
-	def gcd(x:Int, y:Int):Int = swingView.gcd(x,y)
-}
-
-package javafxView {
-	final case class Dimension(val width:Int, val height:Int)
 	
-	object NilTilesheet extends RectangularTilesheet[Any] {
-		import javafx.scene.Node
-		import javafx.scene.paint.Color
-		import javafx.scene.shape.Rectangle
-
-		override val name:String = "Nil"
-		override def getImageFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:scala.util.Random):(Node,Node) = getImageFor
+	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
 		
-		private def getImageFor = ((blankIcon, blankIcon))
-		private def blankIcon = new Rectangle(16,16,Color.TRANSPARENT)
+		val a:Seq[Node] = if (! layersWithLCMFrames.isEmpty) {
+			// FIXTHIS: assumes all images are the same size
+			val imageWidth = layersWithLCMFrames.head.head.getWidth.intValue
+			val imageHeight = layersWithLCMFrames.head.head.getHeight.intValue
+			
+			// merge all the layers in each frame into one image per frame
+			val frames:Seq[Node] = layersWithLCMFrames.foldLeft(
+				Seq.fill(layersWithLCMFrames.head.size){
+					new Canvas(imageWidth, imageHeight)
+				}
+			){(newImage:Seq[Canvas], layer:Seq[Image]) =>
+				newImage.zip(layer).map({(newImage:Canvas, layer:Image) =>
+					newImage.getGraphicsContext2D().drawImage(
+						layer,
+						0, 0
+					)
+					newImage
+				}.tupled)
+			}
+			
+			frames
+		} else {
+			Seq(new ImageView(new WritableImage(1,1)))
+		}
+		
+		if (a.length == 1) {
+			a.head
+		} else {
+			// TODO: Animation
+			a.headOption.getOrElse(new ImageView(new WritableImage(1,1)))
+		}
 	}
 	
-	trait SpaceClassMatcherFactory[-SpaceClass] {
-		def apply(reference:String):SpaceClassMatcher[SpaceClass]
-	}
-	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
-	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstTrueSpaceClassMatcher
-	}
-	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns false */
-	object ConstFalseSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstFalseSpaceClassMatcher
+	def sheeturl2images(sheetUrl:URL, tileWidth:Int, tileHeight:Int):Seq[Image] = {
+		val sheetImage:Image = new Image(sheetUrl.toString)
+		val tilesX = sheetImage.getWidth.intValue / tileWidth
+		val tilesY = sheetImage.getHeight.intValue / tileHeight
+		
+		(0 to (sheetImage.getWidth.intValue - tileWidth) by tileWidth).flatMap{x:Int =>
+			(0 to (sheetImage.getHeight.intValue - tileHeight) by tileHeight).map{y:Int =>
+				val retVal = new WritableImage(tileWidth, tileHeight)
+				retVal.getPixelWriter().setPixels(
+					0, 0,
+					tileWidth, tileHeight,
+					sheetImage.getPixelReader,
+					x, y
+				)
+				retVal
+			}
+		}
 	}
 }

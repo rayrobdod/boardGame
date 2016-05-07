@@ -18,10 +18,10 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import java.awt.{Color, Dimension}
-import com.rayrobdod.boardGame.swingView.CheckerboardTilesheet
+import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 
 object CheckerboardURIMatcher {
-	
+	/*
 	def unapply(ssp:String):Option[CheckerboardTilesheet] = {
 		val split = ssp.split("[\\?\\&]");
 		
@@ -79,4 +79,5 @@ object CheckerboardURIMatcher {
 		
 		Some(returnValue)
 	}
+	*/
 }
