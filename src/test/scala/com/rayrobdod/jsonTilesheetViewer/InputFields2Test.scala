@@ -22,42 +22,49 @@ import org.scalatest.prop.PropertyChecks
 import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.view._
+import com.rayrobdod.boardGame.javafxView.FxTests
+import com.rayrobdod.boardGame.javafxView.InitializeFx
 
+@FxTests
 class InputFields2Test extends FunSpec {
-	
-	{
-		import com.rayrobdod.boardGame.javafxView.InitializeFx
-		if (! InitializeFx.isSetup) { InitializeFx.setup() }
-	}
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet.isInstanceOf[IndexesTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assert{new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_]]}
 		}
 	}
 	describe ("InputFields2.rand") {
 		it ("string '' corresponds to scala.util.Random"){
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assertResult(scala.util.Random){new InputFields2("","","").rng}
 		}
 		it ("string 'a' corresponds to a Random that always returns '1'"){
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assertResult(1){new InputFields2("","","a").rng.nextInt}
 		}
 		it ("string 'b' corresponds to a Random that always returns '0'"){
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assertResult(0){new InputFields2("","","b").rng.nextInt}
 		}
 		it ("string '123' corresponds to a Random with seed 123"){
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assertResult(new Random(123).nextInt){new InputFields2("","","123").rng.nextInt}
 		}
 		it ("errors when given input \"abc\""){
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			intercept[IllegalStateException]{
 				new InputFields2("","","abc").rng
 			}
@@ -65,14 +72,18 @@ class InputFields2Test extends FunSpec {
 	}
 	describe ("fieldIsRotationField") {
 		it ("is true if the Field is the specified string") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assertResult(true){new InputFields2("", "tag:rayrobdod.name,2013-08:map-rotate", "").fieldIsRotationField}
 		}
 		it ("is false otherwise") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			assertResult(false){new InputFields2("", "", "").fieldIsRotationField}
 		}
 	}
 	describe ("field") {
 		it ("can get a thing") {
+			if (! InitializeFx.isSetup) { InitializeFx.setup() }
+			
 			import com.rayrobdod.boardGame.RectangularField
 			val exp = RectangularField(Seq(Seq("a","b","c"), Seq("d","e","f")))
 			val url = this.getClass.getResource("abc.csv")
