@@ -19,6 +19,7 @@ package com.rayrobdod.boardGame.javafxView
 
 import java.util.concurrent.CountDownLatch
 import org.scalatest.Tag
+import com.rayrobdod.boardGame.view.Javafx._
 
 object FxTest extends Tag("com.rayrobdod.boardGame.javafxView.FxTests")
 

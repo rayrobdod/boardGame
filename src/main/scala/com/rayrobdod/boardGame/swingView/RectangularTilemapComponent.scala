@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import java.awt.{Component, Graphics, Dimension}
 import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
@@ -25,9 +25,9 @@ import scala.util.Random
 import com.rayrobdod.boardGame.RectangularFieldIndex
 
 /**
- * A [[JComponent]] which, when painted, paints a grid of icons
+ * A JComponent which, when painted, paints a grid of icons
  */
-class RectangularTilemapComponent(
+private[view] class SwingRectangularTilemapComponent(
 		tiles:Map[RectangularFieldIndex, Icon]
 ) extends JComponent {
 	

@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.javafxView._
+import com.rayrobdod.boardGame.view.Javafx._
 import com.rayrobdod.boardGame.{
 		RectangularField, RectangularSpace
 }

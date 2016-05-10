@@ -27,7 +27,7 @@ import javax.swing.Icon
 import scala.util.Random
 import scala.collection.immutable.{Seq, Set, Map}
 import com.rayrobdod.boardGame.RectangularField
-import com.rayrobdod.boardGame.swingView.compostLayers
+import com.rayrobdod.boardGame.view.Swing.compostLayers
 
 class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 	import VisualizationRuleBasedRectangularTilesheetTest._

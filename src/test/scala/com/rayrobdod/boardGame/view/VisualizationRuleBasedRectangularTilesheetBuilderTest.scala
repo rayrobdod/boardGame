@@ -60,8 +60,8 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 		it ("can apply() using a two-image, two-rule pair of files") {
 			val source = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
-				compostLayers = swingView.compostLayers,
-				urlToFrameImages = swingView.sheeturl2images,
+				compostLayers = Swing.compostLayers,
+				urlToFrameImages = Swing.sheeturl2images,
 				sheetUrl = this.getClass.getResource("/com/rayrobdod/boardGame/swingView/whiteBlackTiles.png"),
 				tileWidth = 32,
 				tileHeight = 32,

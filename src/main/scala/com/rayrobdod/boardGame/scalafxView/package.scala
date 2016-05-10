@@ -16,6 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.rayrobdod.boardGame
+package view
 
 import java.net.URL
 import java.awt.{Dimension, Color => AwtColor}
@@ -28,13 +29,16 @@ import javafx.scene.image.{Image, ImageView, WritableImage}
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
-import com.rayrobdod.boardGame.view.RectangularTilesheet
-import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
  * 
  */
-package object javafxView {
+object Javafx extends PackageObjectTemplate[Image, Node] {
+	// Guess what the compiler cannot figure out?
+	// `package object swingView extends PackageObjectTemplate[Image, Icon]`
+	// Even though it is perfectly capable of figuring out
+	// `object swingView extends PackageObjectTemplate[Image, Icon]`
+	// how is that even possible?
 	
 	def blankIcon(size:Dimension):Node = new Rectangle(size.width, size.height, Color.TRANSPARENT)
 	def rgbToColor(rgb:AwtColor):Color = Color.rgb(rgb.getRed, rgb.getGreen, rgb.getBlue)

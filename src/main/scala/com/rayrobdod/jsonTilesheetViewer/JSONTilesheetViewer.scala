@@ -31,7 +31,7 @@ import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.swingView._
+import com.rayrobdod.boardGame.view.Swing._
 
 
 /**

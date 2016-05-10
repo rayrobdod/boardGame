@@ -29,7 +29,7 @@ import scala.collection.immutable.Seq
 import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.javafxView._
+import com.rayrobdod.boardGame.view.Javafx._
 
 
 /**
@@ -51,17 +51,17 @@ final class InputFields2(
 	
 	
 	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getText match {
-		case TAG_SHEET_NIL => new NilTilesheet(javafxView.blankIcon(new Dimension(16,16)))
-		case TAG_SHEET_INDEX => new IndexesTilesheet(javafxView.rgbToIcon(Color.cyan, new Dimension(32, 32)), javafxView.rgbToIcon(Color.magenta, new Dimension(32, 32)), {s:String => javafxView.stringIcon(s, Color.black, new Dimension(32, 32))})
-		case TAG_SHEET_RAND => new RandomColorTilesheet(javafxView.rgbToIcon, javafxView.stringIcon, new Dimension(32, 32))
-		case TAG_SHEET_HASH => new HashcodeColorTilesheet(javafxView.blankIcon(new Dimension(24, 24)), {c => javafxView.rgbToIcon(c, new Dimension(24, 24))})
+		case TAG_SHEET_NIL => new NilTilesheet(Javafx.blankIcon(new Dimension(16,16)))
+		case TAG_SHEET_INDEX => new IndexesTilesheet(Javafx.rgbToIcon(Color.cyan, new Dimension(32, 32)), Javafx.rgbToIcon(Color.magenta, new Dimension(32, 32)), {s:String => Javafx.stringIcon(s, Color.black, new Dimension(32, 32))})
+		case TAG_SHEET_RAND => new RandomColorTilesheet(Javafx.rgbToIcon, Javafx.stringIcon, new Dimension(32, 32))
+		case TAG_SHEET_HASH => new HashcodeColorTilesheet(Javafx.blankIcon(new Dimension(24, 24)), {c => Javafx.rgbToIcon(c, new Dimension(24, 24))})
 		case x => {
 			val url = urlOrFileStringToUrl(x)
-			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, javafxView.compostLayers, javafxView.sheeturl2images);
+			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Javafx.compostLayers, Javafx.sheeturl2images);
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, javafx.scene.image.Image, javafx.scene.Node]](b).parse(r).apply();
+				return new JsonParser[view.VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, javafx.scene.image.Image, javafx.scene.Node]](b).parse(r).apply();
 			} finally {
 				r.close();
 			}

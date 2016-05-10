@@ -23,15 +23,14 @@ import java.awt.{Dimension, Color}
 import javax.swing.Icon;
 import scala.util.Random
 import com.rayrobdod.swing.SolidColorIcon
-import com.rayrobdod.boardGame.swingView
 
 class RandomColorTilesheetTest extends FunSpec {
 	describe ("Default RandomColorTilesheet") {
 		it ("name is 'Random Color'") {
-			assertResult("Random Color"){new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon).name}
+			assertResult("Random Color"){new RandomColorTilesheet(Swing.rgbToIcon, Swing.stringIcon).name}
 		}
 		it ("toString is 'Random Color: ...'") {
-			assertResult("Random Color"){new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon).toString}
+			assertResult("Random Color"){new RandomColorTilesheet(Swing.rgbToIcon, Swing.stringIcon).toString}
 		}
 		it ("rng is 0") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
@@ -68,7 +67,7 @@ class RandomColorTilesheetTest extends FunSpec {
 		}
 	}
 	describe ("RandomColorTilesheet(13,21)") {
-		val dut = new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, new java.awt.Dimension(13, 21))
+		val dut = new RandomColorTilesheet(Swing.rgbToIcon, Swing.stringIcon, new java.awt.Dimension(13, 21))
 		
 		it ("name is 'Random Color'") {
 			assertResult("Random Color"){dut.name}

@@ -29,7 +29,7 @@ import com.rayrobdod.swing.GridBagConstraintsFactory
 import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.swingView._
+import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
@@ -51,18 +51,26 @@ final class InputFields(
 	
 	
 	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getSelectedItem match {
-		case TAG_SHEET_NIL => new NilTilesheet(swingView.blankIcon(new Dimension(16,16)))
-		case TAG_SHEET_INDEX => new IndexesTilesheet(swingView.rgbToIcon(Color.cyan, new Dimension(64, 24)), swingView.rgbToIcon(Color.magenta, new Dimension(64, 24)), {s:String => swingView.stringIcon(s, Color.black, new Dimension(64, 24))})
-		case TAG_SHEET_RAND => new RandomColorTilesheet(swingView.rgbToIcon, swingView.stringIcon, new Dimension(64, 24))
-		case TAG_SHEET_HASH => new HashcodeColorTilesheet(swingView.blankIcon(new Dimension(24, 24)), {c:Color => swingView.rgbToIcon(c, new Dimension(24, 24))})
-		case CheckerboardURIMatcher(x) => x.apply(swingView.blankIcon, swingView.rgbToIcon)
+		case TAG_SHEET_NIL => Swing.NilTilesheet
+		case TAG_SHEET_INDEX => new view.IndexesTilesheet[Icon](
+			Swing.rgbToIcon(Color.cyan, new Dimension(64, 24)),
+			Swing.rgbToIcon(Color.magenta, new Dimension(64, 24)),
+			{s:String => Swing.stringIcon(s, Color.black, new Dimension(64, 24))}
+		)
+		case TAG_SHEET_RAND => new view.RandomColorTilesheet(
+				Swing.rgbToIcon,
+				Swing.stringIcon,
+				new Dimension(64, 24)
+		)
+		case TAG_SHEET_HASH => new view.HashcodeColorTilesheet(Swing.blankIcon(new Dimension(24, 24)), {c:Color => Swing.rgbToIcon(c, new Dimension(24, 24))})
+		case CheckerboardURIMatcher(x) => x.apply(Swing.blankIcon, Swing.rgbToIcon)
 		case x:String => {
 			val url = urlOrFileStringToUrl(x)
-			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, swingView.compostLayers, swingView.sheeturl2images);
+			val b = new view.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Swing.compostLayers, Swing.sheeturl2images);
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, java.awt.Image, Icon]](b).parse(r).apply();
+				return new JsonParser[view.VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, java.awt.Image, Icon]](b).parse(r).apply();
 			} finally {
 				r.close();
 			}

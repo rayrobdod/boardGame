@@ -22,6 +22,7 @@ import java.awt.Color
 import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.view.CheckerboardTilesheet
+import com.rayrobdod.boardGame.view.Swing._
 
 import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks

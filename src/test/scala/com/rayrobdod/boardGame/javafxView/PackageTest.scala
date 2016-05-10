@@ -22,6 +22,7 @@ import org.scalatest.prop.PropertyChecks
 import java.awt.{Dimension, Color => AwtColor}
 import javafx.scene.shape.Rectangle
 import javafx.scene.paint.Color
+import com.rayrobdod.boardGame.view.Javafx._
 
 class PackageTest extends FunSpec {
 	

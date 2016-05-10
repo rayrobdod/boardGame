@@ -21,6 +21,7 @@ import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 import java.awt.{Dimension, Color}
 import javax.swing.Icon;
+import com.rayrobdod.boardGame.view.Swing._
 
 class BlankIconTest extends FunSpec {
 	describe ("BlankIcon") {

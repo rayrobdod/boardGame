@@ -16,6 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.rayrobdod.boardGame
+package view
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
@@ -31,23 +32,26 @@ import javax.imageio.ImageIO
 import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.SolidColorIcon
-import com.rayrobdod.boardGame.view.RectangularTilesheet
-import com.rayrobdod.boardGame.view.SpaceClassMatcherFactory
 
 /**
  * 
  */
-package object swingView {
+object Swing extends PackageObjectTemplate[Image, Icon] {
+	// Guess what the compiler cannot figure out?
+	// `package object swingView extends PackageObjectTemplate[Image, Icon]`
+	// Even though it is perfectly capable of figuring out
+	// `object swingView extends PackageObjectTemplate[Image, Icon]`
+	// how is that even possible?
 	
-	def blankIcon(size:Dimension):Icon = new Icon {
+	override def blankIcon(size:Dimension):Icon = new Icon{
 		import java.awt.{Component, Graphics}
 		def getIconWidth:Int = size.width
 		def getIconHeight:Int = size.height
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
 	}
 	def rgbToColor(rgb:Color):Color = rgb
-	def rgbToIcon(rgb:Color, size:Dimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
-	def stringIcon(text:String, rgb:Color, size:Dimension):Icon = new Icon {
+	override def rgbToIcon(rgb:Color, size:Dimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	override def stringIcon(text:String, rgb:Color, size:Dimension):Icon = new Icon {
 		import java.awt.{Component, Graphics}
 		def getIconWidth:Int = size.width
 		def getIconHeight:Int = size.height
@@ -58,7 +62,7 @@ package object swingView {
 	}
 	
 	
-	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Icon = {
+	override def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Icon = {
 		val a:Seq[Image] = if (! layersWithLCMFrames.isEmpty) {
 			// FIXTHIS: assumes all images are the same size
 			val imageWidth = layersWithLCMFrames.head.head.getWidth(null)
@@ -88,7 +92,7 @@ package object swingView {
 		}
 	}
 	
-	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
+	override def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
 		val sheetImage:BufferedImage = ImageIO.read(sheetUrl)
 		val tilesX = sheetImage.getWidth / tileDimension.width
 		val tilesY = sheetImage.getHeight / tileDimension.height
@@ -101,12 +105,12 @@ package object swingView {
 			field:RectangularField[A],
 			tilesheet:RectangularTilesheet[A, Icon],
 			rng:Random = Random
-	):(RectangularTilemapComponent, RectangularTilemapComponent) = {
+	):(SwingRectangularTilemapComponent, SwingRectangularTilemapComponent) = {
 		
 		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
 		val top = a.mapValues{_._1}
 		val bot = a.mapValues{_._2}
 		
-		(( new RectangularTilemapComponent(top), new RectangularTilemapComponent(bot) ))
+		(( new SwingRectangularTilemapComponent(top), new SwingRectangularTilemapComponent(bot) ))
 	}
 }
