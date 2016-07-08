@@ -21,6 +21,7 @@ import com.rayrobdod.boardGame.view
 import org.scalatest.{FunSuite, FunSpec}
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.JsonParser;
+import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.boardGame.SpaceClassMatcher
 
 class RectangularVisualizationRuleBuilderTest extends FunSpec {
@@ -35,7 +36,8 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 					"(1,1)":"b"
 				}
 			}"""
-			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
+			val builder = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory).mapKey[StringOrInt](StringOrInt.unwrapToString)
+			val res = new JsonParser().parse(builder, src).fold({x => x}, {x => throw new IllegalArgumentException("Was primitiive" + x)}, {(s,i) => throw new java.text.ParseException(s,i)})
 			
 			assert (res match {
 				case ParamaterizedRectangularVisualizationRule(

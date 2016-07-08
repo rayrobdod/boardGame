@@ -22,8 +22,10 @@ import java.io.Reader
 import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.immutable.Seq
-import com.rayrobdod.json.parser.JsonParser
-import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
+import scala.util.{Either, Left, Right}
+import com.rayrobdod.json.parser.{Parser, JsonParser}
+import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder, ThrowBuilder}
+import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
 
 final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPart, Icon](
@@ -31,18 +33,21 @@ final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPa
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],
 		urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]]
-) extends Builder[Delayed[SpaceClass, IconPart, Icon]] {
-	def init:Delayed[SpaceClass, IconPart, Icon] = new Delayed[SpaceClass, IconPart, Icon](classMap, compostLayers, urlToFrameImages)
-	def apply(a:Delayed[SpaceClass, IconPart, Icon], key:String, value:Any):Delayed[SpaceClass, IconPart, Icon] = key match {
-		case "tiles" => a.copy(sheetUrl = new URL(baseUrl, value.toString)) 
-		case "tileWidth" => a.copy(tileWidth = value.asInstanceOf[Long].intValue)
-		case "tileHeight" => a.copy(tileHeight = value.asInstanceOf[Long].intValue)
-		case "rules" => a.copy(rules = new URL(baseUrl, value.toString))
-		case "name" => a.copy(name = value.toString)
-		case _ => a
+) extends Builder[String, JsonValue, Delayed[SpaceClass, IconPart, Icon]] {
+	override def init:Delayed[SpaceClass, IconPart, Icon] = new Delayed[SpaceClass, IconPart, Icon](classMap, compostLayers, urlToFrameImages)
+	override def apply[Input](a:Delayed[SpaceClass, IconPart, Icon], key:String, input:Input, parser:Parser[String, JsonValue, Input]):Either[(String, Int), Delayed[SpaceClass, IconPart, Icon]] = {
+		parser.parsePrimitive(input).right.flatMap{value => Right{
+			import JsonValue._
+			(key, value) match {
+				case ("tiles", JsonValueString(x)) => a.copy(sheetUrl = new URL(baseUrl, x))
+				case ("tileWidth", JsonValueNumber(x)) => a.copy(tileWidth = x.intValue)
+				case ("tileHeight", JsonValueNumber(x)) => a.copy(tileHeight = x.intValue)
+				case ("rules", JsonValueString(x)) => a.copy(rules = new URL(baseUrl, x))
+				case ("name", JsonValueString(x)) => a.copy(name = x)
+				case _ => a
+			}
+		}}
 	}
-	def childBuilder(key:String):Builder[_] = new MapBuilder
-	override val resultType:Class[Delayed[SpaceClass, IconPart, Icon]] = classOf[Delayed[SpaceClass, IconPart, Icon]]
 }
 
 object VisualizationRuleBasedRectangularTilesheetBuilder {
@@ -62,11 +67,15 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 		}
 		
 		private def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = {
-			val b = new RectangularVisualziationRuleBuilder[SpaceClass, IconPart](urlToFrameImages(sheetUrl, new java.awt.Dimension(tileWidth, tileHeight)), classMap)
+			val b = new RectangularVisualziationRuleBuilder[SpaceClass, IconPart](urlToFrameImages(sheetUrl, new java.awt.Dimension(tileWidth, tileHeight)), classMap).mapKey{StringOrInt.unwrapToString}
 			var r:Reader = new java.io.StringReader("{}")
 			try {
 				r = new java.io.InputStreamReader(rules.openStream(), UTF_8)
-				new JsonParser(new SeqBuilder(b)).parse(r).map{b.resultType.cast(_)}
+				new JsonParser().parse(new SeqBuilder(b), r).fold(
+					{x => x},
+					{x => throw new java.text.ParseException("Parsed to primitive value", 0)},
+					{(s,i) => throw new java.text.ParseException(s,i)}
+				)
 			} finally {
 				r.close()
 			}

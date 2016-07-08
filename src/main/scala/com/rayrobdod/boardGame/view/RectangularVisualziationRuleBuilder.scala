@@ -21,9 +21,12 @@ package view
 import scala.util.Random
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Set}
+import scala.util.{Either, Left, Right}
 import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
-import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
+import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder, ThrowBuilder, PrimitiveSeqBuilder}
+import com.rayrobdod.json.parser.Parser
+import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import ParamaterizedRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
 
 
@@ -35,21 +38,71 @@ import ParamaterizedRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrame
 final class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
 		tileSeq:Seq[IconPart],
 		spaceClassUnapplier:SpaceClassMatcherFactory[SpaceClass]
-) extends Builder[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] {
-	def init:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] = new ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]()
+) extends Builder[String, JsonValue, ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] {
+	override def init:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] = new ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]()
 	
-	def apply(a:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart], key:String, value:Any):ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] = key match {
-		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
-		case "indexies" => a.copy(indexEquation = value.toString)
-		case "surroundingSpaces" => 
-			a.copy(surroundingTiles = value.asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => 
-				(( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))
-			})
-		case "tiles" => a.copy(iconParts = asMapOfFrameIndexies(value).mapValues{_.map{tileSeq}})
-		case _ => a
+	override def apply[Input](folding:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart], key:String, input:Input, parser:Parser[String, JsonValue, Input]):Either[(String, Int), ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = key match {
+		case "tileRand" => {
+			parser.parsePrimitive(input).right.flatMap{_ match {
+				case JsonValue.JsonValueNumber(x) => Right(folding.copy(tileRand = x.intValue))
+				case _ => Left("tileRand value not number", 0)
+			}}
+		}
+		case "indexies" => {
+			parser.parsePrimitive(input).right.flatMap{_ match {
+				case JsonValue.JsonValueString(x) => Right(folding.copy(indexEquation = x))
+				case _ => Left("indexies value not string", 0)
+			}}
+		}
+		case "surroundingSpaces" => {
+			val builder = MapBuilder.apply.mapKey[String](asIndexTranslationFunction).mapValue[JsonValue](x => spaceClassUnapplier(JsonValue.unwrap(x).toString))
+			parser.parse(builder, input).fold(
+				{x => Right(folding.copy(surroundingTiles = x.mapValues{_ match {case Right(x) => x; case _ => throw new IllegalArgumentException("surroundingSpaces value not thing")}}))},
+				{x => Left("surroundingSpaces value was primitive", 0)},
+				{(s,i) => Left(s,i)}
+			)
+		}
+		case "tiles" => {
+			val ARBITRARY_NEGATIVE_VALUE = -127
+			
+			parser.parse(MapBuilder(new PrimitiveSeqBuilder[String, JsonValue]), input).fold(
+				{x =>
+					val x2:Map[String, Either[Seq[JsonValue], JsonValue]] = scala.collection.immutable.TreeMap.empty[String, Either[Seq[JsonValue], JsonValue]] ++ x
+					val x3:Option[Either[Map[String, Seq[JsonValue]], Map[String, JsonValue]]] = x2.toList match {
+						case Nil => None
+						case (a, Left(b)) :: tail => tail.foldLeft[Option[Map[String, Seq[JsonValue]]]](Option(Map(a -> b))){(folding, item) => item match {
+							case (x, Left(y)) => folding.map{z =>  z + (x -> y)}
+							case (x, Right(y)) => None
+						}}.map{Left(_)}
+						case (a, Right(b)) :: tail => tail.foldLeft[Option[Map[String, JsonValue]]](Option(Map(a -> b))){(folding, item) => item match {
+							case (x, Right(y)) => folding.map{z =>  z + (x -> y)}
+							case (x, Left(y)) => None
+						}}.map{Right(_)}
+					}
+					x3.foldLeft[Either[(String, Int), ParamaterizedRectangularVisualizationRule[SpaceClass,IconPart]]]( Left("tiles not legal value", 0) ){(a,b) => b match {
+						case Left(x4:Map[String, Seq[JsonValue]]) => Right{
+							val x5:Map[String, Seq[JsonValue]] = x4
+							val x6:Map[Int, Seq[IconPart]] = x5.map{case (a, b) => ((a.toInt, b.map{case JsonValue.JsonValueNumber(c) => tileSeq(c.intValue); case _ => throw new ClassCastException("tiles not legal value")}))}
+							
+							folding.copy(iconParts = x6)
+						}
+						case Right(x4:Map[String, JsonValue]) => Right{
+							val x5:Map[Int, IconPart] = x4.map{case (a, JsonValue.JsonValueNumber(c)) => ((a.toInt, tileSeq(c.intValue))); case _ => throw new ClassCastException("tiles not legal value")}
+							val x6:Seq[IconPart] = x5.to[Seq].sortBy{_._1}.map{_._2}
+							
+							folding.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE → x6))
+						}
+					}}
+				},
+				{x => x match {
+					case JsonValue.JsonValueNumber(x) => Right(folding.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE → Seq(tileSeq(x.intValue)))))
+					case _ => Left("tiles unexpected value: " + x, 0)
+				}},
+				{(s,i) => Left(s,i)}
+			)
+		}
+		case _ => Right(folding)
 	}
-	def childBuilder(key:String):Builder[_] = new MapBuilder
-	override val resultType:Class[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = classOf[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]]
 }
 
 
@@ -193,8 +246,8 @@ object ParamaterizedRectangularVisualizationRule
 		}
 		val firstStr = matcher.group(1)
 		val secondStr = matcher.group(2)
-		val firstInt = asInt(firstStr)
-		val secondInt = asInt(secondStr)
+		val firstInt = firstStr.toInt
+		val secondInt = secondStr.toInt
 		
 		new Function1[(Int, Int), (Int, Int)]
 		{

@@ -27,6 +27,7 @@ import javafx.event.{EventHandler, ActionEvent}
 import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.json.parser.JsonParser
+import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Javafx._
@@ -57,11 +58,11 @@ final class InputFields2(
 		case TAG_SHEET_HASH => new HashcodeColorTilesheet(Javafx.blankIcon(new Dimension(24, 24)), {c => Javafx.rgbToIcon(c, new Dimension(24, 24))})
 		case x => {
 			val url = urlOrFileStringToUrl(x)
-			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Javafx.compostLayers, Javafx.sheeturl2images);
+			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Javafx.compostLayers, Javafx.sheeturl2images).mapKey(StringOrInt.unwrapToString)
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser[view.VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, javafx.scene.image.Image, javafx.scene.Node]](b).parse(r).apply();
+				return new JsonParser().parse(b, r).fold({x => x}, {x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException("", 0)}).apply()
 			} finally {
 				r.close();
 			}

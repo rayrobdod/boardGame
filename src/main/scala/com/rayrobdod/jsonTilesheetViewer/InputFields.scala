@@ -27,6 +27,7 @@ import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.swing.GridBagConstraintsFactory
 import com.rayrobdod.json.parser.JsonParser
+import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Swing._
@@ -66,11 +67,11 @@ final class InputFields(
 		case CheckerboardURIMatcher(x) => x.apply(Swing.blankIcon, Swing.rgbToIcon)
 		case x:String => {
 			val url = urlOrFileStringToUrl(x)
-			val b = new view.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Swing.compostLayers, Swing.sheeturl2images);
+			val b = new view.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Swing.compostLayers, Swing.sheeturl2images).mapKey(StringOrInt.unwrapToString)
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser[view.VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[String, java.awt.Image, Icon]](b).parse(r).apply();
+				return new JsonParser().parse(b, r).fold({x => x},{x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException("", 0)}).apply()
 			} finally {
 				r.close();
 			}

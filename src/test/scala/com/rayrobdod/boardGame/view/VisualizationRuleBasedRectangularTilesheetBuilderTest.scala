@@ -24,6 +24,8 @@ import java.awt.image.BufferedImage
 import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
 import com.rayrobdod.json.parser.JsonParser;
+import com.rayrobdod.json.union.StringOrInt
+import com.rayrobdod.json.union.ParserRetVal.Complex
 import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.swingView
 
@@ -34,7 +36,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 			val compostLayersFun = {x:Seq[Seq[Float]] => "apple"}
 			val urlToFrameImagesFun = {(u:URL, d:java.awt.Dimension) => Seq(0.5f)}
 			
-			val expected = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
+			val expected = Complex(new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
 				compostLayers = compostLayersFun,
 				urlToFrameImages = urlToFrameImagesFun,
@@ -43,7 +45,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 				tileHeight = 48,
 				rules = new URL("http://localhost/rules"),
 				name = "name"
-			)
+			))
 			val src = """{
 				"tiles":"tiles",
 				"tileWidth":32,
@@ -51,7 +53,8 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 				"rules":"rules",
 				"name":"name"
 			}"""
-			val result = new JsonParser(new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory, compostLayersFun, urlToFrameImagesFun)).parse(src)
+			val builder = new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory, compostLayersFun, urlToFrameImagesFun).mapKey[StringOrInt](StringOrInt.unwrapToString)
+			val result = new JsonParser().parse(builder, src)
 			
 			assertResult(expected){result}
 		}

@@ -23,7 +23,7 @@ mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTiles
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
+libraryDependencies += ("com.rayrobdod" %% "json" % "3.0-RC1")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
