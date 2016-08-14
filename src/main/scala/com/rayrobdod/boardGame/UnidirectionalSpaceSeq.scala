@@ -19,7 +19,6 @@ package com.rayrobdod.boardGame
 
 import scala.collection.immutable.LinearSeq
 import scala.collection.LinearSeqOptimized
-import LoggerInitializer.{unarySeqLogger => logger}
 
 /**
  * Noticed that the UnaryMovement Spaces look like linked list nodes
@@ -33,17 +32,12 @@ import LoggerInitializer.{unarySeqLogger => logger}
 final class UnidirectionalSpaceSeq[A](override val headOption:Option[UnidirectionalSpace[A]])
 			extends LinearSeq[UnidirectionalSpace[A]] 
 {
-	logger.entering("UnidirectionalSpaceSeq", "this(Option[A])", headOption)
-	
 	def this(head:UnidirectionalSpace[A]) = this(Option(head))
 	
 	override def head:UnidirectionalSpace[A] = headOption.get
 	override def isEmpty:Boolean = (headOption == None) // assume no nulls, right?
 	override def tail:UnidirectionalSpaceSeq[A] = // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
 	{
-		logger.entering("UnidirectionalSpaceSeq", "tail()")
-		logger.finer(this.headOption.toString)
-		
 		if (this.isEmpty) {
 			throw new UnsupportedOperationException("Cannot get tail of empty list")
 		} else {
