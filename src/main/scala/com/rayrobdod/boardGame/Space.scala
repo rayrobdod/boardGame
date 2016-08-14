@@ -131,7 +131,7 @@ trait Space[A] {
 	 * This is Dijkstra's algorithm, as the spaces aren't allowed to know where they are in relation
 	 * they are to each other.
 	 * 
-	 * This short-circuts when it finds the desired space, and so is more efficient than pathToEverywhere
+	 * This short-circuits when it finds the desired space, and so is more efficient than pathToEverywhere
 	 * which searches the whole field
 	 * 
 	 * @param other the space to find the movementCost required to get to

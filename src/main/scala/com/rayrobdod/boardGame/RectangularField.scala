@@ -21,15 +21,15 @@ import scala.collection.immutable.{Seq, Set, Map}
 
 /**
  * A RectangularField is a set of [[com.rayrobdod.boardGame.RectangularSpace]]s,
- * such that each space is connected to adjacent spaces Ecludian-geometry wise.
- * 
+ * such that each space is connected to adjacent spaces Euclidean-geometry wise
+ * and that the spaces are arranged in a fully-filled n×m grid.
  * 
  * @version 3.0.0
  * @see [[com.rayrobdod.boardGame.RectangularSpace]]
  */
 object RectangularField
 {
-	/* @since 3.0.0 */
+	/** @since 3.0.0 */
 	private final class RectangularFieldSpace[A](
 			private val fieldClasses:Map[RectangularFieldIndex, A],
 			private val myIndex:(Int, Int)
@@ -51,7 +51,7 @@ object RectangularField
 		
 		// Object Overrides
 		
-		// Until there's something that can apply to all RectangularSpaces, we're doing somehting specialized for this
+		// Until there's something that can apply to all RectangularSpaces, we're doing something specialized for this
 		override def equals(other:Any):Boolean = other match {
 			case other2:RectangularFieldSpace[_] => {
 				(other2.fieldClasses == this.fieldClasses &&
@@ -66,11 +66,11 @@ object RectangularField
 	/**
 	 * A factory method for Rectangular Fields
 	 * 
-	 * It will convert the locations in the array to indexies by using the
+	 * It will convert the locations in the array to indexes by using the
 	 * inner array as the first dimension and the outer array as the
 	 * first dimension.
 	 * 
-	 * It sounds wierd, but it matches the most common ways of making a
+	 * It sounds weird, but it matches the most common ways of making a
 	 * Seq[Seq[_]]. Both OpenCSV and direct inline have this endianess.
 	 * 
 	 * An example is, given the below sequence, `g` would be be considered
