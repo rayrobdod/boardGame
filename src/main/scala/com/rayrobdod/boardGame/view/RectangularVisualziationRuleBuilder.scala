@@ -27,7 +27,7 @@ import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, 
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder, ThrowBuilder, PrimitiveSeqBuilder}
 import com.rayrobdod.json.parser.Parser
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}
-import ParamaterizedRectangularVisualizationRule.{asInt, asBoolean, asMapOfFrameIndexies, asIndexTranslationFunction}
+import ParamaterizedRectangularVisualizationRule.{asBoolean, asIndexTranslationFunction}
 
 
 
@@ -172,16 +172,15 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 
 
 /**
- * @author Raymond Dodge
  * @version 3.0.0
  */
 object ParamaterizedRectangularVisualizationRule
 {
-	val divisionPattern = Pattern.compile("[%//]")
-	val numberPattern = Pattern.compile("\\d+")
-	val andPattern = Pattern.compile("&+")
+	private val divisionPattern = Pattern.compile("[%//]")
+	private val numberPattern = Pattern.compile("\\d+")
+	private val andPattern = Pattern.compile("&+")
 	
-	val scriptEngine = {
+	private val scriptEngine = {
 		val retVal = new ScriptEngineManager(null).getEngineByName("JavaScript")
 		if (retVal == null) throw new NullPointerException("scriptEngine not found")
 		retVal
@@ -200,39 +199,10 @@ object ParamaterizedRectangularVisualizationRule
 		scriptEngine.eval(script, bindings)
 	}
 	
-	// TODO: see how much turning this into a function will help
-	def asInt(x:Any):Int = x match {
-		case y:Int => y
-		case y:String => Integer.parseInt(y)
-		case y:Integer => y
-		case y:Long => y.intValue
-	}
-	
-	def asBoolean(x:Any):Boolean = x match {
+	private def asBoolean(x:Any):Boolean = x match {
 		case y:Boolean => y
 		case y:Int => y != 0
 		case y:String => java.lang.Boolean.parseBoolean(y)
-	}
-	
-	def asMapOfFrameIndexies(frameIndexies:Any):Map[Int, Seq[Int]] =
-	{
-		val ARBITRARY_NEGATIVE_VALUE = -127
-		
-		val normalizedFrameIndex:Map[Int, Seq[Int]] = frameIndexies match {
-			case x:Int => Map(ARBITRARY_NEGATIVE_VALUE → Seq(x))
-			case x:Long => Map(ARBITRARY_NEGATIVE_VALUE → Seq(x.intValue))
-			case x:Seq[_] => Map(ARBITRARY_NEGATIVE_VALUE → x.map{asInt(_)})
-			case x:Map[_, _] => {
-				x.map{(y:Tuple2[_,_]) => (( asInt(y._1), y._2)) }
-						.mapValues{_ match {
-							case y:Int => Seq(y)
-							case y:Long => Seq(y.intValue)
-							case y:Seq[_] => y.map{asInt(_)}
-						}}
-			}
-		}
-		
-		normalizedFrameIndex
 	}
 	
 	def asIndexTranslationFunction(s:String):Function1[(Int, Int), (Int, Int)] =
