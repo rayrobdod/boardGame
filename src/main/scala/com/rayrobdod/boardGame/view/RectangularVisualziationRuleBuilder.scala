@@ -44,7 +44,7 @@ final class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
 	override def apply[Input](folding:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart], key:String, input:Input, parser:Parser[String, JsonValue, Input]):Either[(String, Int), ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = key match {
 		case "tileRand" => {
 			parser.parsePrimitive(input).right.flatMap{_ match {
-				case JsonValue.JsonValueNumber(x) => Right(folding.copy(tileRand = x.intValue))
+				case JsonValue.JsonValueNumber(x) => if (x.doubleValue == x.intValue && x.intValue > 0) {Right(folding.copy(tileRand = x.intValue))} else {Left("tileRand no positive integer", 0)}
 				case _ => Left("tileRand value not number", 0)
 			}}
 		}
