@@ -25,9 +25,9 @@ package object boardGame {
 	type RectangularField[A] = Map[RectangularFieldIndex, StrictRectangularSpace[A]]
 	
 	/** A SpaceClassMatcher that always returns true */
-	val ConstTrueSpaceClassMatcher = new ConstSpaceClassMatcher(true)
+	val ConstTrueSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(true)
 	/** A SpaceClassMatcher that always returns false */
-	val ConstFalseSpaceClassMatcher = new ConstSpaceClassMatcher(false)
+	val ConstFalseSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(false)
 }
 
 package boardGame {

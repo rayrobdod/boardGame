@@ -29,23 +29,23 @@ import scala.collection.LinearSeqOptimized
  * @author Raymond Dodge
  * @version 3.0.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
  */
-final class UnidirectionalSpaceSeq[A](override val headOption:Option[UnidirectionalSpace[A]])
-			extends LinearSeq[UnidirectionalSpace[A]] 
+final class UnidirectionalSpaceSeq[SpaceClass](override val headOption:Option[UnidirectionalSpace[SpaceClass]])
+			extends LinearSeq[UnidirectionalSpace[SpaceClass]] 
 {
-	def this(head:UnidirectionalSpace[A]) = this(Option(head))
+	def this(head:UnidirectionalSpace[SpaceClass]) = this(Option(head))
 	
-	override def head:UnidirectionalSpace[A] = headOption.get
+	override def head:UnidirectionalSpace[SpaceClass] = headOption.get
 	override def isEmpty:Boolean = (headOption == None) // assume no nulls, right?
-	override def tail:UnidirectionalSpaceSeq[A] = { // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
+	override def tail:UnidirectionalSpaceSeq[SpaceClass] = { // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
 		if (this.isEmpty) {
 			throw new UnsupportedOperationException("Cannot get tail of empty list")
 		} else {
-			val next:Option[UnidirectionalSpace[A]] = headOption.flatMap(_.nextSpace)
-			new UnidirectionalSpaceSeq[A](next)
+			val next:Option[UnidirectionalSpace[SpaceClass]] = headOption.flatMap(_.nextSpace)
+			new UnidirectionalSpaceSeq[SpaceClass](next)
 		}
 	}
 	
-	override def apply(i:Int):UnidirectionalSpace[A] = {
+	override def apply(i:Int):UnidirectionalSpace[SpaceClass] = {
 		if (this.isEmpty) {throw new IndexOutOfBoundsException("Too high an index called")}
 		else if (i < 0) {throw new IndexOutOfBoundsException("index less than zero called: " + i)}
 		else if (i == 0) {head}

@@ -21,7 +21,7 @@ import scala.collection.immutable.{Seq, Set, Map}
 
 /**
  * A RectangularField is a set of [[com.rayrobdod.boardGame.RectangularSpace]]s,
- * such that each space is connected to adjacent spaces Ecludian-geometry wise.
+ * such that each space is connected to adjacent spaces Euclidean-geometry wise.
  * 
  * 
  * @version 3.0.0
@@ -30,12 +30,12 @@ import scala.collection.immutable.{Seq, Set, Map}
 object RectangularField
 {
 	/* @since 3.0.0 */
-	private final class RectangularFieldSpace[A](
-			private val fieldClasses:Map[RectangularFieldIndex, A],
+	private final class RectangularFieldSpace[SpaceClass](
+			private val fieldClasses:Map[RectangularFieldIndex, SpaceClass],
 			private val myIndex:(Int, Int)
-	) extends StrictRectangularSpace[A] {
+	) extends StrictRectangularSpace[SpaceClass] {
 		private val (i,j) = myIndex
-		private def getSpaceAt(i:RectangularFieldIndex):Option[StrictRectangularSpace[A]] = {
+		private def getSpaceAt(i:RectangularFieldIndex):Option[StrictRectangularSpace[SpaceClass]] = {
 			if (fieldClasses.contains(i)) {
 				Some(new RectangularFieldSpace(fieldClasses, i))
 			} else {None}
@@ -43,11 +43,11 @@ object RectangularField
 		
 		// RectangularSpace Implementation
 		
-		override val typeOfSpace:A = fieldClasses(myIndex)
-		override def left:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i - 1, j)
-		override def up:Option[StrictRectangularSpace[A]]    = this.getSpaceAt(i, j - 1)
-		override def right:Option[StrictRectangularSpace[A]] = this.getSpaceAt(i + 1, j)
-		override def down:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i, j + 1)
+		override val typeOfSpace:SpaceClass = fieldClasses(myIndex)
+		override def left:Option[StrictRectangularSpace[SpaceClass]]  = this.getSpaceAt(i - 1, j)
+		override def up:Option[StrictRectangularSpace[SpaceClass]]    = this.getSpaceAt(i, j - 1)
+		override def right:Option[StrictRectangularSpace[SpaceClass]] = this.getSpaceAt(i + 1, j)
+		override def down:Option[StrictRectangularSpace[SpaceClass]]  = this.getSpaceAt(i, j + 1)
 		
 		// Object Overrides
 		
@@ -66,11 +66,11 @@ object RectangularField
 	/**
 	 * A factory method for Rectangular Fields
 	 * 
-	 * It will convert the locations in the array to indexies by using the
+	 * It will convert the locations in the array to indexes by using the
 	 * inner array as the first dimension and the outer array as the
 	 * first dimension.
 	 * 
-	 * It sounds wierd, but it matches the most common ways of making a
+	 * It sounds weird, but it matches the most common ways of making a
 	 * Seq[Seq[_]]. Both OpenCSV and direct inline have this endianess.
 	 * 
 	 * An example is, given the below sequence, `g` would be be considered
@@ -85,10 +85,10 @@ object RectangularField
 	 * @param classes the Space Classes making up the field
 	 * @version 3.0.0
 	 */
-	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = this.apply(
+	def apply[SpaceClass](classes:Seq[Seq[SpaceClass]]):RectangularField[SpaceClass] = this.apply(
 		
-		classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) =>
-			classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
+		classes.zipWithIndex.map({(classSeq:Seq[SpaceClass], j:Int) =>
+			classSeq.zipWithIndex.map({(clazz:SpaceClass, i:Int) => 
 				(i, j) -> clazz
 			}.tupled)
 		}.tupled).flatten.toMap
@@ -98,7 +98,7 @@ object RectangularField
 	 * A factory method for Rectangular Fields
 	 * @since 3.0.0
 	 */
-	def apply[A](classes:Map[RectangularFieldIndex, A]):RectangularField[A] = {
+	def apply[SpaceClass](classes:Map[RectangularFieldIndex, SpaceClass]):RectangularField[SpaceClass] = {
 		classes.map{x => ((x._1, new RectangularFieldSpace(classes, x._1) ))}
 	}
 }
