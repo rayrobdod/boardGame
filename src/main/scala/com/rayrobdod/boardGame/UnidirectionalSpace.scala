@@ -27,16 +27,16 @@ import scala.collection.immutable.{Set, List, Map}
  * @version 3.0.0 rename from UnaryMovement
  * 
  * @constructor
- * @tparam A the type of spaceclass used by this class
+ * @tparam SpaceClass the domain object representing the properties of this space
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
-final class UnidirectionalSpace[A](override val typeOfSpace:A, val nextSpace:Option[UnidirectionalSpace[A]]) extends Space[A]
+final class UnidirectionalSpace[SpaceClass](override val typeOfSpace:SpaceClass, val nextSpace:Option[UnidirectionalSpace[SpaceClass]]) extends Space[SpaceClass]
 {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
 	 */
-	override def adjacentSpaces:Set[UnidirectionalSpace[A]] = nextSpace.toList.toSet
+	override def adjacentSpaces:Set[UnidirectionalSpace[SpaceClass]] = nextSpace.toList.toSet
 	
 	/**
 	 * Returns the space a player will reach when using a certain cost.
@@ -46,12 +46,12 @@ final class UnidirectionalSpace[A](override val typeOfSpace:A, val nextSpace:Opt
 	 * @throws ClassCastException if one of the next spaces is not an instance of UnaryMovement, which presumably means
 				there are multiple available adjacentSpaces.
 	 */
-	def spaceAfter(availableCost:Int, costFunction:Space.CostFunction[A]):Option[UnidirectionalSpace[_]] =
+	def spaceAfter(availableCost:Int, costFunction:Space.CostFunction[SpaceClass]):Option[UnidirectionalSpace[_]] =
 	{
 		if (availableCost < 0) {None}
 		else if (availableCost == 0) {Option(this)}
 		else {
-			nextSpace.map{x:UnidirectionalSpace[A] =>
+			nextSpace.map{x:UnidirectionalSpace[SpaceClass] =>
 				val actualCost = costFunction(this, x)
 				
 				if (actualCost > availableCost) {None}

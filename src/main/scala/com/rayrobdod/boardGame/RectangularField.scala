@@ -30,12 +30,12 @@ import scala.collection.immutable.{Seq, Set, Map}
 object RectangularField
 {
 	/** @since 3.0.0 */
-	private final class RectangularFieldSpace[A](
-			private val fieldClasses:Map[RectangularFieldIndex, A],
+	private final class RectangularFieldSpace[SpaceClass](
+			private val fieldClasses:Map[RectangularFieldIndex, SpaceClass],
 			private val myIndex:(Int, Int)
-	) extends StrictRectangularSpace[A] {
+	) extends StrictRectangularSpace[SpaceClass] {
 		private val (i,j) = myIndex
-		private def getSpaceAt(i:RectangularFieldIndex):Option[StrictRectangularSpace[A]] = {
+		private def getSpaceAt(i:RectangularFieldIndex):Option[StrictRectangularSpace[SpaceClass]] = {
 			if (fieldClasses.contains(i)) {
 				Some(new RectangularFieldSpace(fieldClasses, i))
 			} else {None}
@@ -43,11 +43,11 @@ object RectangularField
 		
 		// RectangularSpace Implementation
 		
-		override val typeOfSpace:A = fieldClasses(myIndex)
-		override def left:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i - 1, j)
-		override def up:Option[StrictRectangularSpace[A]]    = this.getSpaceAt(i, j - 1)
-		override def right:Option[StrictRectangularSpace[A]] = this.getSpaceAt(i + 1, j)
-		override def down:Option[StrictRectangularSpace[A]]  = this.getSpaceAt(i, j + 1)
+		override val typeOfSpace:SpaceClass = fieldClasses(myIndex)
+		override def left:Option[StrictRectangularSpace[SpaceClass]]  = this.getSpaceAt(i - 1, j)
+		override def up:Option[StrictRectangularSpace[SpaceClass]]    = this.getSpaceAt(i, j - 1)
+		override def right:Option[StrictRectangularSpace[SpaceClass]] = this.getSpaceAt(i + 1, j)
+		override def down:Option[StrictRectangularSpace[SpaceClass]]  = this.getSpaceAt(i, j + 1)
 		
 		// Object Overrides
 		
@@ -85,10 +85,10 @@ object RectangularField
 	 * @param classes the Space Classes making up the field
 	 * @version 3.0.0
 	 */
-	def apply[A](classes:Seq[Seq[A]]):RectangularField[A] = this.apply(
+	def apply[SpaceClass](classes:Seq[Seq[SpaceClass]]):RectangularField[SpaceClass] = this.apply(
 		
-		classes.zipWithIndex.map({(classSeq:Seq[A], j:Int) =>
-			classSeq.zipWithIndex.map({(clazz:A, i:Int) => 
+		classes.zipWithIndex.map({(classSeq:Seq[SpaceClass], j:Int) =>
+			classSeq.zipWithIndex.map({(clazz:SpaceClass, i:Int) => 
 				(i, j) -> clazz
 			}.tupled)
 		}.tupled).flatten.toMap
@@ -98,7 +98,7 @@ object RectangularField
 	 * A factory method for Rectangular Fields
 	 * @since 3.0.0
 	 */
-	def apply[A](classes:Map[RectangularFieldIndex, A]):RectangularField[A] = {
+	def apply[SpaceClass](classes:Map[RectangularFieldIndex, SpaceClass]):RectangularField[SpaceClass] = {
 		classes.map{x => ((x._1, new RectangularFieldSpace(classes, x._1) ))}
 	}
 }

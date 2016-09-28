@@ -22,12 +22,13 @@ import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import java.nio.charset.StandardCharsets.UTF_8
-import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JComboBox}
+import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JComboBox, JFileChooser}
 import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.swing.GridBagConstraintsFactory
 import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.union.StringOrInt
+import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Swing._
@@ -119,6 +120,23 @@ final class InputFields(
 	
 	
 	
+	private[this] val tilesheetFileChooser = new JFileChooser
+	tilesheetFileChooser.setAcceptAllFileFilterUsed(true)
+	tilesheetFileChooser.setMultiSelectionEnabled(false)
+	tilesheetFileChooser.addActionListener(new java.awt.event.ActionListener {
+		def actionPerformed(e:java.awt.event.ActionEvent) = {
+			tilesheetUrlBox.setSelectedItem( tilesheetFileChooser.getSelectedFile.toURI.toString )
+		}
+	})
+	private[this] val fieldFileChooser = new JFileChooser
+	fieldFileChooser.setAcceptAllFileFilterUsed(true)
+	fieldFileChooser.setMultiSelectionEnabled(false)
+	fieldFileChooser.addActionListener(new java.awt.event.ActionListener {
+		def actionPerformed(e:java.awt.event.ActionEvent) = {
+			fieldUrlBox.setSelectedItem( fieldFileChooser.getSelectedFile.toURI.toString )
+		}
+	})
+	
 	
 	
 	
@@ -142,16 +160,38 @@ final class InputFields(
 		a.setSelectedItem(initialFieldUrl)
 		a
 	}
+	private val tilesheetFileButton = {
+		val a = new JButton("…")
+		a.addActionListener(new java.awt.event.ActionListener {
+			def actionPerformed(e:java.awt.event.ActionEvent) = {
+				tilesheetFileChooser.showOpenDialog(a)
+			}
+		})
+		a
+	}
+	private val fieldFileButton = {
+		val a = new JButton("…")
+		a.addActionListener(new java.awt.event.ActionListener {
+			def actionPerformed(e:java.awt.event.ActionEvent) = {
+				fieldFileChooser.showOpenDialog(a)
+			}
+		})
+		a
+	}
+	
 	private val randBox = new JTextField(initialRand, 5)
 	private val goButton = new JButton("->")
 	
 	private val label = GridBagConstraintsFactory(insets = new java.awt.Insets(0,5,0,5), fill = GridBagConstraints.BOTH)
+	private val midUrlBox = GridBagConstraintsFactory(fill = GridBagConstraints.BOTH)
 	private val endOfLine = GridBagConstraintsFactory(gridwidth = GridBagConstraints.REMAINDER, weightx = 1, fill = GridBagConstraints.BOTH)
 	
 	panel.add(new JLabel("tilesheet: "), label)
-	panel.add(tilesheetUrlBox, endOfLine)
+	panel.add(tilesheetUrlBox, midUrlBox)
+	panel.add(tilesheetFileButton, endOfLine)
 	panel.add(new JLabel("map: "), label)
-	panel.add(fieldUrlBox, endOfLine)
+	panel.add(fieldUrlBox, midUrlBox)
+	panel.add(fieldFileButton, endOfLine)
 	panel.add(new JLabel("seed: "), label)
 	panel.add(randBox, endOfLine)
 	panel.add(goButton, endOfLine)
