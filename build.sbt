@@ -10,8 +10,8 @@ version := "3.0.0-SNAPSHOT"
 
 scalaVersion := "2.10.6"
 
-crossScalaVersions := Seq("2.10.6", "2.11.7") ++
-    (if (System.getProperty("scoverage.disable", "") != "true") {Nil} else {Seq("2.12.0-M3")})
+crossScalaVersions := Seq("2.10.6", "2.11.8") ++
+    (if (System.getProperty("scoverage.disable", "") != "true") {Nil} else {Seq("2.12.0-RC1")})
 
 // heavy resource use, including Services
 fork := true
@@ -64,6 +64,29 @@ packageOptions in (Compile, packageBin) += {
 }
 
 
+if (System.getProperty("scoverage.disable", "") == "true") {
+	// provide no-op replacements for disabled tasks
+	TaskKey[Unit]("coverage") := {}
+} else {
+	TaskKey[Unit]("asfdsdfasdf") := {}
+}
+
+if (System.getProperty("scoverage.disable", "") == "true") {
+	// provide no-op replacements for disabled tasks
+	TaskKey[Unit]("coveralls") := {}
+} else {
+	TaskKey[Unit]("asfdsdfasdf") := {}
+}
+
+if (System.getProperty("scoverage.disable", "") == "true") {
+	// provide no-op replacements for disabled tasks
+	TaskKey[Unit]("coverageReport") := {}
+} else {
+	TaskKey[Unit]("asfdsdfasdf") := {}
+}
+
+
+
 // license nonsense
 licenses += (("GPLv3 or later", new URL("http://www.gnu.org/licenses/") ))
 
@@ -91,10 +114,12 @@ ProguardKeys.inputFilter in Proguard := { file =>
 	}
 }
 
+ProguardKeys.libraries in Proguard := {
+	(ProguardKeys.libraries in Proguard).value.filter{x => x.toString.endsWith(".jar")}
+}
+
 // scalaTest
-libraryDependencies += "org.scalatest" %% "scalatest" % (
-      "2.2.5" + (if ((scalaVersion.value take 7) == "2.12.0-") { "-" + (scalaVersion.value drop 7) } else {""}) 
-    ) % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 
 testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 
