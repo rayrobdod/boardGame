@@ -20,9 +20,11 @@ package com.rayrobdod.jsonTilesheetViewer
 import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
-import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane}
+import java.nio.charset.StandardCharsets.UTF_8
+import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JComboBox}
 import com.rayrobdod.swing.GridBagConstraintsFactory
 import scala.util.Random
+import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.swingView._
 
@@ -47,15 +49,28 @@ final class InputFields(
 	
 	def tilesheet:RectangularTilesheet[SpaceClass] = {
 		ToggleContentHandlerFactory.setCurrentToTilesheet();
-		urlOrFileStringToUrl(tilesheetUrlBox.getText).getContent().asInstanceOf[RectangularTilesheet[SpaceClass]]
+		urlOrFileStringToUrl(tilesheetUrlBox.getSelectedItem.toString).getContent().asInstanceOf[RectangularTilesheet[SpaceClass]]
 	}
 	def fieldIsRotationField:Boolean = {
 		// not quite sure how to do this without hardcoding anymore
-		fieldUrlBox.getText startsWith "tag:rayrobdod.name,2013-08:map-rotate"
+		fieldUrlBox.getSelectedItem.toString startsWith TAG_MAP_ROTATE
 	}
 	def field:RectangularField[SpaceClass] = {
-		ToggleContentHandlerFactory.setCurrentToField();
-		urlOrFileStringToUrl(fieldUrlBox.getText).getContent().asInstanceOf[RectangularField[SpaceClass]]
+		import java.io.InputStreamReader
+		import com.opencsv.CSVReader
+		
+		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getSelectedItem.toString).openStream(), UTF_8)
+		val layoutTable:Seq[Seq[String]] = {
+			import scala.collection.JavaConversions.collectionAsScalaIterable;
+			
+			val reader = new CSVReader(layoutReader);
+			val letterTable3 = reader.readAll();
+			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
+			
+			letterTable
+		}
+		
+		RectangularField( layoutTable )
 	}
 	def rng:Random = randBox.getText match {
 		case "" => Random
@@ -83,8 +98,25 @@ final class InputFields(
 	
 	
 	val panel = new JPanel(new GridBagLayout)
-	private val tilesheetUrlBox = new JTextField(initialTilesheetUrl)
-	private val fieldUrlBox = new JTextField(initialFieldUrl)
+	private val tilesheetUrlBox = {
+		val a = new JComboBox[String]()
+		a.addItem(TAG_SHEET_NIL)
+		a.addItem(TAG_SHEET_INDEX)
+		a.addItem(TAG_SHEET_RAND)
+		a.addItem(TAG_SHEET_HASH)
+		a.addItem(TAG_SHEET_CHECKER)
+		a.addItem(TAG_SHEET_CHECKER + "?size=32&light=16711680&dark=255")
+		a.setEditable(true)
+		a.setSelectedItem(initialTilesheetUrl)
+		a
+	}
+	private val fieldUrlBox = {
+		val a = new JComboBox[String]()
+		a.addItem(TAG_MAP_ROTATE)
+		a.setEditable(true)
+		a.setSelectedItem(initialFieldUrl)
+		a
+	}
 	private val randBox = new JTextField(initialRand, 5)
 	private val goButton = new JButton("->")
 	
