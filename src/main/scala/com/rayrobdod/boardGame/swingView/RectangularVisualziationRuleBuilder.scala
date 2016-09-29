@@ -26,7 +26,7 @@ import java.util.regex.{Pattern, Matcher}
 import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 import JSONRectangularVisualizationRule.{asInt, asMapOfFrameIndexies, asIndexTranslationFunction}
-import view.CoordinateFunctionSpecifierParser.{parser => coordinateFunctionParser}
+import view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 import view.CoordinateFunctionSpecifierParser.CoordinateFunction
 
 
@@ -42,7 +42,7 @@ class RectangularVisualziationRuleBuilder[A](
 	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
 	def apply(a:ParamaterizedRectangularVisualizationRule[A], key:String, value:Any):ParamaterizedRectangularVisualizationRule[A] = key match {
 		case "tileRand" => a.copy(tileRand = value.asInstanceOf[Long].intValue) 
-		case "indexies" => a.copy(indexEquation = coordinateFunctionParser.parse(value.toString).fold({(parser, idx, extra) => throw new IllegalArgumentException(extra.toString)}, {(res, idx) => res}))
+		case "indexies" => a.copy(indexEquation = coordinateFunctionParser.parse(value.toString).left.map{case (msg, idx) => throw new java.text.ParseException(msg, idx)}.merge)
 		case "surroundingSpaces" => 
 			a.copy(surroundingTiles = value.asInstanceOf[Map[_,_]].map{(x:(Any,Any)) => 
 				(( asIndexTranslationFunction(x._1.toString), spaceClassUnapplier(x._2.toString) ))

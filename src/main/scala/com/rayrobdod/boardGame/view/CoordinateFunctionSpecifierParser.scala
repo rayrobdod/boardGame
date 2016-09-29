@@ -21,7 +21,7 @@ import fastparse.all._
 import scala.language.implicitConversions
 
 /**
- * Contains a parser that converts CoordinateFunctionSpecifier into a `(Int,Int,Int,Int) => Boolean` function.
+ * A parser that converts CoordinateFunctionSpecifier strings into a `(Int,Int,Int,Int) => Boolean` function.
  * 
  * Basically, think the smallest subset of C-styled languages to create a boolean-returning
  * expression consisting of integer and boolean algebra.
@@ -129,6 +129,9 @@ object CoordinateFunctionSpecifierParser {
 		folding.zipMap(c, {(x,y:Boolean) => x && y}, s"($folding && $c)", incrementAndCount = 1)
 	}}
 	
-	val parser:P[CoordinateFunction[Boolean]] = and ~ End
-
+	private[this] val parser:P[CoordinateFunction[Boolean]] = and ~ End
+	
+	def parse(spec:String):Either[(String,Int), CoordinateFunction[Boolean]] = {
+		parser.parse(spec).fold({(_, idx, extra) => Left(extra.toString, idx)}, {(res, idx) => Right(res)})
+	}
 }

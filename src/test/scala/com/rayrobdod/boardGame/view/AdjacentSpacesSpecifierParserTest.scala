@@ -23,20 +23,20 @@ import org.scalatest.FunSpec
 class AdjacentSpacesSpecifierParserTest extends FunSpec {
 	
 	val identifiers = Seq("grass", "dirt", "road", "water", "pit", "ééé", "123")
-	import AdjacentSpacesSpecifierParser.parser
+	def parse(s:String) = AdjacentSpacesSpecifierParser.parse[String](s, {s => Some(s)})
 
 	describe ("The function produced by AdjacentSpacesSpecifierParser.parser") {
 		
 		describe ("when the specifier is a single identifier") {
 			it ("should return true if given that identifier") {
 				identifiers.foreach{id =>
-					assert(parser.parse(id).get.value.apply(id))
+					assert(parse(id).right.get.unapply(id))
 				}
 			}
 			it ("should return false if given any other value") {
 				for (a <- identifiers; z <- identifiers) {
 					if (a != z) {
-						assert(! parser.parse(a).get.value.apply(z))
+						assert(! parse(a).right.get.unapply(z))
 					}
 				}
 			}
@@ -45,13 +45,13 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 		describe ("when the specifier is \"NOT \" followed by a single identifier") {
 			it ("should return false if given that identifier") {
 				identifiers.foreach{id =>
-					assert(! parser.parse(s"NOT $id").get.value.apply(id))
+					assert(! parse(s"NOT $id").right.get.unapply(id))
 				}
 			}
 			it ("should return true if given any other value") {
 				for (a <- identifiers; z <- identifiers) {
 					if (a != z) {
-						assert(parser.parse(s"NOT $a").get.value.apply(z))
+						assert(parse(s"NOT $a").right.get.unapply(z))
 					}
 				}
 			}
@@ -60,18 +60,18 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 		describe ("when the specifier is two identifiers separated by \" OR \"") {
 			it ("should return true if given the first identifier") {
 				for (a <- identifiers; b <- identifiers) {
-					assert(parser.parse(s"$a OR $b").get.value.apply(a))
+					assert(parse(s"$a OR $b").right.get.unapply(a))
 				}
 			}
 			it ("should return true if given the second identifier") {
 				for (a <- identifiers; b <- identifiers) {
-					assert(parser.parse(s"$a OR $b").get.value.apply(b))
+					assert(parse(s"$a OR $b").right.get.unapply(b))
 				}
 			}
 			it ("should return false if given any other value") {
 				for (a <- identifiers; b <- identifiers; z <- identifiers) {
 					if (a != z && b != z) {
-						assert(! parser.parse(s"$a OR $b").get.value.apply(z))
+						assert(! parse(s"$a OR $b").right.get.unapply(z))
 					}
 				}
 			}
@@ -80,23 +80,23 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 		describe ("when the specifier is three identifiers separated by \" OR \"") {
 			it ("should return true if given the first identifier") {
 				for (a <- identifiers; b <- identifiers; c <- identifiers) {
-					assert(parser.parse(s"$a OR $b OR $c").get.value.apply(a))
+					assert(parse(s"$a OR $b OR $c").right.get.unapply(a))
 				}
 			}
 			it ("should return true if given the second identifier") {
 				for (a <- identifiers; b <- identifiers; c <- identifiers) {
-					assert(parser.parse(s"$a OR $b OR $c").get.value.apply(b))
+					assert(parse(s"$a OR $b OR $c").right.get.unapply(b))
 				}
 			}
 			it ("should return true if given the third identifier") {
 				for (a <- identifiers; b <- identifiers; c <- identifiers) {
-					assert(parser.parse(s"$a OR $b OR $c").get.value.apply(c))
+					assert(parse(s"$a OR $b OR $c").right.get.unapply(c))
 				}
 			}
 			it ("should return false if given any other value") {
 				for (a <- identifiers; b <- identifiers; c <- identifiers; z <- identifiers) {
 					if (a != z && b != z && c != z) {
-						assert(! parser.parse(s"$a OR $b OR $c").get.value.apply(z))
+						assert(! parse(s"$a OR $b OR $c").right.get.unapply(z))
 					}
 				}
 			}
@@ -105,18 +105,18 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 		describe ("when the specifier is two identifiers both prefixed with \"NOT\" and separated by \" AND \"") {
 			it ("should return false if given the first identifier") {
 				for (a <- identifiers; b <- identifiers) {
-					assert(! parser.parse(s"NOT $a AND NOT $b").get.value.apply(a))
+					assert(! parse(s"NOT $a AND NOT $b").right.get.unapply(a))
 				}
 			}
 			it ("should return false if given the second identifier") {
 				for (a <- identifiers; b <- identifiers) {
-					assert(! parser.parse(s"NOT $a AND NOT $b").get.value.apply(b))
+					assert(! parse(s"NOT $a AND NOT $b").right.get.unapply(b))
 				}
 			}
 			it ("should return true if given any other value") {
 				for (a <- identifiers; b <- identifiers; z <- identifiers) {
 					if (a != z && b != z) {
-						assert(parser.parse(s"NOT $a AND NOT $b").get.value.apply(z))
+						assert(parse(s"NOT $a AND NOT $b").right.get.unapply(z))
 					}
 				}
 			}
@@ -125,7 +125,7 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 		describe ("when the specifier is a value and its complement") {
 			it ("should return false") {
 				for (a <- identifiers; z <- identifiers) {
-					assert(! parser.parse(s"$a AND NOT $a").get.value.apply(z))
+					assert(! parse(s"$a AND NOT $a").right.get.unapply(z))
 				}
 			}
 		}
@@ -133,32 +133,16 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 	
 	describe ("AdjacentSpacesSpecifierParser.parser") {
 		it ("does not accept \"NOT\" as an identifier") {
-			parser.parse("NOT").fold[Unit]({(parser, idx, extra) =>
-					// success
-				}, {(res, idx) =>
-					fail("Parse succeeded: " + res)
-			})
+			parse("NOT").left.get
 		}
 		it ("does not accept \"NOT\" as an identifier after a \"NOT \"") {
-			parser.parse("NOT NOT").fold[Unit]({(parser, idx, extra) =>
-					// success
-				}, {(res, idx) =>
-					fail("Parse succeeded: " + res)
-			})
+			parse("NOT NOT").left.get
 		}
 		it ("does not accept \"AND\" as an identifier") {
-			parser.parse("AND").fold[Unit]({(parser, idx, extra) =>
-					// success
-				}, {(res, idx) =>
-					fail("Parse succeeded: " + res)
-			})
+			parse("AND").left.get
 		}
 		it ("does not accept \"OR\" as an identifier") {
-			parser.parse("OR").fold[Unit]({(parser, idx, extra) =>
-					// success
-				}, {(res, idx) =>
-					fail("Parse succeeded: " + res)
-			})
+			parse("OR").left.get
 		}
 	}
 }
