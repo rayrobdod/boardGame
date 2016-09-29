@@ -29,6 +29,8 @@ libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
+libraryDependencies += "com.lihaoyi" %% "fastparse" % "0.4.1"
+
 javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-target:jvm-1.7")
@@ -120,6 +122,8 @@ ProguardKeys.libraries in Proguard := {
 
 // scalaTest
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.2" % "test"
 
 testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 
