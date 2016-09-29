@@ -293,8 +293,37 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 				}
 			}
 		}
-
 		
+	}
+	
+	describe ("The function produced by AdjacentSpacesSpecifierParser.parser priorities") {
+		it ("\"true\" has a priority of 0") {
+			assertResult(0){parser.parse("true").get.value.priority}
+		}
+		it ("\"x % 2 == 0\" has a lower priority than \"x % 4 == 0\"") {
+			val mod2 = parser.parse("x % 2 == 0").get.value
+			val mod4 = parser.parse("x % 4 == 0").get.value
+			
+			assert(mod2.priority < mod4.priority)
+		}
+		it ("\"x == 0\" has a lower priority than \"x == 0 && y == 0\"") {
+			val noAnd = parser.parse("x == 0").get.value
+			val oneAnd = parser.parse("x == 0 && y == 0").get.value
+			
+			assert(noAnd.priority < oneAnd.priority)
+		}
+		it ("\"x == 0 && w == 0\" has a lower priority than \"x == 0 && y == 0 && w == 0\"") {
+			val oneAnd = parser.parse("x == 0 && w == 0").get.value
+			val twoAnd = parser.parse("x == 0 && y == 0 && w == 0").get.value
+			
+			assert(oneAnd.priority < twoAnd.priority)
+		}
+		it ("\"x == 0\" has a higher priority than \"x % 2 == 0\"") {
+			val noDiv = parser.parse("x == 0").get.value
+			val oneDiv = parser.parse("x % 2 == 0").get.value
+			
+			assert(noDiv.priority > oneDiv.priority)
+		}
 	}
 	
 	describe ("AdjacentSpacesSpecifierParser.parser") {

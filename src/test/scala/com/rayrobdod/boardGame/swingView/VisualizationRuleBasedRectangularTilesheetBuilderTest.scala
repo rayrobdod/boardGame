@@ -63,8 +63,8 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 			
 			assertResult("name"){result.name}
 			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[String]]}
-			assertResult("x == 0"){resRules(0).indexEquation}
-			assertResult("true"){resRules(1).indexEquation}
+			assertResult("(x == 0)"){resRules(0).indexEquation.toString}
+			assertResult("true"){resRules(1).indexEquation.toString}
 			assertResult(java.awt.Color.white.getRGB){resRules(0).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
 			assertResult(java.awt.Color.black.getRGB){resRules(1).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
 		}

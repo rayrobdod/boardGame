@@ -26,6 +26,7 @@ import javax.swing.Icon
 import scala.util.Random
 import scala.collection.immutable.{Seq, Set, Map}
 import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.view.CoordinateFunctionSpecifierParser.{parser => coordinateFunctionParser}
 
 class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 	import VisualizationRuleBasedRectangularTilesheetTest._
@@ -134,7 +135,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 					),
 					new ParamaterizedRectangularVisualizationRule[String](
 						iconParts = Map(-1 -> Seq(topGreen)),
-						indexEquation = "x == 0"
+						indexEquation = coordinateFunctionParser.parse("x == 0").get.value
 					)
 				)
 			)
@@ -152,7 +153,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 					),
 					new ParamaterizedRectangularVisualizationRule[String](
 						iconParts = Map(-1 -> Seq(solidBlue)),
-						indexEquation = "x == 1"
+						indexEquation = coordinateFunctionParser.parse("x == 1").get.value
 					)
 				)
 			)

@@ -37,17 +37,37 @@ object CoordinateFunctionSpecifierParser {
 	
 	trait CoordinateFunction[@specialized(Int, Boolean) A] {
 		def apply(x:Int, y:Int, w:Int, h:Int):A
-		private[CoordinateFunctionSpecifierParser] def zipMap[B, C](rhs:CoordinateFunction[B], mapping:(A,B) => C, name:String) = {
+		private[CoordinateFunctionSpecifierParser] def divCount:Int = 0
+		private[CoordinateFunctionSpecifierParser] def andCount:Int = 0
+		private[CoordinateFunctionSpecifierParser] def primitiveSum:Int = 0
+		private[CoordinateFunctionSpecifierParser] def isJustTrue:Boolean = false
+		
+		final def priority = if (isJustTrue) {0} else {(1000) / (divCount + 1) * (andCount + 1) + primitiveSum}
+
+		private[CoordinateFunctionSpecifierParser] def zipMap[@specialized(Int, Boolean) B, @specialized(Int, Boolean) C](
+				rhs:CoordinateFunction[B],
+				mapping:(A,B) => C,
+				name:String,
+				incrementDivCount:Int = 0,
+				incrementAndCount:Int = 0
+		) = {
 			new CoordinateFunction[C]{
-				def apply(x:Int, y:Int, w:Int, h:Int):C =
+				override def apply(x:Int, y:Int, w:Int, h:Int):C =
 					mapping(CoordinateFunction.this.apply(x,y,w,h), rhs.apply(x,y,w,h))
+				override def divCount:Int = CoordinateFunction.this.divCount + rhs.divCount + incrementDivCount
+				override def andCount:Int = CoordinateFunction.this.andCount + rhs.andCount + incrementAndCount
+				override def primitiveSum:Int = CoordinateFunction.this.primitiveSum + rhs.primitiveSum
 				override def toString = name
 			}
 		}
 	}
 	object CoordinateFunction {
 		def constant[@specialized(Int, Boolean) A](a:A) = new CoordinateFunction[A]{
-			def apply(x:Int, y:Int, w:Int, h:Int):A = a
+			override def apply(x:Int, y:Int, w:Int, h:Int):A = a
+			override def primitiveSum:Int = {
+				if (a.isInstanceOf[Int]) {a.asInstanceOf[Int]} else {0}
+			}
+			override def isJustTrue:Boolean = if (a.isInstanceOf[Boolean]) {a.asInstanceOf[Boolean]} else {false}
 			override def toString:String = a.toString
 		}
 	}
@@ -70,8 +90,8 @@ object CoordinateFunctionSpecifierParser {
 		factor ~ (whitespace.rep ~ CharIn("*/%").! ~/ whitespace.rep ~ factor).rep
 	).map{case (a, bcSeq) => bcSeq.foldLeft(a){case (folding, (b,c)) => b match {
 		case "*" => folding.zipMap(c, {(x,y:Int) => x * y}, s"($folding * $c)")
-		case "/" => folding.zipMap(c, {(x,y:Int) => x / y}, s"($folding / $c)")
-		case "%" => folding.zipMap(c, {(x,y:Int) => x % y}, s"($folding % $c)")
+		case "/" => folding.zipMap(c, {(x,y:Int) => x / y}, s"($folding / $c)", incrementDivCount = 1)
+		case "%" => folding.zipMap(c, {(x,y:Int) => x % y}, s"($folding % $c)", incrementDivCount = 1)
 	}}}
 	
 	private[this] val addSub:P[CoordinateFunction[Int]] = P(
@@ -106,7 +126,7 @@ object CoordinateFunctionSpecifierParser {
 	private[this] val and:P[CoordinateFunction[Boolean]] = P(
 		or ~ (whitespace.rep ~ "&&" ~/ whitespace.rep ~ or).rep
 	).map{case (a, cSeq) => cSeq.foldLeft(a){(folding, c) =>
-		folding.zipMap(c, {(x,y:Boolean) => x && y}, s"($folding && $c)")
+		folding.zipMap(c, {(x,y:Boolean) => x && y}, s"($folding && $c)", incrementAndCount = 1)
 	}}
 	
 	val parser:P[CoordinateFunction[Boolean]] = and ~ End
