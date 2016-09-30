@@ -25,8 +25,6 @@ import com.rayrobdod.boardGame.swingView.RandomColorTilesheet
 import com.rayrobdod.boardGame.swingView.NilTilesheet
 
 class InputFieldsTest extends FunSpec {
-	InitTagProtocol.apply()
-	
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
