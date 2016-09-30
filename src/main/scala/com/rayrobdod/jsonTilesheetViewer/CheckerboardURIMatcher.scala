@@ -20,6 +20,9 @@ package com.rayrobdod.jsonTilesheetViewer
 import java.awt.{Color, Dimension}
 import com.rayrobdod.boardGame.swingView.CheckerboardTilesheet
 
+/**
+ * @version next
+ */
 object CheckerboardURIMatcher {
 	
 	def unapply(ssp:String):Option[CheckerboardTilesheet] = {

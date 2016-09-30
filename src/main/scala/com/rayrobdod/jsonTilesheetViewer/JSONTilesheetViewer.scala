@@ -34,7 +34,7 @@ import com.rayrobdod.boardGame.swingView._
 
 
 /**
- * @version 3.0.0
+ * @version next
  */
 object JSONTilesheetViewer {
 	

@@ -32,6 +32,7 @@ import com.rayrobdod.boardGame.swingView._
 
 /**
  * @since 3.0.0
+ * @version next
  */
 final class InputFields(
 		initialTilesheetUrl:String,

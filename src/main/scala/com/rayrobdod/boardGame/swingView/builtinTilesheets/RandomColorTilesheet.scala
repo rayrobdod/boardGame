@@ -27,7 +27,7 @@ import com.rayrobdod.boardGame.RectangularField
 /**
  * A tilesheet for testing randoms. Isolating the problem.
  * 
- * @author Raymond Dodge
+ * @version next
  */
 final class RandomColorTilesheet(
 		val dim:Dimension = new Dimension(64,24)
@@ -53,13 +53,16 @@ final class RandomColorTilesheet(
 }
 
 object RandomColorTilesheet {
+	/**
+	 * An icon that prints the hex value of a color in whichever of black or white contrasts with that color
+	 * @version next
+	 */
 	final class ColorStringIcon(val color:Color, val dim:Dimension) extends javax.swing.Icon {
 		override def getIconWidth:Int = dim.width
 		override def getIconHeight:Int = dim.height
 		
 		import java.awt.{Component, Graphics}
-		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int)
-		{
+		override def paintIcon(c:Component, g:Graphics, x:Int, y:Int) {
 			g.setColor(foreground)
 			g.drawString("" + color.getRGB.toHexString, x + 2, y + dim.height - 5)
 		}

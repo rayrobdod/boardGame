@@ -29,7 +29,10 @@ import scala.collection.immutable.{Seq, Set, Map}
  */
 object RectangularField
 {
-	/* @since 3.0.0 */
+	/**
+	 * @version next
+	 * @since 3.0.0
+	 */
 	private final class RectangularFieldSpace[SpaceClass](
 			private val fieldClasses:Map[RectangularFieldIndex, SpaceClass],
 			private val myIndex:(Int, Int)
