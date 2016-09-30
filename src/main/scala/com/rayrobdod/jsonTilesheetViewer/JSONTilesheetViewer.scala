@@ -36,34 +36,40 @@ import com.rayrobdod.boardGame.swingView._
 /**
  * @version 3.0.0
  */
-object JSONTilesheetViewer extends App
-{
-	val frame = new JFrame("JSON Tilesheet Viewer")
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+object JSONTilesheetViewer {
 	
-	val inputFields = new InputFields(
-			initialTilesheetUrl = if (args.size > 0) args(0) else "tag:rayrobdod.name,2013-08:tilesheet-nil",
-			initialFieldUrl     = if (args.size > 1) args(1) else "tag:rayrobdod.name,2013-08:map-rotate",
-			initialRand         = if (args.size > 2) args(2) else ""
-	)
+	def main(args:Array[String]):Unit = {
+		val frame = new JFrame("JSON Tilesheet Viewer")
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+		
+		val inputFields = new InputFields(
+				initialTilesheetUrl = if (args.size > 0) args(0) else TAG_SHEET_NIL,
+				initialFieldUrl     = if (args.size > 1) args(1) else TAG_MAP_ROTATE,
+				initialRand         = if (args.size > 2) args(2) else ""
+		)
+		
+		val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
+		
+		inputFields.addOkButtonActionListener(new ActionListener() {
+			override def actionPerformed(e:ActionEvent) {
+				loadNewTilesheet(frame, fieldComp, inputFields)
+			}
+		})
+		
+		frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
+		frame.getContentPane.add(new JScrollPane(fieldComp))
+		
+		
+		
+		loadNewTilesheet(frame, fieldComp, inputFields)
+		frame.setVisible(true)
+	}
 	
-	inputFields.addOkButtonActionListener(new ActionListener() {
-		override def actionPerformed(e:ActionEvent) {
-			loadNewTilesheet()
-		}
-	})
-	
-	val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
-	
-	frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
-	frame.getContentPane.add(new JScrollPane(fieldComp))
-	
-	
-	
-	loadNewTilesheet()
-	frame.setVisible(true)
-	
-	def loadNewTilesheet():Unit = {
+	def loadNewTilesheet(
+			frame:JFrame,
+			fieldComp:JPanel,
+			inputFields:InputFields
+	):Unit = {
 		
 		if (inputFields.fieldIsRotationField) {
 			
@@ -87,7 +93,7 @@ object JSONTilesheetViewer extends App
 			
 			currentRotationState.toSeq.map{_._1}.foreach{index =>
 				a._1.addMouseListener(index, new FieldRotationMouseListener(
-						index, currentRotationRotation, currentRotationState
+						index, currentRotationRotation, currentRotationState, fieldComp, inputFields
 				))
 			}
 			
@@ -151,7 +157,9 @@ object JSONTilesheetViewer extends App
 	final class FieldRotationMouseListener(
 			index:(Int,Int),
 			currentRotationRotation:Seq[SpaceClass],
-			currentRotationState:RectangularField[SpaceClass]
+			currentRotationState:RectangularField[SpaceClass],
+			fieldComp:JPanel,
+			inputFields:InputFields
 	) extends MouseAdapter {
 		override def mouseClicked(e:MouseEvent):Unit = {
 			
@@ -180,7 +188,7 @@ object JSONTilesheetViewer extends App
 			
 			nextRotationState.toSeq.map{_._1}.foreach{index =>
 				a._1.addMouseListener(index, new FieldRotationMouseListener(
-						index, currentRotationRotation, nextRotationState
+						index, currentRotationRotation, nextRotationState, fieldComp, inputFields
 				))
 			}
 		}
