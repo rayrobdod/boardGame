@@ -28,6 +28,8 @@ import scala.language.implicitConversions
  * 
  * Theoretically, this could use the built-in Javascript interpreter, but I don't know the security
  * implications of an action like that.
+ * 
+ * @since next
  */
 object CoordinateFunctionSpecifierParser {
 	// apparently, scala 2.10 has trouble with finding `parserApi`

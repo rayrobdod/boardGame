@@ -29,6 +29,7 @@ import com.rayrobdod.boardGame.SpaceClassMatcher
  * separating each token. There is currently no explicit grouping, and the precedence order is
  * NOT before OR before AND.
  * 
+ * @since next
  */
 object AdjacentSpacesSpecifierParser {
 	// apparently, scala 2.10 has trouble with finding `parserApi`

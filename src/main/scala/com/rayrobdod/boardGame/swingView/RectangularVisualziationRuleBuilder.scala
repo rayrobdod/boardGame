@@ -33,7 +33,7 @@ import view.CoordinateFunctionSpecifierParser.CoordinateFunction
 
 
 /**
- * @version 3.0.0
+ * @version next
  */
 class RectangularVisualziationRuleBuilder[A](
 		tileSeq:Seq[Image],
@@ -56,7 +56,7 @@ class RectangularVisualziationRuleBuilder[A](
 
 
 /**
- * @version 3.0.0
+ * @version next
  */
 final case class ParamaterizedRectangularVisualizationRule[A] (
 	override val iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
@@ -92,8 +92,7 @@ final case class ParamaterizedRectangularVisualizationRule[A] (
 
 
 /**
- * @author Raymond Dodge
- * @version 3.0.0
+ * @version next
  */
 object JSONRectangularVisualizationRule
 {
