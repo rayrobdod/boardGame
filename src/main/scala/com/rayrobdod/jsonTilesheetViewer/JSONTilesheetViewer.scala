@@ -38,20 +38,6 @@ import com.rayrobdod.boardGame.swingView._
  */
 object JSONTilesheetViewer extends App
 {
-	{
-		val prop:String = "java.protocol.handler.pkgs";
-		val pkg:String = "com.rayrobdod.tagprotocol";
-		
-		var value:String = System.getProperty(prop);
-		value = if (value == null) {pkg} else {value + "|" + pkg};
-		System.setProperty(prop, value);
-		
-		
-		java.net.URLConnection.setContentHandlerFactory(
-				ToggleContentHandlerFactory);
-	}
-	
-	
 	val frame = new JFrame("JSON Tilesheet Viewer")
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 	

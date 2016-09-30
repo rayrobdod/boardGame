@@ -25,28 +25,10 @@ object CheckerboardURIMatcher {
 	def unapply(ssp:String):Option[CheckerboardTilesheet] = {
 		val split = ssp.split("[\\?\\&]");
 		
-		if ("rayrobdod.name,2013-08:tilesheet-checker" == split.head)
-		{
+		if ("tag:rayrobdod.name,2013-08:tilesheet-checker" == split.head) {
 			build(split.tail)
 		} else {
 			None;
-		}
-	}
-	
-	def unapply(ssp:java.net.URI):Option[CheckerboardTilesheet] = {
-		this.unapply(ssp.getSchemeSpecificPart())
-	}
-	
-	def unapply(ssp:java.net.URL):Option[CheckerboardTilesheet] = {
-		if (ssp.getProtocol == "tag" &&
-				ssp.getAuthority == "rayrobdod.name,2013-08" &&
-				ssp.getPath == "tilesheet-checker") {
-			
-			val split = ssp.getQuery.split("\\&");
-			
-			build(split);
-		} else {
-			None
 		}
 	}
 	

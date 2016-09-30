@@ -25,6 +25,7 @@ import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPa
 import com.rayrobdod.swing.GridBagConstraintsFactory
 import scala.util.Random
 import scala.collection.immutable.Seq
+import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.swingView._
 
@@ -48,8 +49,24 @@ final class InputFields(
 	
 	
 	def tilesheet:RectangularTilesheet[SpaceClass] = {
-		ToggleContentHandlerFactory.setCurrentToTilesheet();
-		urlOrFileStringToUrl(tilesheetUrlBox.getSelectedItem.toString).getContent().asInstanceOf[RectangularTilesheet[SpaceClass]]
+		tilesheetUrlBox.getSelectedItem.toString match {
+			case TAG_SHEET_NIL => NilTilesheet
+			case TAG_SHEET_INDEX => IndexesTilesheet
+			case TAG_SHEET_RAND => new RandomColorTilesheet
+			case TAG_SHEET_HASH => new HashcodeColorTilesheet
+			case CheckerboardURIMatcher(sheet) => sheet
+			case urlStr => {
+				val url = urlOrFileStringToUrl(urlStr)
+				val b = new VisualizationRuleBasedRectangularTilesheetBuilder[String](url, StringSpaceClassMatcherFactory)
+				var r:java.io.Reader = new java.io.StringReader("{}")
+				try {
+					r = new java.io.InputStreamReader(url.openStream(), UTF_8);
+					return new JsonParser(b).parse(r).apply();
+				} finally {
+					r.close();
+				}
+			}
+		}
 	}
 	def fieldIsRotationField:Boolean = {
 		// not quite sure how to do this without hardcoding anymore
