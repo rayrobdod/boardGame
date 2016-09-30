@@ -24,13 +24,6 @@ import org.scalatest.prop.PropertyChecks
 class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks {
 	import CoordinateFunctionSpecifierParser.parse
 	
-	type CoordFun = Function4[Int,Int,Int,Int,Boolean]
-	val happyCases:Seq[(String, CoordFun)] = Seq(
-		"x == 1 || x == 2" -> {(x:Int,y:Int,w:Int,h:Int) => x == 1 || x == 1},
-		"x < 0 && y > 0" -> {(x:Int,y:Int,w:Int,h:Int) => x < 0 && y >= 0}
-	)
-	
-	
 	describe ("The function produced by AdjacentSpacesSpecifierParser.parser") {
 		describe ("when the specifier is \"true\"") {
 			val parserResult = parse("true").right.get
@@ -249,8 +242,13 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 		describe ("when the specifier is \"x == 0 || y == 0\"") {
 			val parserResult = parse("x == 0 || y == 0").right.get
 			it ("returns true when either x or y is zero") {
-				forAll{(x:Int, y:Int, w:Int, h:Int) => whenever(x == 0 || y == 0) {
-					assert(parserResult(x, y, w, h) )
+				forAll{(whichIsZero:Boolean, xy:Int, w:Int, h:Int) => {
+					assert(parserResult(
+						if(whichIsZero) {xy} else {0},
+						if(whichIsZero) {0} else {xy},
+						w,
+						h
+					))
 				}}
 			}
 			it ("returns false when neither x nor y is zero") {
@@ -267,12 +265,17 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 				}}
 			}
 			it ("returns false when either x or y is zero") {
-				forAll{(x:Int, y:Int, w:Int, h:Int) => whenever(! (x != 0 && y != 0)) {
-					assert(! parserResult(x, y, w, h) )
+				forAll{(whichIsZero:Boolean, xy:Int, w:Int, h:Int) => {
+					assert(! parserResult(
+						if(whichIsZero) {xy} else {0},
+						if(whichIsZero) {0} else {xy},
+						w,
+						h
+					))
 				}}
 			}
 		}
-		describe ("parentetical around a boolean part") {
+		describe ("parenthetical around a boolean part") {
 			val parserResult = parse("(x < 0 && y < 0) || w == h").right.get
 			it ("returns true when ???") {
 				forAll{(x:Int, y:Int, w:Int, h:Int) =>
@@ -288,7 +291,10 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 					if (!(x < 0 && y < 0)) {
 						assert(! parserResult(x, y, w, h))
 					} else {
-						assert(! parserResult(-x, -y, w, h))
+						whenever(x != java.lang.Integer.MIN_VALUE && y != java.lang.Integer.MIN_VALUE) {
+							// java.lang.Integer.MIN_VALUE == - java.lang.Integer.MIN_VALUE
+							assert(! parserResult(-x, -y, w, h))
+						}
 					}}
 				}
 			}
