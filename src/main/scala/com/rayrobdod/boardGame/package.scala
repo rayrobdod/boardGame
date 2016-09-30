@@ -48,7 +48,7 @@ package boardGame {
 	 * A SpaceClassMatcher that always returns the specified value
 	 * @since next
 	 */
-	final class ConstSpaceClassMatcher(value:Boolean) extends SpaceClassMatcher[Any] {
+	private[this] final class ConstSpaceClassMatcher(value:Boolean) extends SpaceClassMatcher[Any] {
 		def unapply(sc:Any):Boolean = value
 	}
 }

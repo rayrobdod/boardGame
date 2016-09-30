@@ -34,6 +34,18 @@ package object swingView {
 		if (x > y) {gcd(x - y, y)} else
 		{gcd(x, y - x)}
 	}
+	
+	/**
+	 * A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always returns true
+	 * @version next
+	 */
+	val ConstTrueSpaceClassMatcherFactory:SpaceClassMatcherFactory[Any] = new ConstSpaceClassMatcherFactory[Any](ConstTrueSpaceClassMatcher)
+	
+	/**
+	 * A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always returns false
+	 * @version next
+	 */
+	val ConstFalseSpaceClassMatcherFactory:SpaceClassMatcherFactory[Any] = new ConstSpaceClassMatcherFactory[Any](ConstFalseSpaceClassMatcher)
 }
 
 package swingView {
@@ -41,13 +53,12 @@ package swingView {
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
 	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns true */
-	object ConstTrueSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstTrueSpaceClassMatcher
-	}
-	
-	/** A SpaceClassMatcherFactory that always returns a SpaceClassMatcher that always retuns false */
-	object ConstFalseSpaceClassMatcherFactory extends SpaceClassMatcherFactory[Any] {
-		def apply(s:String):SpaceClassMatcher[Any] = ConstFalseSpaceClassMatcher
+	/**
+	 * A SpaceClassMatcherFactory that always returns the specified value
+	 * @since next
+	 */
+	private[this] final class ConstSpaceClassMatcherFactory[SpaceClass](value:SpaceClassMatcher[SpaceClass])
+				extends SpaceClassMatcherFactory[SpaceClass] {
+		def apply(reference:String):SpaceClassMatcher[SpaceClass] = value
 	}
 }
