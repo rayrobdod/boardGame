@@ -19,7 +19,8 @@ package com.rayrobdod.boardGame.view
 
 import fastparse.all._
 import scala.language.implicitConversions
-import com.rayrobdod.boardGame.SpaceClassMatcher
+import com.rayrobdod.boardGame.{SpaceClassMatcher, ConstFalseSpaceClassMatcher}
+import com.rayrobdod.boardGame.swingView.{SpaceClassMatcherFactory => RootSpaceClassMatcherFactory}
 
 /**
  * A parser that converts AdjacentSpacesSpecifier strings into [[SpaceClassMatcher]]s.
@@ -116,5 +117,13 @@ object AdjacentSpacesSpecifierParser {
 				.right.map{new SpaceClassMatcherFromMySet(_)}
 				.left.map{x:Set[String] => (x.mkString(unknownError, ", ", ""), 0)}
 		})
+	}
+	
+	def spaceClassMatcherFactory[SpaceClass](derefSpaceClass:String => Option[SpaceClass]):RootSpaceClassMatcherFactory[SpaceClass] = {
+		new RootSpaceClassMatcherFactory[SpaceClass] {
+			def apply(spec:String):SpaceClassMatcher[SpaceClass] = {
+				AdjacentSpacesSpecifierParser.this.parse(spec, derefSpaceClass).fold({err => ConstFalseSpaceClassMatcher}, {m => m})
+			}
+		}
 	}
 }

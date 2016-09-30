@@ -23,8 +23,10 @@ import org.scalatest.FunSpec
 class AdjacentSpacesSpecifierParserTest extends FunSpec {
 	
 	val identifiers = Seq("grass", "dirt", "road", "water", "pit", "ééé", "123")
-	def parse(s:String) = AdjacentSpacesSpecifierParser.parse[String](s, {s => Some(s)})
-
+	val stringToSome = {s:String => Some(s)}
+	def parse(s:String) = AdjacentSpacesSpecifierParser.parse[String](s, stringToSome)
+	def matcher(s:String) = AdjacentSpacesSpecifierParser.spaceClassMatcherFactory[String](stringToSome).apply(s)
+	
 	describe ("The function produced by AdjacentSpacesSpecifierParser.parser") {
 		
 		describe ("when the specifier is a single identifier") {
@@ -130,6 +132,19 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 			}
 		}
 	}
+	
+	describe ("AdjacentSpacesSpecifierParser.spaceClassMatcherFactory") {
+		it ("gets the same result as parse") {
+			val spec = "grass OR dirt OR 123"
+			val exp = parse(spec).right.get
+			val dut = matcher(spec)
+			
+			for (z <- identifiers) {
+				assertResult(exp.unapply(z)){dut.unapply(z)}
+			}
+		}
+	}
+	
 	
 	describe ("AdjacentSpacesSpecifierParser.parser") {
 		it ("does not accept \"NOT\" as an identifier") {
