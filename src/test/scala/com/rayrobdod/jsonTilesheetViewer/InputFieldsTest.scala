@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 import scala.util.Random
 import com.rayrobdod.boardGame.swingView.IndexesTilesheet
 import com.rayrobdod.boardGame.swingView.RandomColorTilesheet

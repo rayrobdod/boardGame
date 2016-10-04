@@ -17,11 +17,11 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import java.net.{URL, URI}
-import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
-import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
+import java.net.{URL}
+import java.awt.{GridBagLayout, GridBagConstraints}
+import java.awt.event.{ActionListener}
 import java.nio.charset.StandardCharsets.UTF_8
-import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JComboBox, JFileChooser}
+import javax.swing.{JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser}
 import com.rayrobdod.swing.GridBagConstraintsFactory
 import scala.util.Random
 import scala.collection.immutable.Seq

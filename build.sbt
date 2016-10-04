@@ -35,6 +35,8 @@ javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-sour
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-target:jvm-1.7")
 
+scalacOptions ++= (if (scalaVersion.value != "2.11.8") {Nil} else {Seq("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint:_", "-Xlint:-adapted-args")})
+
 scalacOptions in doc in Compile ++= Seq(
 		"-doc-title", name.value,
 		"-doc-version", version.value,

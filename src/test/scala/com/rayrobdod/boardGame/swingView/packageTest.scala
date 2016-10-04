@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 
 class PackageTest extends FunSpec {
 	

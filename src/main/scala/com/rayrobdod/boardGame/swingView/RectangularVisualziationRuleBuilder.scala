@@ -20,15 +20,14 @@ package swingView
 
 import scala.util.Random
 import scala.annotation.tailrec
-import scala.collection.immutable.{Seq, Map, Set}
+import scala.collection.immutable.{Seq, Map}
 import java.awt.Image
 import java.util.regex.{Pattern, Matcher}
-import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
-import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
+import javax.script.{Bindings, SimpleBindings, ScriptEngineManager}
+import com.rayrobdod.json.builder.{Builder, MapBuilder}
 import JSONRectangularVisualizationRule.{asInt, asMapOfFrameIndexies, asIndexTranslationFunction}
 import view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 import view.CoordinateFunctionSpecifierParser.CoordinateFunction
-
 
 
 
@@ -127,7 +126,7 @@ object JSONRectangularVisualizationRule
 	
 	def asIndexTranslationFunction(s:String):Function1[(Int, Int), (Int, Int)] =
 	{
-		import java.util.regex.{Pattern, Matcher}
+		import java.util.regex.Pattern
 		
 		val pairPattern = Pattern.compile("""\(([\+\-]?\d+),([\+\-]?\d+)\)""")
 		val matcher = pairPattern.matcher(s)

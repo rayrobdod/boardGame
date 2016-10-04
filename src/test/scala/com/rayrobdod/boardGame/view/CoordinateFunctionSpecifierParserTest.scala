@@ -17,7 +17,6 @@
 */
 package com.rayrobdod.boardGame.view
 
-import scala.collection.immutable.Seq
 import org.scalatest.FunSpec
 import org.scalatest.prop.PropertyChecks
 

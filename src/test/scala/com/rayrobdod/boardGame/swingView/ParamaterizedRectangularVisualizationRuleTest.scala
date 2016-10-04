@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 import java.awt.Image
 import java.awt.image.ImageObserver
 import scala.collection.immutable.Seq

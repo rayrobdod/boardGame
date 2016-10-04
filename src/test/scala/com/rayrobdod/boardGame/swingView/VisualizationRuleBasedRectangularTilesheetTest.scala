@@ -17,14 +17,13 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color}
+import org.scalatest.FunSpec
+import java.awt.{Color}
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import javax.swing.Icon
 import scala.util.Random
-import scala.collection.immutable.{Seq, Set, Map}
+import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 

@@ -17,7 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.{Seq, Set, Map}
+import scala.collection.immutable.{Seq, Map}
 
 /**
  * A RectangularField is a set of [[com.rayrobdod.boardGame.RectangularSpace]]s,

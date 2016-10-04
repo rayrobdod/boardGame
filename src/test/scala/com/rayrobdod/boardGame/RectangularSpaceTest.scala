@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.{FunSpec}
 
 class RectangularSpaceTest extends FunSpec {
 	

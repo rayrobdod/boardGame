@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 import java.util.ServiceConfigurationError
 import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8

@@ -18,20 +18,13 @@
 package com.rayrobdod.boardGame.swingView
 
 import com.rayrobdod.boardGame._
-import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import scala.util.Random
-import scala.{Function0 => Future}
-import scala.annotation.tailrec
-import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
-import scala.collection.mutable.{Map => MMap}
+import scala.collection.immutable.{Seq, Map, Vector}
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.{TYPE_INT_RGB => nonAlphaImage, TYPE_INT_ARGB => alphaImage}
-import java.net.URL
 import javax.swing.{Icon, ImageIcon}
-import java.util.regex.{Pattern, Matcher}
-import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 
 
 /**
@@ -47,7 +40,7 @@ final case class VisualizationRuleBasedRectangularTilesheet[A](
 		type ImageFrames = Seq[Image]
 		
 		val layers:Map[Int, ImageFrames] = {
-			import JSONRectangularVisualizationRule.{FullOrdering, PriorityOrdering}
+			import JSONRectangularVisualizationRule.{PriorityOrdering}
 			
 			visualizationRules.filter{
 				_.matches(field, x, y, rng)

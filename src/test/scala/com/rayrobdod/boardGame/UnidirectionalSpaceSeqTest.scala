@@ -17,9 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import scala.collection.immutable.{Set, List, Map}
+import org.scalatest.FunSpec
 
 class UnidirectionalSpaceSeqTest extends FunSpec {
 	

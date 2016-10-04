@@ -19,8 +19,7 @@ package com.rayrobdod.boardGame
 
 import java.util.NoSuchElementException
 import scala.collection.immutable.Seq
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 
 class RectangularFieldTest extends FunSpec {
 	

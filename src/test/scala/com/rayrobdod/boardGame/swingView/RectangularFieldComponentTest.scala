@@ -17,15 +17,10 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import javax.swing.Icon
-import com.rayrobdod.swing.SolidColorIcon
+import org.scalatest.FunSpec
 import com.rayrobdod.boardGame.RectangularField
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-
 class RectangularFieldComponentTest extends FunSpec {
-	
 	
 	describe ("4x4 field using a default CheckerboardTilesheet") {
 		val uut = RectangularFieldComponent[Any](

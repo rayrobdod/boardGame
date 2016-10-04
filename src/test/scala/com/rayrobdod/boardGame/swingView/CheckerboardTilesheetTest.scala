@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 import java.awt.{Dimension, Color}
 import javax.swing.Icon;
 import com.rayrobdod.swing.SolidColorIcon

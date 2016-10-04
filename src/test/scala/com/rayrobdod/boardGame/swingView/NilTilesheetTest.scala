@@ -17,11 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color}
-import javax.swing.Icon;
-import com.rayrobdod.swing.SolidColorIcon
+import org.scalatest.FunSpec
 
 class NilTilesheetTest extends FunSpec {
 	describe ("NilTilesheet") {

@@ -17,9 +17,7 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
-import scala.collection.immutable.{Seq, Map}
-import java.awt.Image
+import org.scalatest.FunSpec
 import java.awt.image.BufferedImage
 import java.net.URL
 import com.rayrobdod.json.parser.JsonParser;

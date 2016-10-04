@@ -17,11 +17,10 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import org.scalatest.{FunSuite, FunSpec}
+import org.scalatest.FunSpec
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame.SpaceClassMatcher
-import com.rayrobdod.boardGame.view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 
 class RectangularVisualizationRuleBuilderTest extends FunSpec {
 	

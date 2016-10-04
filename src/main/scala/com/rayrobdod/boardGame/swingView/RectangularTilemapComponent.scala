@@ -18,10 +18,9 @@
 package com.rayrobdod.boardGame.swingView
 
 import java.awt.{Component, Graphics, Dimension}
-import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
+import java.awt.event.{MouseListener, MouseEvent}
 import javax.swing.{JComponent, Icon}
 import scala.collection.immutable.Map
-import scala.util.Random
 import com.rayrobdod.boardGame.RectangularFieldIndex
 
 /**
