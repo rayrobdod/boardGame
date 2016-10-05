@@ -26,7 +26,8 @@ import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
 
 /**
- * A tilesheet that uses the tile's hashcode to determine what color to use
+ * A tilesheet that makes solid color tile images, where the color of each
+ * tile is dependent upon that tile's space's spaceClass's hashcode. 
  * 
  * @version 3.0.0
  * 
@@ -34,7 +35,7 @@ import com.rayrobdod.boardGame.RectangularField
  * @param dim the size of each tile in the checkerboard
  * @note there is no good reason for this to have a type parameter.
  */
-case class HashcodeColorTilesheet(
+final case class HashcodeColorTilesheet(
 		val dim:Dimension = new Dimension(16,16)
 ) extends RectangularTilesheet[Any] {
 	override def name:String = "HashcodeColor";

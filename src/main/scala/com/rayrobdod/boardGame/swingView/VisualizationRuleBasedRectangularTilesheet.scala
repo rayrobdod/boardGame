@@ -28,6 +28,7 @@ import javax.swing.{Icon, ImageIcon}
 
 
 /**
+ * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
  * @version 3.0.0
  */
 final case class VisualizationRuleBasedRectangularTilesheet[A](

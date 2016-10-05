@@ -27,8 +27,8 @@ import com.rayrobdod.boardGame.RectangularField
 /**
  * A tilesheet that creates a Checked pattern.
  * 
- * Spaces where the sum of the indexies is even uses a square of the 'light' color,
- * Spaces where the sum of the indexies is odd uses a square of the 'dark' color
+ * Spaces where the sum of the indexes is even uses a square of the 'light' color,
+ * Spaces where the sum of the indexes is odd uses a square of the 'dark' color
  * 
  * @author Raymond Dodge
  * @version 3.0.0
@@ -37,7 +37,7 @@ import com.rayrobdod.boardGame.RectangularField
  * @param light,dark the two colors the checkerboard should show
  * @param dim the size of each tile in the checkerboard
  */
-case class CheckerboardTilesheet(
+final case class CheckerboardTilesheet(
 		val light:Color = Color.white,
 		val dark:Color = Color.black,
 		val dim:Dimension = new Dimension(16,16)

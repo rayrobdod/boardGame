@@ -24,9 +24,9 @@ import java.nio.charset.StandardCharsets.UTF_8
 import com.rayrobdod.json.parser.JsonParser
 
 /**
- * Like {@link java.util.ServiceLoader}, but for Tilesheets.
+ * Like [[java.util.ServiceLoader]], but for Tilesheets.
  *
- * Is willing to load either resources using 'path/to/file' or scala objects 'package.name.object'
+ * Is capable of loading either resources using 'path/to/file' or scala objects using 'package.name.object'
  * 
  * @author Raymond Dodge
  * @version 3.0.0
@@ -39,8 +39,7 @@ final class RectangularTilesheetLoader[SpaceClass](
 	
 	def iterator:Iterator[RectangularTilesheet[SpaceClass]] = new MyIterator()
 	
-	private class MyIterator() extends Iterator[RectangularTilesheet[SpaceClass]]
-	{
+	private class MyIterator extends Iterator[RectangularTilesheet[SpaceClass]] {
 		private var current:Int = 0;
 		private val readLines = try {
 			readServices(service, loader);

@@ -19,19 +19,17 @@ package com.rayrobdod.boardGame
 package swingView
 
 import scala.util.Random
-import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map}
 import java.awt.Image
-import java.util.regex.{Pattern, Matcher}
-import javax.script.{Bindings, SimpleBindings, ScriptEngineManager}
 import com.rayrobdod.json.builder.{Builder, MapBuilder}
-import JSONRectangularVisualizationRule.{asInt, asMapOfFrameIndexies, asIndexTranslationFunction}
+import JSONRectangularVisualizationRule.{asMapOfFrameIndexies, asIndexTranslationFunction}
 import view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 import view.CoordinateFunctionSpecifierParser.CoordinateFunction
 
 
 
 /**
+ * A Builder of RectangularVisualizationRule
  * @version next
  */
 class RectangularVisualziationRuleBuilder[A](
@@ -55,6 +53,7 @@ class RectangularVisualziationRuleBuilder[A](
 
 
 /**
+ * A RectangularVisualizationRule where each of the overridable methods in represented by one of the constructor parameters
  * @version next
  */
 final case class ParamaterizedRectangularVisualizationRule[A] (
@@ -93,10 +92,9 @@ final case class ParamaterizedRectangularVisualizationRule[A] (
 /**
  * @version next
  */
-object JSONRectangularVisualizationRule
+private[swingView] object JSONRectangularVisualizationRule
 {
-	// TODO: see how much turning this into a function will help
-	def asInt(x:Any):Int = x match {
+	private[this] def asInt(x:Any):Int = x match {
 		case y:Int => y
 		case y:String => Integer.parseInt(y)
 		case y:Integer => y

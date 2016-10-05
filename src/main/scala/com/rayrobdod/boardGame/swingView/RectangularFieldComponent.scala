@@ -22,9 +22,8 @@ import javax.swing.Icon
 import com.rayrobdod.boardGame.RectangularField
 
 
-
-
 /**
+ * A function that creates a pair of RectangularTilemapComponent that displays a specified field using a specified tilesheet
  * @version 3.0.0
  */
 object RectangularFieldComponent {

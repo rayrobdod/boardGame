@@ -38,9 +38,10 @@ trait RectangularTilesheet[-A]
 	 * @param field the field on the space to lookup
 	 * @param x the x coordinate of the space to lookup
 	 * @param y the y coordinate of the space to lookup
-	 * @param rng the 
-	 * @return # the part of the image that goes below the movable controlled tokens
-			# the part of the image that goes above the movable controlled tokens
+	 * @param rng the rng
+	 * @return 
+		- the part of the image that goes below the movable controlled tokens
+		- the part of the image that goes above the movable controlled tokens
 	 */
 	def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon)
 }

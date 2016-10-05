@@ -31,8 +31,13 @@ import com.rayrobdod.boardGame.swingView._
 
 
 /**
+ * Holds input fields that accept user input.
  * @since 3.0.0
  * @version next
+ * @constructor
+ * @param initialTilesheetUrl the initial value for the tilesheet input field
+ * @param initialFieldUrl the initial value for the field input field
+ * @param initialRand the initial value for the rng input field
  */
 final class InputFields(
 		initialTilesheetUrl:String,

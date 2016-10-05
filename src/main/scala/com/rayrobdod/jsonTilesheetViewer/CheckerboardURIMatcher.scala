@@ -21,6 +21,7 @@ import java.awt.{Color, Dimension}
 import com.rayrobdod.boardGame.swingView.CheckerboardTilesheet
 
 /**
+ * A method that converts a uri string into a matching CheckerboardTilesheet
  * @version next
  */
 object CheckerboardURIMatcher {

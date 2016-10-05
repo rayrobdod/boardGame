@@ -41,6 +41,7 @@ package boardGame {
 	
 	/** A boolean match against a class */
 	trait SpaceClassMatcher[-SpaceClass] {
+		/** Returns true if the provided space class fits the requirements of this matcher */
 		def unapply(sc:SpaceClass):Boolean
 	}
 	

@@ -25,7 +25,7 @@ import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
 
 /**
- * A tilesheet for testing randoms. Isolating the problem.
+ * A tilesheet for testing randoms. Created to help isolate problems with the Random parameter
  * 
  * @version next
  */

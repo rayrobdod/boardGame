@@ -25,8 +25,10 @@ import scala.annotation.tailrec
 package object swingView {
 	type IndexConverter = Function1[(Int, Int), (Int, Int)]
 	
+	/** calculates the Least Common Multiple of two values */
 	def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
 	
+	/** calculates the Greatest Common Denominator of two values */
 	@tailrec def gcd(x:Int, y:Int):Int = {
 		if (y == 1) {1} else
 		if (x == 1) {1} else
@@ -50,6 +52,7 @@ package object swingView {
 
 package swingView {
 	trait SpaceClassMatcherFactory[-SpaceClass] {
+		/** Returns the SpaceClassMatcher that the provided reference string represents */
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
 	

@@ -28,6 +28,9 @@ import com.rayrobdod.boardGame.swingView._
 
 
 /**
+ * A simple program using boardGame to display the results of applying a
+ * rectangular tilesheet to a rectangular map
+ * 
  * @version next
  */
 object JSONTilesheetViewer {

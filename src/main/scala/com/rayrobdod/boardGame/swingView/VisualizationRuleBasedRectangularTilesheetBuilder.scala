@@ -29,7 +29,12 @@ import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
 
-class VisualizationRuleBasedRectangularTilesheetBuilder[A](
+/**
+ * A Builder of VisualizationRuleBasedRectangularTilesheet
+ * @constructor
+ * @param baseUrl the url to resolve relative urls against
+ */
+final class VisualizationRuleBasedRectangularTilesheetBuilder[A](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[A]
 ) extends Builder[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A]] {
@@ -47,7 +52,13 @@ class VisualizationRuleBasedRectangularTilesheetBuilder[A](
 }
 
 object VisualizationRuleBasedRectangularTilesheetBuilder {
-	case class Delayed[A] (
+	/**
+	 * A case class that collects properties about a VisualizationRuleBasedRectangularTilesheet,
+	 * and has a method to construct one based on the properties provided.
+	 * Done because a logical "frameImages" depends on three different json properties
+	 * and eagerly dealing with those may be inefficient.
+	 */
+	final case class Delayed[A] (
 		classMap:SpaceClassMatcherFactory[A],
 		sheetUrl:URL = new URL("http://localhost:80/"),
 		tileWidth:Int = 1,
