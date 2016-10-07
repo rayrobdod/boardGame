@@ -25,8 +25,9 @@ import java.nio.charset.StandardCharsets.UTF_8
 import javax.imageio.ImageIO
 import scala.collection.immutable.Seq
 import com.rayrobdod.util.BlitzAnimImage
-import com.rayrobdod.json.parser.JsonParser
-import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
+import com.rayrobdod.json.builder.{Builder, SeqBuilder}
+import com.rayrobdod.json.parser.{Parser, JsonParser}
+import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
 
 /**
@@ -37,18 +38,26 @@ import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
 final class VisualizationRuleBasedRectangularTilesheetBuilder[A](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[A]
-) extends Builder[VisualizationRuleBasedRectangularTilesheetBuilder.Delayed[A]] {
+) extends Builder[StringOrInt, JsonValue, Delayed[A]] {
 	def init:Delayed[A] = new Delayed[A](classMap)
-	def apply(a:Delayed[A], key:String, value:Any):Delayed[A] = key match {
-		case "tiles" => a.copy(sheetUrl = new URL(baseUrl, value.toString)) 
-		case "tileWidth" => a.copy(tileWidth = value.asInstanceOf[Long].intValue)
-		case "tileHeight" => a.copy(tileHeight = value.asInstanceOf[Long].intValue)
-		case "rules" => a.copy(rules = new URL(baseUrl, value.toString))
-		case "name" => a.copy(name = value.toString)
-		case _ => a
+	def apply[I](a:Delayed[A], key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, I]):Either[(String, Int), Delayed[A]] = key match {
+		case StringOrInt.Left("tiles") => {
+			parser.parsePrimitive(input).right.flatMap{_.stringToEither{value => Right(a.copy(sheetUrl = new URL(baseUrl, value)))}}
+		}
+		case StringOrInt.Left("tileWidth") => {
+			parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => Right(a.copy(tileWidth = value))}}
+		}
+		case StringOrInt.Left("tileHeight") => {
+			parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => Right(a.copy(tileHeight = value))}}
+		}
+		case StringOrInt.Left("rules") => {
+			parser.parsePrimitive(input).right.flatMap{_.stringToEither{value => Right(a.copy(rules = new URL(baseUrl, value)))}}
+		}
+		case StringOrInt.Left("name") => {
+			parser.parsePrimitive(input).right.flatMap{_.stringToEither{value => Right(a.copy(name = value))}}
+		}
+		case _ => Right(a)
 	}
-	def childBuilder(key:String):Builder[_] = new MapBuilder
-	override val resultType:Class[Delayed[A]] = classOf[Delayed[A]]
 }
 
 object VisualizationRuleBasedRectangularTilesheetBuilder {
@@ -83,7 +92,11 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 			var r:Reader = new java.io.StringReader("{}")
 			try {
 				r = new java.io.InputStreamReader(rules.openStream(), UTF_8)
-				new JsonParser(new SeqBuilder(b)).parse(r).map{b.resultType.cast(_)}
+				new JsonParser().parse(new SeqBuilder(b), r).fold(
+					{c => c},
+					{p => throw new java.text.ParseException("Parsed value: " + p.toString, 0)},
+					{(msg, idx) => throw new java.text.ParseException(msg, idx)}
+				)
 			} finally {
 				r.close()
 			}

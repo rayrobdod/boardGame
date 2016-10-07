@@ -6,7 +6,7 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
 
-version := "3.0.0-SNAPSHOT"
+version := "3.1.0-SNAPSHOT"
 
 scalaVersion := "2.10.6"
 
@@ -23,7 +23,7 @@ mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "2.0")
+libraryDependencies += ("com.rayrobdod" %% "json" % "3.0-RC2")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 

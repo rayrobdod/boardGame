@@ -72,7 +72,11 @@ final class RectangularTilesheetLoader[SpaceClass](
 					var r:java.io.Reader = new java.io.StringReader("{}")
 					try {
 						r = new java.io.InputStreamReader(lineURL.openStream(), UTF_8)
-						new JsonParser(b).parse(r).apply
+						new JsonParser().parse(b, r).fold(
+							{c => c.apply},
+							{p => throw new java.text.ParseException("Parsed value: " + p.toString, 0)},
+							{(msg, idx) => throw new java.text.ParseException(msg, idx)}
+						)
 					} finally {
 						r.close()
 					}

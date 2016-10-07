@@ -21,6 +21,7 @@ import org.scalatest.FunSpec
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame.SpaceClassMatcher
+import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class RectangularVisualizationRuleBuilderTest extends FunSpec {
 	
@@ -34,10 +35,10 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 					"(1,1)":"b"
 				}
 			}"""
-			val res = new JsonParser(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)).parse(src)
+			val res = new JsonParser().parse(new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory), src)
 			
 			res match {
-				case ParamaterizedRectangularVisualizationRule(
+				case Complex(ParamaterizedRectangularVisualizationRule(
 						MapUnapplyer(),
 						5,
 						indexFun,
@@ -45,7 +46,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 							Tuple2(IndexConverter(0,0), MySpaceClassMatcher("a")),
 							Tuple2(IndexConverter(1,1), MySpaceClassMatcher("b"))
 						)
-				) => assert(indexFun.toString == "(((x + y) % 2) == 0)")
+				)) => assert(indexFun.toString == "(((x + y) % 2) == 0)")
 				case _ => fail("res does not match")
 			}
 		}
