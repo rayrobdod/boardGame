@@ -1,5 +1,5 @@
 # BoardGame
-[![Build Status](https://travis-ci.org/rayrobdod/boardGame.svg?branch=master)](https://travis-ci.org/rayrobdod/json)
+[![Build Status](https://travis-ci.org/rayrobdod/boardGame.svg?branch=master)](https://travis-ci.org/rayrobdod/boardGame)
 [![Coverage Status](https://coveralls.io/repos/rayrobdod/boardGame/badge.svg?branch=master&service=github)](https://coveralls.io/github/rayrobdod/boardGame?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/vtv458lxe8cd54rv/branch/master?svg=true)](https://ci.appveyor.com/project/rayrobdod/boardgame/branch/master)
 
