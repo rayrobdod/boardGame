@@ -24,7 +24,6 @@ import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
 import javax.imageio.ImageIO
 import scala.collection.immutable.Seq
-import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder}
 import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
@@ -70,16 +69,13 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 			new VisualizationRuleBasedRectangularTilesheet(name, visualizationRules)
 		}
 		
-		private def frameImages:BlitzAnimImage = {
+		private[this] def frameImages:Seq[BufferedImage] = {
 			val sheetImage:BufferedImage = ImageIO.read(sheetUrl)
-			val tilesX = sheetImage.getWidth / tileWidth
-			val tilesY = sheetImage.getHeight / tileHeight
-			
-			new BlitzAnimImage(sheetImage, tileWidth, tileHeight, 0, tilesX * tilesY)
+			splitImageIntoTiles(sheetImage, tileWidth, tileHeight)
 		}
 		
-		private def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[A]] = {
-			val b = new RectangularVisualziationRuleBuilder[A](Seq.empty ++ frameImages.getImages, classMap)
+		private[this] def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[A]] = {
+			val b = new RectangularVisualziationRuleBuilder[A](frameImages, classMap)
 			var r:Reader = new java.io.StringReader("{}")
 			try {
 				r = new java.io.InputStreamReader(rules.openStream(), UTF_8)
@@ -89,5 +85,29 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 			}
 		}
 	} 
+	
+	/**
+	 * Take an input `image` and split said image into a series of `tileWidth`×`tileHeight` sized subimages
+	 */
+	private[this] def splitImageIntoTiles(image:BufferedImage, tileWidth:Int, tileHeight:Int):Seq[BufferedImage] = {
+		assert(tileWidth > 0)
+		assert(tileHeight > 0)
+		
+		val imageWidth = image.getWidth(null)
+		val imageHeight = image.getHeight(null)
+		
+		assert(imageWidth > 0)
+		assert(imageHeight > 0)
+		
+		val tilesInImageX = imageWidth / tileWidth
+		val tilesInImageY = imageHeight / tileHeight
+		
+		for (
+			frameX <- 0 until tilesInImageX;
+			frameY <- 0 until tilesInImageY
+		) yield {
+			image.getSubimage(frameX * tileWidth, frameY * tileHeight, tileWidth, tileHeight);
+		}
+	}
 }
 

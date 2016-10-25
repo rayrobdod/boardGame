@@ -6,7 +6,7 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
 
-version := "3.0.0-SNAPSHOT"
+version := "3.1.0-SNAPSHOT"
 
 scalaVersion := "2.10.6"
 
