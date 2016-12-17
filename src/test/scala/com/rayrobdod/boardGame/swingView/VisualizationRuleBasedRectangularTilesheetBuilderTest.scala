@@ -22,19 +22,20 @@ import java.awt.image.BufferedImage
 import java.net.URL
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.boardGame.SpaceClassMatcher
+import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 	
 	describe("VisualizationRuleBasedRectangularTilesheetBuilder + JsonParser") {
 		it ("do a thing") {
-			val expected = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
+			val expected = Complex(new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
 				sheetUrl = new URL("http://localhost/tiles"),
 				tileWidth = 32,
 				tileHeight = 48,
 				rules = new URL("http://localhost/rules"),
 				name = "name"
-			)
+			))
 			val src = """{
 				"tiles":"tiles",
 				"tileWidth":32,
@@ -42,7 +43,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 				"rules":"rules",
 				"name":"name"
 			}"""
-			val result = new JsonParser(new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory)).parse(src)
+			val result = new JsonParser().parse(new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory), src)
 			
 			assertResult(expected){result}
 		}
