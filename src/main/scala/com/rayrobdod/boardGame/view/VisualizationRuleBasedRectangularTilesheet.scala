@@ -22,12 +22,10 @@ import scala.util.Random
 import scala.{Function0 => Future}
 import scala.annotation.tailrec
 import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
-import java.net.URL
-import java.util.regex.{Pattern, Matcher}
-import javax.script.{Bindings, SimpleBindings, ScriptEngineManager, Compilable, CompiledScript}
 
 
 /**
+ * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
  * @version 3.0.0
  */
 final case class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](

@@ -17,17 +17,17 @@
 */
 package com.rayrobdod.boardGame.view
 
-import org.scalatest.{FunSuite, FunSpec}
-import scala.collection.immutable.{Seq, Map}
-import java.awt.Image
+import org.scalatest.FunSpec
 import java.awt.image.BufferedImage
 import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
+import scala.collection.immutable.Seq
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.json.union.ParserRetVal.Complex
 import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.swingView
+import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 	
@@ -75,8 +75,8 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 			
 			assertResult("name"){result.name}
 			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[String, _]]}
-			assertResult("x == 0"){resRules(0).indexEquation}
-			assertResult("true"){resRules(1).indexEquation}
+			assertResult("(x == 0)"){resRules(0).indexEquation.toString}
+			assertResult("true"){resRules(1).indexEquation.toString}
 			assertResult(java.awt.Color.white.getRGB){resRules(0).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
 			assertResult(java.awt.Color.black.getRGB){resRules(1).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
 		}

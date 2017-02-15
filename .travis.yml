@@ -9,27 +9,16 @@ jdk:
    - oraclejdk7
    - openjdk7
 
-env:
-   - SCOVERAGE_DISABLE=true
-
 matrix:
    include:
-      - scala: 2.10.6
-        jdk: oraclejdk8
-        env: SCOVERAGE_DISABLE=false
-      - scala: 2.12.0-RC1
-        jdk: oraclejdk8
-        env: SCOVERAGE_DISABLE=true
-   exclude:
-      - scala: 2.10.6
-        jdk: oraclejdk8
-        env: SCOVERAGE_DISABLE=true
+      #- scala: 2.12.1
+      #  jdk: oraclejdk8
 
 install:
    - sbt update
 
 script:
-  - sbt -Dscoverage.disable=$SCOVERAGE_DISABLE set\ JFX.devKit\ :=\ JFX.jdk\(\"$JAVA_HOME\"\) set\ testOptions\ in\ Test\ +=\ Tests.Argument\(\"-l\"\,\ \"com.rayrobdod.boardGame.javafxView.FxTests\"\) ++$TRAVIS_SCALA_VERSION coverage test
+  - sbt set\ JFX.devKit\ :=\ JFX.jdk\(\"$JAVA_HOME\"\) set\ testOptions\ in\ Test\ +=\ Tests.Argument\(\"-l\"\,\ \"com.rayrobdod.boardGame.javafxView.FxTests\"\) ++$TRAVIS_SCALA_VERSION coverage test
 
 after_success:
-  - sbt -Dscoverage.disable=$SCOVERAGE_DISABLE ++$TRAVIS_SCALA_VERSION coverageReport coveralls
+  - sbt ++$TRAVIS_SCALA_VERSION coverageReport coveralls

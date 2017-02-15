@@ -23,6 +23,7 @@ import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.{JsonParser, IdentityParser}
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import com.rayrobdod.boardGame.SpaceClassMatcher
+import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class RectangularVisualizationRuleBuilderTest extends FunSpec {
 	
@@ -31,37 +32,37 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			val dut = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)
 			
 			it ("Accepts positive integer value") {
-				assertResult(4){dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[String, JsonValue]).right.get.tileRand}
+				assertResult(4){dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[JsonValue]).right.get.tileRand}
 			}
 			it ("Rejects negative integer value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(-4), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(-4), new IdentityParser[JsonValue]).left.get._2}
 			}
 			it ("Rejects zero value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(0), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(0), new IdentityParser[JsonValue]).left.get._2}
 			}
 			it ("Rejects float value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(1.5), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(1.5), new IdentityParser[JsonValue]).left.get._2}
 			}
 			it ("Rejects String value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue("abc"), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue("abc"), new IdentityParser[JsonValue]).left.get._2}
 			}
 		}
 		describe ("indexies") {
 			val dut = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)
 			
 			it ("Accepts string") {
-				assertResult("x + y"){dut.apply(dut.init, "indexies", JsonValue("x + y"), new IdentityParser[String, JsonValue]).right.get.indexEquation}
+				assertResult("(x == y)"){dut.apply(dut.init, "indexies", JsonValue("x == y"), new IdentityParser[JsonValue]).right.get.indexEquation.toString}
 			}
 			it ("Rejects not-string") {
-				assertResult(0){dut.apply(dut.init, "indexies", JsonValue(54), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "indexies", JsonValue(54), new IdentityParser[JsonValue]).left.get._2}
 			}
 		}
 		describe ("surroundingSpaces") {
 			val dut = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)
-			val jsonParser = new JsonParser().mapKey[String](StringOrInt.unwrapToString)
+			val jsonParser = new JsonParser()
 			
 			it ("Rejects primitive") {
-				assertResult(0){dut.apply(dut.init, "surroundingSpaces", JsonValue(54), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "surroundingSpaces", JsonValue(54), new IdentityParser[JsonValue]).left.get._2}
 			}
 			it ("Accepts a correctly-formatted string -> string pair") {
 				val res = dut.apply[Iterable[Char]](dut.init, "surroundingSpaces", """{ "(0,0)": "abc" }""", jsonParser).right.get.surroundingTiles
@@ -84,10 +85,10 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 		describe ("tiles") {
 			val tiles = ('a' to 'z').map{_.toString}
 			val dut = new RectangularVisualziationRuleBuilder(tiles, MySpaceClassMatcherFactory)
-			val jsonParser = new JsonParser().mapKey[String](StringOrInt.unwrapToString)
+			val jsonParser = new JsonParser()
 			
 			it ("Accepts a primitive int value, treating it as a not-animated tile at some negative layer") {
-				val res = dut.apply(dut.init, "tiles", JsonValue(3), new IdentityParser[String, JsonValue]).right.get.iconParts
+				val res = dut.apply(dut.init, "tiles", JsonValue(3), new IdentityParser[JsonValue]).right.get.iconParts
 				
 				assert(res.size == 1)
 				val ((layer, Seq(frame))) = res.head
@@ -110,10 +111,10 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 				assertResult(Map(1 -> Seq("b"), 2 -> Seq("c"))){res}
 			}
 			it ("Rejects a primitive string value") {
-				assertResult(0){dut.apply(dut.init, "tiles", JsonValue("abc"), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "tiles", JsonValue("abc"), new IdentityParser[JsonValue]).left.get._2}
 			}
 			it ("Rejects a primitive intable string value") {
-				assertResult(0){dut.apply(dut.init, "tiles", JsonValue("43"), new IdentityParser[String, JsonValue]).left.get._2}
+				assertResult(0){dut.apply(dut.init, "tiles", JsonValue("43"), new IdentityParser[JsonValue]).left.get._2}
 			}
 			ignore ("Rejects a sequence-of-strings") {
 				// throws instead
@@ -135,18 +136,18 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			val builder = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory).mapKey[StringOrInt](StringOrInt.unwrapToString)
 			val res = new JsonParser().parse(builder, src).fold({x => x}, {x => throw new IllegalArgumentException("Was primitiive" + x)}, {(s,i) => throw new java.text.ParseException(s,i)})
 			
-			assert (res match {
+			res match {
 				case ParamaterizedRectangularVisualizationRule(
 						MapUnapplyer(),
 						5,
-						"(x + y) % 2 == 0",
+						indexFun,
 						MapUnapplyer(
 							Tuple2(IndexConverter(0,0), MySpaceClassMatcher("a")),
 							Tuple2(IndexConverter(1,1), MySpaceClassMatcher("b"))
 						)
-				) => true
-				case _ => false
-			})
+				) => assert(indexFun.toString == "(((x + y) % 2) == 0)")
+				case _ => fail("res does not match")
+			}
 		}
 	}
 	

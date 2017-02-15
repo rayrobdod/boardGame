@@ -24,9 +24,16 @@ package object boardGame {
 	type RectangularFieldIndex = Tuple2[Int, Int]
 	type RectangularField[A] = Map[RectangularFieldIndex, StrictRectangularSpace[A]]
 	
-	/** A SpaceClassMatcher that always returns true */
+	/**
+	 * A SpaceClassMatcher that always returns true
+	 * @version next
+	 */
 	val ConstTrueSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(true)
-	/** A SpaceClassMatcher that always returns false */
+	
+	/**
+	 * A SpaceClassMatcher that always returns false
+	 * @version next
+	 */
 	val ConstFalseSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(false)
 }
 
@@ -34,11 +41,15 @@ package boardGame {
 	
 	/** A boolean match against a class */
 	trait SpaceClassMatcher[-SpaceClass] {
+		/** Returns true if the provided space class fits the requirements of this matcher */
 		def unapply(sc:SpaceClass):Boolean
 	}
 	
-	/** A SpaceClassMatcher that always returns the specified value */
-	final class ConstSpaceClassMatcher(value:Boolean) extends SpaceClassMatcher[Any] {
+	/**
+	 * A SpaceClassMatcher that always returns the specified value
+	 * @since next
+	 */
+	private[this] final class ConstSpaceClassMatcher(value:Boolean) extends SpaceClassMatcher[Any] {
 		def unapply(sc:Any):Boolean = value
 	}
 }

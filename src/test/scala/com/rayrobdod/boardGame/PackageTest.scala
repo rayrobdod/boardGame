@@ -17,7 +17,6 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.Seq
 import org.scalatest.FunSpec
 
 class PackageTest extends FunSpec {

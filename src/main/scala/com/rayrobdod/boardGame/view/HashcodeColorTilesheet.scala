@@ -21,6 +21,16 @@ package view
 import scala.collection.immutable.BitSet
 import scala.util.Random
 
+/**
+ * A tilesheet that makes solid color tile images, where the color of each
+ * tile is dependent upon that tile's space's spaceClass's hashcode. 
+ * 
+ * @version 3.0.0
+ * 
+ * @constructor Creates a CheckerboardTilesheet
+ * @param dim the size of each tile in the checkerboard
+ * @note there is no good reason for this to have a type parameter.
+ */
 final class HashcodeColorTilesheet[Icon](
 	transparentIcon:Icon,
 	colorToIcon:Function1[java.awt.Color, Icon]

@@ -23,12 +23,9 @@ import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 import com.rayrobdod.boardGame.view.Swing._
-
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 
 class RectangularFieldComponentTest extends FunSpec {
-	
 	
 	describe ("4x4 field using a default CheckerboardTilesheet") {
 		val uut = RectangularFieldComponent[Any](

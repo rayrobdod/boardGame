@@ -31,9 +31,9 @@ environment:
   - SCALA_VERSION: 2.11.8
     JAVA_HOME: C:\Program Files (x86)\Java\jdk1.7.0
     SBT_CROSS_TARGET: scala-2.11
-  - SCALA_VERSION: 2.12.0-RC1
-    JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
-    SBT_CROSS_TARGET: scala-2.12.0-RC1
+  #- SCALA_VERSION: 2.12.1
+  #  JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+  #  SBT_CROSS_TARGET: scala-2.12
 build_script:
   - '%SBT_CMD% "set scalacOptions in doc in Compile ++= Seq(""-diagrams-dot-path"", ""C:/graphviz/release/bin/dot.exe"")" "set publishTo := Some(Resolver.file(""file"", baseDirectory.value / ""publish""))" "set JFX.devKit := JFX.jdk(""""""%JAVA_HOME%"""""")" ++%SCALA_VERSION% compile publish'
 test_script:
@@ -48,8 +48,3 @@ test_script:
 artifacts:
   - path: publish
     name: sbt_publish_directory
-cache:
-  - C:\sbt\
-  - C:\graphviz\
-  - C:\Users\appveyor\.m2
-  - C:\Users\appveyor\.ivy2

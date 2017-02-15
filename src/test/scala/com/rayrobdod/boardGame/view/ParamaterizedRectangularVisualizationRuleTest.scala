@@ -17,14 +17,14 @@
 */
 package com.rayrobdod.boardGame.view
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 import java.awt.Image
 import java.awt.image.ImageObserver
 import scala.collection.immutable.Seq
 import scala.util.Random
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 
 class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	
@@ -213,7 +213,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("indexEquation = 'x == 0'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "x == 0")
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("x == 0").right.get)
 		
 		it ("indexiesMatch is true when x is 0") {
 			assert(dut.indexiesMatch(0, -1, -1, -1))
@@ -229,7 +229,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("indexEquation = 'x % 2 == 0'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "x % 2 == 0")
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("x % 2 == 0").right.get)
 		
 		it ("indexiesMatch is true when x is 0") {
 			assert(dut.indexiesMatch(0, -1, -1, -1))
@@ -245,7 +245,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("indexEquation = 'x == 2 && y == 4'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "x == 2 && y == 4")
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("x == 2 && y == 4").right.get)
 		
 		it ("indexiesMatch is true when x is 2 and y is 4") {
 			assert(dut.indexiesMatch(2, 4, -1, -1))
@@ -258,7 +258,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("indexEquation = 'w == 2 && h == 4'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = "w == 2 && h == 4")
+		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("w == 2 && h == 4").right.get)
 		
 		it ("indexiesMatch is true when w is 2 and h is 4") {
 			assert(dut.indexiesMatch(-1, -1, 2, 4))

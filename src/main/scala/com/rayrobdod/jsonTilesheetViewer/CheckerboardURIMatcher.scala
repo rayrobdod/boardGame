@@ -20,6 +20,10 @@ package com.rayrobdod.jsonTilesheetViewer
 import java.awt.{Color, Dimension}
 import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 
+/**
+ * A method that converts a uri string into a matching CheckerboardTilesheet
+ * @version next
+ */
 object CheckerboardURIMatcher {
 	
 	def unapply(ssp:String):Option[CheckerboardTilesheetDelay] = {

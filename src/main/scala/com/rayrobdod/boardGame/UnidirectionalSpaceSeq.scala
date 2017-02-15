@@ -18,7 +18,6 @@
 package com.rayrobdod.boardGame
 
 import scala.collection.immutable.LinearSeq
-import scala.collection.LinearSeqOptimized
 
 /**
  * Noticed that the UnaryMovement Spaces look like linked list nodes

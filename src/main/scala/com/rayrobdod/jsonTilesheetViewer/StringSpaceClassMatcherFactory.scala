@@ -21,26 +21,28 @@ import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
 
 /**
- * A factory that produces matchers from strings, where:
+ * A SpaceClassMatcherFactory for strings where
  * 
- * # "*" matches everything
- * # "!whatever" matches everything except "whatever"
- * # "whatever" matches only "whatever"
+  - "*" matches everything
+  - "!whatever" matches everything except "whatever"
+  - "whatever" matches only "whatever"
  * 
  * @since 3.0.0
  */
 object StringSpaceClassMatcherFactory extends 
 		com.rayrobdod.boardGame.view.SpaceClassMatcherFactory[SpaceClass] {
 	
-	def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
+	override def apply(reference:String):SpaceClassMatcher[SpaceClass] = {
 		if (reference == "*") {ConstTrueSpaceClassMatcher}
 		else if (reference.head == '!') {new UnequalsMatcher(reference.tail)}
 		else {new EqualsMatcher(reference)}
 	}
 	
+	/** A SpaceClassMatcher which returns true if the reference equals the space class */
 	case class EqualsMatcher(val reference:String) extends SpaceClassMatcher[SpaceClass] {
 		def unapply(sc:SpaceClass):Boolean = (sc == reference)
 	}
+	/** A SpaceClassMatcher which returns true if the reference does not equal the space class */
 	case class UnequalsMatcher(val reference:String) extends SpaceClassMatcher[SpaceClass] {
 		def unapply(sc:SpaceClass):Boolean = (sc != reference)
 	}

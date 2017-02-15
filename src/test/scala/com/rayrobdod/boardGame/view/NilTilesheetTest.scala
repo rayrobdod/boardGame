@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.boardGame.view
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 
 class NilTilesheetTest extends FunSpec {
 	describe ("NilTilesheet") {

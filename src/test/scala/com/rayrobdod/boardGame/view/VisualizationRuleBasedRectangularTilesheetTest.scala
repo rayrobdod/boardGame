@@ -17,16 +17,16 @@
 */
 package com.rayrobdod.boardGame.view
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color}
+import org.scalatest.FunSpec
+import java.awt.{Color}
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import javax.swing.Icon
 import scala.util.Random
-import scala.collection.immutable.{Seq, Set, Map}
+import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 import com.rayrobdod.boardGame.view.Swing.compostLayers
 
 class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
@@ -143,7 +143,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 					),
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(topGreen)),
-						indexEquation = "x == 0"
+						indexEquation = coordinateFunctionParser.parse("x == 0").right.get
 					)
 				),
 				compostLayers
@@ -162,7 +162,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 					),
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(solidBlue)),
-						indexEquation = "x == 1"
+						indexEquation = coordinateFunctionParser.parse("x == 1").right.get
 					)
 				),
 				compostLayers

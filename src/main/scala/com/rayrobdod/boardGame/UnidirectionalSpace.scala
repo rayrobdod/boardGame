@@ -17,7 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.{Set, List, Map}
+import scala.collection.immutable.{Set}
 
 
 /**
@@ -57,8 +57,7 @@ final class UnidirectionalSpace[SpaceClass](override val typeOfSpace:SpaceClass,
 				if (actualCost > availableCost) {None}
 				else if (actualCost == availableCost) {Some(x)}
 				else {x.spaceAfter(availableCost - actualCost, costFunction)}
-			}.flatten.headOption
-			// `headOption` because scala_2.9.
+			}.flatten
 		}
 	}
 }

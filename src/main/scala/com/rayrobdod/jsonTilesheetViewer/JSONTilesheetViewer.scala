@@ -18,16 +18,10 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import scala.collection.immutable.Seq
-import scala.util.Random
 
-import java.net.{URL, URI}
-import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
+import java.awt.{BorderLayout}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JScrollPane}
-
-import java.io.File
-import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.file.{Path, Paths, Files}
 
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
@@ -35,7 +29,10 @@ import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
- * @version 3.0.0
+ * A simple program using boardGame to display the results of applying a
+ * rectangular tilesheet to a rectangular map
+ * 
+ * @version next
  */
 object JsonTilesheetViewer {
 	def main(args:Array[String]):Unit = {

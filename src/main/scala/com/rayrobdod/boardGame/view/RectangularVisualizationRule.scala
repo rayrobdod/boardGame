@@ -22,7 +22,7 @@ import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.RectangularField
 
 /**
- * A single rule for matching spaces on a rectangular field
+ * A single rule for associating images with spots on a RectangularField
  * 
  * @since next
  * @tparam SpaceClass the types of spaces to deal with
@@ -55,7 +55,7 @@ abstract class RectangularVisualizationRule[SpaceClass, IconPart] {
 	}
 	
 	/**
-	 * A ranking indicating which rules should take precidence should multiple rules
+	 * A ranking indicating which rules should take precedence should multiple rules
 	 * apply at the same time.
 	 * A rule with a higher priority overrides a rule with a lower priority
 	 */

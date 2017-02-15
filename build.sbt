@@ -6,12 +6,11 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
 
-version := "3.0.0-SNAPSHOT"
+version := "3.1.0-SNAPSHOT"
 
 scalaVersion := "2.10.6"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8") ++
-    (if (System.getProperty("scoverage.disable", "") != "true") {Nil} else {Seq("2.12.0-RC1")})
+crossScalaVersions := Seq("2.10.6", "2.11.8" /* , "2.12.1" */)
 
 // heavy resource use, including Services
 fork := true
@@ -23,7 +22,7 @@ mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTiles
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
-libraryDependencies += ("com.rayrobdod" %% "json" % "3.0-RC1")
+libraryDependencies += ("com.rayrobdod" %% "json" % "3.0.1")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
 
@@ -31,9 +30,13 @@ javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
+libraryDependencies += "com.lihaoyi" %% "fastparse" % "0.4.2"
+
 javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-target:jvm-1.7")
+
+scalacOptions ++= (if (scalaVersion.value != "2.11.8") {Nil} else {Seq("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint:_", "-Xlint:-adapted-args")})
 
 scalacOptions in doc in Compile ++= Seq(
 		"-doc-title", name.value,
@@ -66,35 +69,12 @@ packageOptions in (Compile, packageBin) += {
 }
 
 
-if (System.getProperty("scoverage.disable", "") == "true") {
-	// provide no-op replacements for disabled tasks
-	TaskKey[Unit]("coverage") := {}
-} else {
-	TaskKey[Unit]("asfdsdfasdf") := {}
-}
 
-if (System.getProperty("scoverage.disable", "") == "true") {
-	// provide no-op replacements for disabled tasks
-	TaskKey[Unit]("coveralls") := {}
-} else {
-	TaskKey[Unit]("asfdsdfasdf") := {}
-}
-
-if (System.getProperty("scoverage.disable", "") == "true") {
-	// provide no-op replacements for disabled tasks
-	TaskKey[Unit]("coverageReport") := {}
-} else {
-	TaskKey[Unit]("asfdsdfasdf") := {}
-}
-
-
-
-// license nonsense
 licenses += (("GPLv3 or later", new URL("http://www.gnu.org/licenses/") ))
 
-mappings in (Compile, packageSrc) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
+mappings in (Compile, packageSrc) += (baseDirectory.value / "LICENSE.txt", "LICENSE.txt" )
 
-mappings in (Compile, packageBin) <+= baseDirectory.map{(b) => (new File(b, "LICENSE.txt"), "LICENSE.txt" )}
+mappings in (Compile, packageBin) += (baseDirectory.value / "LICENSE.txt", "LICENSE.txt" )
 
 
 
@@ -102,7 +82,7 @@ proguardSettings
 
 ProguardKeys.proguardVersion in Proguard := "5.2.1"
 
-ProguardKeys.options in Proguard <+= (baseDirectory in Compile).map{"-include '"+_+"/viewer.proguard'"}
+ProguardKeys.options in Proguard += "-include '" + baseDirectory.value.toString + "/viewer.proguard'"
 
 ProguardKeys.inputFilter in Proguard := { file =>
 	if (file.name.startsWith("board-game-generic")) {
@@ -122,6 +102,8 @@ ProguardKeys.libraries in Proguard := {
 
 // scalaTest
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
 
 jfxSettings
 

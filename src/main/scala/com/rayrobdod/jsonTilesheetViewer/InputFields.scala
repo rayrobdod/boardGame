@@ -22,7 +22,7 @@ import java.net.{URL, URI}
 import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import java.nio.charset.StandardCharsets.UTF_8
-import javax.swing.{Icon, JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JComboBox, JFileChooser}
+import javax.swing.{Icon, JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser}
 import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.swing.GridBagConstraintsFactory
@@ -35,7 +35,13 @@ import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
+ * Holds input fields that accept user input.
  * @since 3.0.0
+ * @version next
+ * @constructor
+ * @param initialTilesheetUrl the initial value for the tilesheet input field
+ * @param initialFieldUrl the initial value for the field input field
+ * @param initialRand the initial value for the rng input field
  */
 final class InputFields(
 		initialTilesheetUrl:String,

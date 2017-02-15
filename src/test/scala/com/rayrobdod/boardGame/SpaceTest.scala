@@ -17,9 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.Seq
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 
 class SpaceTest extends FunSpec {
 

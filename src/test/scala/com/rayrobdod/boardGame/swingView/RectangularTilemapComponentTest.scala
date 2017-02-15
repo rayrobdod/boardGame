@@ -18,13 +18,12 @@
 package com.rayrobdod.boardGame.view
 
 import java.awt.{Component, Graphics}
-import java.awt.event.{MouseListener, MouseAdapter, MouseEvent}
+import java.awt.event.{MouseListener, MouseEvent}
 import javax.swing.Icon
 import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.view.Swing._
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 
 class SwingRectangularTilemapComponentTest extends FunSpec {
 	val icon32 = new SolidColorIcon(java.awt.Color.cyan, 32, 32)
