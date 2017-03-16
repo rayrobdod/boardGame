@@ -18,7 +18,6 @@
 package com.rayrobdod.boardGame
 
 import scala.collection.immutable.Seq
-import scala.{Function0 => Future}
 
 /**
  * A [[com.rayrobdod.boardGame.Space]] in a rectangular board, such that
@@ -73,10 +72,10 @@ trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, St
  */
 class RectangularSpaceViaFutures[SpaceClass, Repr <: Space[SpaceClass, Repr]](
 		val typeOfSpace:SpaceClass,
-		leftFuture:Future[Option[Repr]],
-		upFuture:Future[Option[Repr]],
-		rightFuture:Future[Option[Repr]],
-		downFuture:Future[Option[Repr]]
+		leftFuture:Function0[Option[Repr]],
+		upFuture:Function0[Option[Repr]],
+		rightFuture:Function0[Option[Repr]],
+		downFuture:Function0[Option[Repr]]
 ) extends RectangularSpace[SpaceClass, Repr] {
 	lazy override val left:Option[Repr] = leftFuture()
 	lazy override val up:Option[Repr] = upFuture()
@@ -98,8 +97,8 @@ class RectangularSpaceViaFutures[SpaceClass, Repr <: Space[SpaceClass, Repr]](
  */
 final class StrictRectangularSpaceViaFutures[SpaceClass](
 		typeOfSpace:SpaceClass,
-		leftFuture:Future[Option[StrictRectangularSpace[SpaceClass]]],
-		upFuture:Future[Option[StrictRectangularSpace[SpaceClass]]],
-		rightFuture:Future[Option[StrictRectangularSpace[SpaceClass]]],
-		downFuture:Future[Option[StrictRectangularSpace[SpaceClass]]]
+		leftFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
+		upFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
+		rightFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
+		downFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]]
 ) extends RectangularSpaceViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](typeOfSpace, leftFuture, upFuture, rightFuture, downFuture) with StrictRectangularSpace[SpaceClass]
