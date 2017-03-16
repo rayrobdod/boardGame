@@ -19,52 +19,61 @@ package com.rayrobdod.boardGame
 
 import scala.collection.immutable.{Seq, Map}
 
+/* A rectangular tesselation */
 /**
- * A RectangularField is a set of [[com.rayrobdod.boardGame.RectangularSpace]]s,
+ * A RectangularField is a set of [[com.rayrobdod.boardGame.StrictRectangularSpace]]s,
  * such that each space is connected to adjacent spaces Euclidean-geometry wise
  * and that the spaces are arranged in a fully-filled n×m grid.
  * 
- * @version 3.0.0
- * @see [[com.rayrobdod.boardGame.RectangularSpace]]
+ * @since 4.0
+ * @see [[com.rayrobdod.boardGame.StrictRectangularSpace]]
  */
-object RectangularField
-{
-	/**
-	 * @version next
-	 * @since 3.0.0
-	 */
-	private final class RectangularFieldSpace[SpaceClass](
-			private val fieldClasses:Map[RectangularFieldIndex, SpaceClass],
-			private val myIndex:(Int, Int)
-	) extends StrictRectangularSpace[SpaceClass] {
-		private val (i,j) = myIndex
-		private def getSpaceAt(i:RectangularFieldIndex):Option[StrictRectangularSpace[SpaceClass]] = {
-			if (fieldClasses.contains(i)) {
-				Some(new RectangularFieldSpace(fieldClasses, i))
-			} else {None}
-		}
+final class RectangularField[SpaceClass](private val classes:Map[(Int, Int), SpaceClass]) {
+	def getSpaceAt(x:Int, y:Int):Option[StrictRectangularSpace[SpaceClass]] = classes.get( ((x,y)) ).map{sc => new Space(x, y)}
+	
+	val minX = classes.map{_._1._1}.min
+	val maxX = classes.map{_._1._1}.max
+	val minY = classes.map{_._1._2}.min
+	val maxY = classes.map{_._1._2}.max
+	val width = maxX - minX
+	val height = maxY - minY
+	def containsIndex(x:Int, y:Int):Boolean = classes.keySet.contains( ((x,y)) )
+	def mapIndex[A](f:((Int,Int)) => A) = classes.keySet.map(f)
+	def indexies:Set[(Int, Int)] = classes.keySet
+	
+	private final class Space(private val x:Int, private val y:Int) extends StrictRectangularSpace[SpaceClass] {
+		private val field = RectangularField.this
+		override def typeOfSpace:SpaceClass = RectangularField.this.classes.apply( ((x,y)) )
 		
-		// RectangularSpace Implementation
+		override def left:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x - 1, y)
+		override def up:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y - 1)
+		override def right:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x + 1, y)
+		override def down:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y + 1)
 		
-		override val typeOfSpace:SpaceClass = fieldClasses(myIndex)
-		override def left:Option[StrictRectangularSpace[SpaceClass]]  = this.getSpaceAt(i - 1, j)
-		override def up:Option[StrictRectangularSpace[SpaceClass]]    = this.getSpaceAt(i, j - 1)
-		override def right:Option[StrictRectangularSpace[SpaceClass]] = this.getSpaceAt(i + 1, j)
-		override def down:Option[StrictRectangularSpace[SpaceClass]]  = this.getSpaceAt(i, j + 1)
-		
-		// Object Overrides
-		
-		// Until there's something that can apply to all RectangularSpaces, we're doing something specialized for this
-		override def equals(other:Any):Boolean = other match {
-			case other2:RectangularFieldSpace[_] => {
-				(other2.fieldClasses == this.fieldClasses &&
-						other2.myIndex == this.myIndex)
+		override def toString:String = s"RectangularField.Space(typ = $typeOfSpace, x = $x, y = $y, field = ${RectangularField.this})"
+		override def hashCode:Int = x * 31 + y
+		override def equals(other:Any):Boolean = {
+			if (other.isInstanceOf[Space]) {
+				val other2 = other.asInstanceOf[Space]
+				other2.field == this.field &&
+					other2.x == this.x &&
+					other2.y == this.y
+			} else {
+				false
 			}
-			case _ => false
 		}
-		override def hashCode:Int = myIndex.hashCode
 	}
 	
+	override def hashCode:Int = this.classes.hashCode
+	override def equals(other:Any):Boolean = other match {
+		case other2:RectangularField[_] => {
+			other2.classes == this.classes
+		}
+		case _ => false
+	}
+}
+
+object RectangularField {
 	
 	/**
 	 * A factory method for Rectangular Fields
@@ -102,6 +111,6 @@ object RectangularField
 	 * @since 3.0.0
 	 */
 	def apply[SpaceClass](classes:Map[RectangularFieldIndex, SpaceClass]):RectangularField[SpaceClass] = {
-		classes.map{x => ((x._1, new RectangularFieldSpace(classes, x._1) ))}
+		new RectangularField(classes)
 	}
 }

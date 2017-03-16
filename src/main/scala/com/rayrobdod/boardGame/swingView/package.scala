@@ -121,7 +121,7 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 			rng:Random = Random
 	):(SwingRectangularTilemapComponent, SwingRectangularTilemapComponent) = {
 		
-		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
+		val a:Map[(Int, Int), (Icon, Icon)] = field.mapIndex{x => ((x, tilesheet.getIconFor(field, x._1, x._2, rng) )) }.toMap
 		val top = a.mapValues{_._1}
 		val bot = a.mapValues{_._2}
 		

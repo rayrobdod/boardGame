@@ -88,12 +88,9 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[SpaceClass]) =>
 			val newIndexies = conversion( ((x,y)) )
-			if (field.contains((newIndexies._1, newIndexies._2)))
-			{
-				val spaceClass = field(newIndexies._1, newIndexies._2).typeOfSpace
-				
-				scc.unapply(spaceClass)
-			} else {true}
+			field.getSpaceAt(newIndexies._1, newIndexies._2).map{space =>
+				scc.unapply(space.typeOfSpace)
+			}.getOrElse(true)
 		}.tupled)
 	}
 	

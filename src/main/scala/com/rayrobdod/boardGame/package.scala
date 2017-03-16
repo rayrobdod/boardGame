@@ -22,7 +22,6 @@ package com.rayrobdod
  */
 package object boardGame {
 	type RectangularFieldIndex = Tuple2[Int, Int]
-	type RectangularField[A] = Map[RectangularFieldIndex, StrictRectangularSpace[A]]
 	
 	/**
 	 * A SpaceClassMatcher that always returns true

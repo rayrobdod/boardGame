@@ -49,7 +49,7 @@ abstract class RectangularVisualizationRule[SpaceClass, IconPart] {
 	 * @param rng a Random to allow for randomness
 	 */
 	final def matches(field:RectangularField[_ <: SpaceClass], x:Int, y:Int, rng:Random):Boolean = {
-		indexiesMatch(x, y, field.map{_._1._1}.max, field.map{_._1._2}.max) &&
+		indexiesMatch(x, y, field.width, field.height) &&
 				surroundingTilesMatch(field, x, y) &&
 				randsMatch(rng)
 	}

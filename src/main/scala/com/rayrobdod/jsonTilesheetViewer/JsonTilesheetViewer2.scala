@@ -149,7 +149,7 @@ object JsonTilesheetViewer2 {
 			fieldComp.getChildren().add(a._2)
 			
 			
-			currentRotationState.toSeq.map{_._1}.foreach{index =>
+			currentRotationState.indexies.foreach{index =>
 				import scala.collection.JavaConversions.collectionAsScalaIterable;
 				a._2.getChildren().filter{x =>
 					GridPane.getColumnIndex(x) == index._1 &&
@@ -184,13 +184,13 @@ object JsonTilesheetViewer2 {
 	) extends EventHandler[MouseEvent] {
 		override def handle(e:MouseEvent):Unit = {
 			
-			val currentSpace:SpaceClass = currentRotationState(index).typeOfSpace
+			val currentSpace:SpaceClass = currentRotationState.getSpaceAt(index._1, index._2).get.typeOfSpace
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
 			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
 			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
 			
 			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
-					currentRotationState.map{x => ((x._1, x._2.typeOfSpace))} +
+					currentRotationState.mapIndex{x => ((x, currentRotationState.getSpaceAt(x._1, x._2).get.typeOfSpace))}.toMap +
 							((index, nextSpace))
 			
 			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)
@@ -205,7 +205,7 @@ object JsonTilesheetViewer2 {
 			fieldComp.getChildren().add(a._1)
 			fieldComp.getChildren().add(a._2)
 			
-			nextRotationState.toSeq.map{_._1}.foreach{index =>
+			nextRotationState.indexies.foreach{index =>
 				import scala.collection.JavaConversions.collectionAsScalaIterable;
 				a._2.getChildren().filter{x =>
 					GridPane.getColumnIndex(x) == index._1 &&

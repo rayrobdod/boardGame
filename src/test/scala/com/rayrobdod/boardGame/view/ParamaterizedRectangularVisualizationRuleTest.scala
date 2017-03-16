@@ -130,7 +130,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map((x, y)).typeOfSpace == "a"
+				val expected = map.getSpaceAt(x, y).get.typeOfSpace == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -148,7 +148,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.get((x, y - 1)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.getSpaceAt(x, y - 1).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -166,7 +166,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.get((x, y + 1)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.getSpaceAt(x, y + 1).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -184,7 +184,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.get((x - 1, y)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.getSpaceAt(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -202,8 +202,8 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.get((x - 1, y)).map{_.typeOfSpace}.getOrElse("a") == "a" &&
-				               map.get((x, y)).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.getSpaceAt(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a" &&
+				               map.getSpaceAt(x, y).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}

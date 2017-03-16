@@ -43,7 +43,7 @@ final class HashcodeColorTilesheet[Icon](
 	}
 	
 	private[this] def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):java.awt.Color = {
-		val hash = f.apply((x,y)).typeOfSpace.hashCode
+		val hash = f.getSpaceAt(x,y).map{_.typeOfSpace.hashCode}.getOrElse{0}
 		// reorder bits to make most colors not really close to black
 		val set1 = BitSet.fromBitMask(Array(hash))
 		val color = Seq(

@@ -46,7 +46,7 @@ trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Spac
 	 * the union of `this.left`, `this.up`, `this.right`, `this.down`
 	 */
 	override def adjacentSpaces:Seq[Repr] = {
-		Seq(left,up,right,down).flatMap{_.to[Seq]}
+		Seq(left, up, right, down).flatMap{_.to[Seq]}
 	}
 }
 
