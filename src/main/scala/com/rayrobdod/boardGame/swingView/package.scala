@@ -29,7 +29,6 @@ import java.awt.image.BufferedImage.{TYPE_INT_RGB => nonAlphaImage, TYPE_INT_ARG
 import java.net.URL
 import javax.swing.{Icon, ImageIcon}
 import javax.imageio.ImageIO
-import com.rayrobdod.util.BlitzAnimImage
 import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
 import com.rayrobdod.swing.SolidColorIcon
 
@@ -92,12 +91,27 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 		}
 	}
 	
+	/**
+	 * Take an input `image` and split said image into a series of `tileWidth`×`tileHeight` sized subimages
+	 */
 	override def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
-		val sheetImage:BufferedImage = ImageIO.read(sheetUrl)
-		val tilesX = sheetImage.getWidth / tileDimension.width
-		val tilesY = sheetImage.getHeight / tileDimension.height
+		assert(tileDimension.width > 0)
+		assert(tileDimension.height > 0)
 		
-		Seq.empty ++ new BlitzAnimImage(sheetImage, tileDimension.width, tileDimension.height, 0, tilesX * tilesY).getImages
+		val sheetImage:BufferedImage = ImageIO.read(sheetUrl)
+		
+		assert(sheetImage.getWidth > 0)
+		assert(sheetImage.getHeight > 0)
+		
+		val tilesInImageX = sheetImage.getWidth / tileDimension.width
+		val tilesInImageY = sheetImage.getHeight / tileDimension.height
+		
+		for (
+			frameX <- 0 until tilesInImageX;
+			frameY <- 0 until tilesInImageY
+		) yield {
+			sheetImage.getSubimage(frameX * tileDimension.width, frameY * tileDimension.height, tileDimension.width, tileDimension.height);
+		}
 	}
 	
 	
