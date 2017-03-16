@@ -20,7 +20,7 @@ package com.rayrobdod.boardGame.view
 import fastparse.all._
 import scala.language.implicitConversions
 import com.rayrobdod.boardGame.{SpaceClassMatcher, ConstFalseSpaceClassMatcher}
-import com.rayrobdod.boardGame.swingView.{SpaceClassMatcherFactory => RootSpaceClassMatcherFactory}
+import com.rayrobdod.boardGame.view.{SpaceClassMatcherFactory => RootSpaceClassMatcherFactory}
 
 /**
  * A parser that converts AdjacentSpacesSpecifier strings into [[SpaceClassMatcher]]s.

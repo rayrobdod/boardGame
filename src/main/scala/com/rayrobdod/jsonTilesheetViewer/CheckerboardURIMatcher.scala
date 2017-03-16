@@ -18,7 +18,7 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import java.awt.{Color, Dimension}
-import com.rayrobdod.boardGame.swingView.CheckerboardTilesheet
+import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 
 /**
  * A method that converts a uri string into a matching CheckerboardTilesheet
@@ -26,43 +26,55 @@ import com.rayrobdod.boardGame.swingView.CheckerboardTilesheet
  */
 object CheckerboardURIMatcher {
 	
-	def unapply(ssp:String):Option[CheckerboardTilesheet] = {
+	def unapply(ssp:String):Option[CheckerboardTilesheetDelay] = {
 		val split = ssp.split("[\\?\\&]");
 		
-		if ("tag:rayrobdod.name,2013-08:tilesheet-checker" == split.head) {
+		if (TAG_SHEET_CHECKER == split.head) {
 			build(split.tail)
 		} else {
 			None;
 		}
 	}
 	
+	final case class CheckerboardTilesheetDelay(
+		tileDimension:java.awt.Dimension = new java.awt.Dimension(24, 24),
+		light:java.awt.Color = java.awt.Color.white,
+		dark:java.awt.Color = java.awt.Color.black
+	) {
+		def apply[Icon](
+			transparentIcon:Function1[java.awt.Dimension, Icon],
+			rgbToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon]
+		):CheckerboardTilesheet[Icon] = {
+			CheckerboardTilesheet(
+				transparentIcon(tileDimension),
+				rgbToIcon(light, tileDimension),
+				rgbToIcon(dark, tileDimension)
+			)
+		}
+	}
+	
 	
 	private def build(params:Seq[String]) = {
-		var returnValue = new CheckerboardTilesheet()
 		
-		params.foreach{(param:String) =>
+		params.foldLeft[Option[CheckerboardTilesheetDelay]](Option(new CheckerboardTilesheetDelay())){(foldingOpt, param:String) => foldingOpt.flatMap{folding =>
 			val splitParam = param.split("=");
 			splitParam(0) match {
 				case "size" => {
-					returnValue = returnValue.copy(
-						dim = new Dimension(splitParam(1).toInt,
-								splitParam(1).toInt)
-					)
+					scala.util.Try( folding.copy(
+						tileDimension = new java.awt.Dimension(
+							splitParam(1).toInt,
+							splitParam(1).toInt
+						)
+					)).toOption
 				}
 				case "light" => {
-					returnValue = returnValue.copy(
-						light = new Color(splitParam(1).toInt)
-					)
+					scala.util.Try( folding.copy( light = new java.awt.Color(splitParam(1).toInt) ) ).toOption
 				}
 				case "dark" => {
-					returnValue = returnValue.copy(
-						dark = new Color(splitParam(1).toInt)
-					)
+					scala.util.Try( folding.copy( dark = new java.awt.Color(splitParam(1).toInt) ) ).toOption
 				}
-				case _ => {}
+				case _ => { foldingOpt }
 			}
-		}
-		
-		Some(returnValue)
+		}}
 	}
 }

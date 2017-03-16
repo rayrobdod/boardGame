@@ -15,9 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
-import java.awt.Image
 import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.RectangularField
@@ -25,17 +24,19 @@ import com.rayrobdod.boardGame.RectangularField
 /**
  * A single rule for associating images with spots on a RectangularField
  * 
- * @version 3.0.0
+ * @since next
+ * @tparam SpaceClass the types of spaces to deal with
+ * @tparam ImagePart icon parts
  */
-abstract class RectangularVisualizationRule[A] {
+abstract class RectangularVisualizationRule[SpaceClass, IconPart] {
 	
 	/**
 	 * Returns the images to be used if this visualization rule applies 
 	 */
-	def iconParts:Map[Int, Seq[Image]]
+	def iconParts:Map[Int, Seq[IconPart]]
 	
 	protected def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean
-	protected def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean
+	protected def surroundingTilesMatch(field:RectangularField[_ <: SpaceClass], x:Int, y:Int):Boolean
 	protected def randsMatch(rng:Random):Boolean
 	
 	/**
@@ -47,7 +48,7 @@ abstract class RectangularVisualizationRule[A] {
 	 * @param y the y-coordinate of the tile to check
 	 * @param rng a Random to allow for randomness
 	 */
-	final def matches(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):Boolean = {
+	final def matches(field:RectangularField[_ <: SpaceClass], x:Int, y:Int, rng:Random):Boolean = {
 		indexiesMatch(x, y, field.map{_._1._1}.max, field.map{_._1._2}.max) &&
 				surroundingTilesMatch(field, x, y) &&
 				randsMatch(rng)

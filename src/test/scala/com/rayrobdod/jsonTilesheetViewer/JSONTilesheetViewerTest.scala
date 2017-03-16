@@ -21,54 +21,54 @@ import org.scalatest.{FunSuite, FunSpec}
 import org.scalatest.prop.PropertyChecks
 import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
-import com.rayrobdod.boardGame.swingView.IndexConverter
-import com.rayrobdod.boardGame.swingView.NilTilesheet
-import com.rayrobdod.boardGame.swingView.HashcodeColorTilesheet
-import com.rayrobdod.boardGame.swingView.VisualizationRuleBasedRectangularTilesheet
-import com.rayrobdod.boardGame.swingView.ParamaterizedRectangularVisualizationRule
+import com.rayrobdod.boardGame.view.IndexConverter
+import com.rayrobdod.boardGame.view.NilTilesheet
+import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
+import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheet
+import com.rayrobdod.boardGame.view.ParamaterizedRectangularVisualizationRule
 
-class JSONTilesheetViewerTest extends FunSpec {
+class JsonTilesheetViewerTest extends FunSpec {
 	val identityIndexConverter:IndexConverter = {x:(Int, Int) => x}
 	
 	describe ("allClassesInTilesheet") {
 		it ("NilTilesheet returns ['']"){
 			assertResult(List("")){
-				JSONTilesheetViewer.allClassesInTilesheet(NilTilesheet)
+				JsonTilesheetViewer.allClassesInTilesheet(new NilTilesheet(""))
 			}
 		}
 		it ("HashcodeColorTilesheet returns ['a','b','c','d']") {
 			assertResult(Seq("a", "b", "c", "d")){
-				JSONTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet)
+				JsonTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet(1,{(a) => 1}))
 			}
 		}
 		it ("VisualizationRuleBasedRectangularTilesheet() returns []") {
 			assertResult(Seq()){
-				JSONTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet("", Seq(
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet[SpaceClass, Int, Seq[Seq[Int]]]("", Seq(
 					new ParamaterizedRectangularVisualizationRule(surroundingTiles = Map(identityIndexConverter -> ConstTrueSpaceClassMatcher))
-				)))
+				), {a:Seq[Seq[Int]] => a}))
 			}
 		}
 		it ("VisualizationRuleBasedRectangularTilesheet('a') returns ['a']") {
 			assertResult(Seq("a")){
-				JSONTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet("", Seq(
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet[SpaceClass, Int, Seq[Seq[Int]]]("", Seq(
 					new ParamaterizedRectangularVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a")))
-				)))
+				), {a:Seq[Seq[Int]] => a}))
 			}
 		}
 		it ("VisualizationRuleBasedRectangularTilesheet('a','b') returns ['a','b']") {
 			assertResult(Seq("a","b")){
-				JSONTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet("", Seq(
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet[SpaceClass, Int, Seq[Seq[Int]]]("", Seq(
 					new ParamaterizedRectangularVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
 					new ParamaterizedRectangularVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("b")))
-				)))
+				), {a:Seq[Seq[Int]] => a}))
 			}
 		}
 		it ("VisualizationRuleBasedRectangularTilesheet('a','!b') returns ['a']") {
 			assertResult(Seq("a")){
-				JSONTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet("", Seq(
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedRectangularTilesheet[SpaceClass, Int, Seq[Seq[Int]]]("", Seq(
 					new ParamaterizedRectangularVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
 					new ParamaterizedRectangularVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.UnequalsMatcher("b")))
-				)))
+				), {a:Seq[Seq[Int]] => a}))
 			}
 		}
 	}

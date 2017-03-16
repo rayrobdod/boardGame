@@ -72,7 +72,7 @@ trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass] {
 
 /**
  * A RectangularSpace where the values of `left`, `right`, `up` and `down` are
- * lazily evaluated from scala.Function0s
+ * lazily evaluated from `scala.Function0`s
  * 
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space 

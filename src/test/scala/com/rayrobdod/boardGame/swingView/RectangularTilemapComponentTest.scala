@@ -15,16 +15,17 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import java.awt.{Component, Graphics}
 import java.awt.event.{MouseListener, MouseEvent}
 import javax.swing.Icon
 import com.rayrobdod.swing.SolidColorIcon
+import com.rayrobdod.boardGame.view.Swing._
 
 import org.scalatest.FunSpec
 
-class RectangularTilemapComponentTest extends FunSpec {
+class SwingRectangularTilemapComponentTest extends FunSpec {
 	val icon32 = new SolidColorIcon(java.awt.Color.cyan, 32, 32)
 	val icon1632 = new SolidColorIcon(java.awt.Color.cyan, 16, 32)
 	
@@ -35,8 +36,8 @@ class RectangularTilemapComponentTest extends FunSpec {
 	
 	
 	describe ("Bounds checking") {
-	describe ("RectangularTilemapComponent with icon32 and map(0,0)to(3,3)") {
-		val uut = new RectangularTilemapComponent(tiles(0 to 3, 0 to 3, icon32))
+	describe ("SwingRectangularTilemapComponent with icon32 and map(0,0)to(3,3)") {
+		val uut = new SwingRectangularTilemapComponent(tiles(0 to 3, 0 to 3, icon32))
 		
 		it ("getWest is (32 * 4)"){
 			assertResult(4 * 32){uut.getMaximumSize.width}
@@ -45,8 +46,8 @@ class RectangularTilemapComponentTest extends FunSpec {
 			assertResult(4 * 32){uut.getMaximumSize.height}
 		}
 	}
-	describe ("RectangularTilemapComponent with icon32 and map(-2,-2)to(1,1)") {
-		val uut = new RectangularTilemapComponent(tiles(-2 to 1, -2 to 1, icon32))
+	describe ("SwingRectangularTilemapComponent with icon32 and map(-2,-2)to(1,1)") {
+		val uut = new SwingRectangularTilemapComponent(tiles(-2 to 1, -2 to 1, icon32))
 		
 		it ("getWest is (32 * 4)"){
 			assertResult(4 * 32){uut.getMaximumSize.width}
@@ -55,8 +56,8 @@ class RectangularTilemapComponentTest extends FunSpec {
 			assertResult(4 * 32){uut.getMaximumSize.height}
 		}
 	}
-	describe ("RectangularTilemapComponent with icon32 and map(0,2)to(0,5)") {
-		val uut = new RectangularTilemapComponent(tiles(0 to 0, 2 to 5, icon32))
+	describe ("SwingRectangularTilemapComponent with icon32 and map(0,2)to(0,5)") {
+		val uut = new SwingRectangularTilemapComponent(tiles(0 to 0, 2 to 5, icon32))
 		
 		it ("getWest is (32 * 1)"){
 			assertResult(1 * 32){uut.getMaximumSize.width}
@@ -65,8 +66,8 @@ class RectangularTilemapComponentTest extends FunSpec {
 			assertResult(4 * 32){uut.getMaximumSize.height}
 		}
 	}
-	describe ("RectangularTilemapComponent with icon1632 and map(-2,-2)to(1,1)") {
-		val uut = new RectangularTilemapComponent(tiles(-2 to 1, -2 to 1, icon1632))
+	describe ("SwingRectangularTilemapComponent with icon1632 and map(-2,-2)to(1,1)") {
+		val uut = new SwingRectangularTilemapComponent(tiles(-2 to 1, -2 to 1, icon1632))
 		
 		it ("getWest is (16 * 4)"){
 			assertResult(4 * 16){uut.getMaximumSize.width}
@@ -78,7 +79,7 @@ class RectangularTilemapComponentTest extends FunSpec {
 	}
 	describe ("mouse events") {
 	describe ("with icon size 32x32") {
-		class afsd extends RectangularTilemapComponent(tiles(0 to 3, 0 to 3, icon32)) {
+		class afsd extends SwingRectangularTilemapComponent(tiles(0 to 3, 0 to 3, icon32)) {
 			override def processMouseEvent(e:MouseEvent):Unit = super.processMouseEvent(e)
 		}
 		

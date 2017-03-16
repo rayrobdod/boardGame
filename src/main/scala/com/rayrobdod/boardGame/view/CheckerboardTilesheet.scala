@@ -15,28 +15,27 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame
+package view
 
-import java.awt.{Component, Graphics}
-import javax.swing.Icon
+import scala.collection.immutable.BitSet
 import scala.util.Random
-import com.rayrobdod.boardGame.RectangularField
 
 /**
- * A tilesheet that has only one rule: for anything, display blank image.
- * @author Raymond Dodge
- * @version 3.0.0
+ * @constructor
+ * @param transparentIcon the icon that is always returned for `getIconFor(...)._2`
+ * @param lightIcon the icon that is returned for even `getIconFor(...)._1`
+ * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
  */
-object NilTilesheet extends RectangularTilesheet[Any]
-{
-	override val name:String = "Nil"
-	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon,Icon) = getIconFor
+final case class CheckerboardTilesheet[Icon](
+	transparentIcon:Icon,
+	lightIcon:Icon,
+	darkIcon:Icon
+) extends RectangularTilesheet[Any, Icon] {
+	override def name:String = "Checkerboard"
+	override def toString:String = name
 	
-	private val getIconFor = ((BlankIcon, BlankIcon))
-	
-	object BlankIcon extends Icon{
-		def getIconWidth:Int = 16
-		def getIconHeight:Int = 16
-		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
+	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+		(( if ((x + y) % 2 == 0) {lightIcon} else {darkIcon}, transparentIcon ))
 	}
 }

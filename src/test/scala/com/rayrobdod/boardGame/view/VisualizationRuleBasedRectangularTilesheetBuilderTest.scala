@@ -15,21 +15,31 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import org.scalatest.FunSpec
 import java.awt.image.BufferedImage
 import java.net.URL
+import java.nio.charset.StandardCharsets.UTF_8
+import scala.collection.immutable.Seq
 import com.rayrobdod.json.parser.JsonParser;
+import com.rayrobdod.json.union.StringOrInt
+import com.rayrobdod.json.union.ParserRetVal.Complex
 import com.rayrobdod.boardGame.SpaceClassMatcher
+import com.rayrobdod.boardGame.swingView
 import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 	
 	describe("VisualizationRuleBasedRectangularTilesheetBuilder + JsonParser") {
 		it ("do a thing") {
+			val compostLayersFun = {x:Seq[Seq[Float]] => "apple"}
+			val urlToFrameImagesFun = {(u:URL, d:java.awt.Dimension) => Seq(0.5f)}
+			
 			val expected = Complex(new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
+				compostLayers = compostLayersFun,
+				urlToFrameImages = urlToFrameImagesFun,
 				sheetUrl = new URL("http://localhost/tiles"),
 				tileWidth = 32,
 				tileHeight = 48,
@@ -43,7 +53,8 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 				"rules":"rules",
 				"name":"name"
 			}"""
-			val result = new JsonParser().parse(new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory), src)
+			val builder = new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory, compostLayersFun, urlToFrameImagesFun).mapKey[StringOrInt](StringOrInt.unwrapToString)
+			val result = new JsonParser().parse(builder, src)
 			
 			assertResult(expected){result}
 		}
@@ -52,7 +63,9 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 		it ("can apply() using a two-image, two-rule pair of files") {
 			val source = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
-				sheetUrl = this.getClass.getResource("whiteBlackTiles.png"),
+				compostLayers = Swing.compostLayers,
+				urlToFrameImages = Swing.sheeturl2images,
+				sheetUrl = this.getClass.getResource("/com/rayrobdod/boardGame/swingView/whiteBlackTiles.png"),
 				tileWidth = 32,
 				tileHeight = 32,
 				rules = new URL("data", "text/json", -1, """[{"tiles":0, "indexies":"x == 0"},{"tiles":1}]""", new DataHandler),
@@ -61,7 +74,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 			val result = source.apply()
 			
 			assertResult("name"){result.name}
-			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[String]]}
+			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[String, _]]}
 			assertResult("(x == 0)"){resRules(0).indexEquation.toString}
 			assertResult("true"){resRules(1).indexEquation.toString}
 			assertResult(java.awt.Color.white.getRGB){resRules(0).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
@@ -74,5 +87,18 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 		def apply(ref:String):SpaceClassMatcher[String] = {
 			throw new UnsupportedOperationException("")
 		}
+	}
+}
+
+class DataHandler extends java.net.URLStreamHandler {
+	override def openConnection(u:URL):java.net.URLConnection = {
+		new DataConnection(u)
+	}
+}
+
+class DataConnection(u:URL) extends java.net.URLConnection(u) {
+	override def connect():Unit = {}
+	override def getInputStream():java.io.InputStream = {
+		new java.io.ByteArrayInputStream(u.getFile.getBytes(UTF_8))
 	}
 }

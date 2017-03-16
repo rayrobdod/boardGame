@@ -21,10 +21,11 @@ import scala.collection.immutable.Seq
 
 import java.awt.{BorderLayout}
 import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
-import javax.swing.{JFrame, JPanel, JScrollPane}
+import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JScrollPane}
 
 import com.rayrobdod.boardGame._
-import com.rayrobdod.boardGame.swingView._
+import com.rayrobdod.boardGame.view._
+import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
@@ -33,9 +34,9 @@ import com.rayrobdod.boardGame.swingView._
  * 
  * @version next
  */
-object JSONTilesheetViewer {
-	
+object JsonTilesheetViewer {
 	def main(args:Array[String]):Unit = {
+		
 		val frame = new JFrame("JSON Tilesheet Viewer")
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 		
@@ -44,7 +45,6 @@ object JSONTilesheetViewer {
 				initialFieldUrl     = if (args.size > 1) args(1) else TAG_MAP_ROTATE,
 				initialRand         = if (args.size > 2) args(2) else ""
 		)
-		
 		val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
 		
 		inputFields.addOkButtonActionListener(new ActionListener() {
@@ -55,8 +55,6 @@ object JSONTilesheetViewer {
 		
 		frame.getContentPane.add(inputFields.panel, BorderLayout.NORTH)
 		frame.getContentPane.add(new JScrollPane(fieldComp))
-		
-		
 		
 		loadNewTilesheet(frame, fieldComp, inputFields)
 		frame.setVisible(true)
@@ -111,24 +109,16 @@ object JSONTilesheetViewer {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass]):Seq[SpaceClass] = {
+	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
-		import com.rayrobdod.boardGame.swingView.ParamaterizedRectangularVisualizationRule
-		import com.rayrobdod.boardGame.swingView.VisualizationRuleBasedRectangularTilesheet
-		import com.rayrobdod.boardGame.swingView.HashcodeColorTilesheet
+		import com.rayrobdod.boardGame.view.ParamaterizedRectangularVisualizationRule
+		import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheet
+		import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
 		import StringSpaceClassMatcherFactory.EqualsMatcher
 		
 		val a = f match {
-			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass] => {
-				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass]]}
+			case x:VisualizationRuleBasedRectangularTilesheet[SpaceClass, _, _] => {
+				val a:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[SpaceClass, _]]}
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
 				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
@@ -143,7 +133,7 @@ object JSONTilesheetViewer {
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet => Seq("a", "b", "c", "d")
+			case x:HashcodeColorTilesheet[_] => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		

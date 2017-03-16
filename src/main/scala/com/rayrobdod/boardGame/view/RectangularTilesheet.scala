@@ -15,20 +15,20 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import scala.util.Random
-import javax.swing.Icon
 import com.rayrobdod.boardGame.RectangularField
 
 /**
  * A class that contains a method to create an image appropriate for representing
  * a particular space in a rectangular field 
  * 
- * @author Raymond Dodge
- * @version 3.0.0
+ * @since next
+ * @tparam SpaceClass the space types that this can provide a view for
+ * @tparam Icon the icon produced by this tilesheet
  */
-trait RectangularTilesheet[-A]
+trait RectangularTilesheet[-SpaceClass, Icon]
 {
 	/** a name for the tilesheet */
 	def name:String
@@ -43,5 +43,5 @@ trait RectangularTilesheet[-A]
 		- the part of the image that goes below the movable controlled tokens
 		- the part of the image that goes above the movable controlled tokens
 	 */
-	def getIconFor(field:RectangularField[_ <: A], x:Int, y:Int, rng:Random):(Icon, Icon)
+	def getIconFor(field:RectangularField[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon)
 }

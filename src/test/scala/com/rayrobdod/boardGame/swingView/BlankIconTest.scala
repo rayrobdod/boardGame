@@ -17,26 +17,23 @@
 */
 package com.rayrobdod.boardGame.swingView
 
-import scala.util.Random
-import javax.swing.Icon
-import com.rayrobdod.boardGame.RectangularField
+import org.scalatest.{FunSuite, FunSpec}
+import org.scalatest.prop.PropertyChecks
+import java.awt.{Dimension, Color}
+import javax.swing.Icon;
+import com.rayrobdod.boardGame.view.Swing._
 
-
-/**
- * A function that creates a pair of RectangularTilemapComponent that displays a specified field using a specified tilesheet
- * @version 3.0.0
- */
-object RectangularFieldComponent {
-	def apply[A](
-			field:RectangularField[A],
-			tilesheet:RectangularTilesheet[A],
-			rng:Random = Random
-	):(RectangularTilemapComponent, RectangularTilemapComponent) = {
-		
-		val a:Map[(Int, Int), (Icon, Icon)] = field.map{x => ((x._1, tilesheet.getIconFor(field, x._1._1, x._1._2, rng) )) }
-		val top = a.mapValues{_._1}
-		val bot = a.mapValues{_._2}
-		
-		(( new RectangularTilemapComponent(top), new RectangularTilemapComponent(bot) ))
+class BlankIconTest extends FunSpec {
+	describe ("BlankIcon") {
+		it ("getIconWidth == 16") {
+			assertResult(16){blankIcon(new java.awt.Dimension(16, 16)).getIconWidth}
+		}
+		it ("getIconHeight == 16") {
+			assertResult(16){blankIcon(new java.awt.Dimension(16, 16)).getIconHeight}
+		}
+		it ("paintIcon does nothing") {
+			// it is incredibly hard to prove a negative...
+			blankIcon(new java.awt.Dimension(16, 16)).paintIcon(null, null, -1, -1)
+		}
 	}
 }

@@ -16,7 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.rayrobdod.boardGame
-package swingView
+package view
 
 import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
@@ -33,38 +33,39 @@ import view.CoordinateFunctionSpecifierParser.CoordinateFunction
  * A Builder of RectangularVisualizationRule
  * @version next
  */
-class RectangularVisualziationRuleBuilder[A](
-		tileSeq:Seq[Image],
-		spaceClassUnapplier:SpaceClassMatcherFactory[A]
-) extends Builder[StringOrInt, JsonValue, ParamaterizedRectangularVisualizationRule[A]] {
+final class RectangularVisualziationRuleBuilder[SpaceClass, IconPart](
+		tileSeq:Seq[IconPart],
+		spaceClassUnapplier:SpaceClassMatcherFactory[SpaceClass]
+) extends Builder[StringOrInt, JsonValue, ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] {
 	import RectangularVisualziationRuleBuilder.ARBITRARY_NEGATIVE_VALUE
 	
-	def init:ParamaterizedRectangularVisualizationRule[A] = new ParamaterizedRectangularVisualizationRule[A]()
-	def apply[I](a:ParamaterizedRectangularVisualizationRule[A], key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, I]):Either[(String, Int), ParamaterizedRectangularVisualizationRule[A]] = key match {
+	override def init:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] = new ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]()
+	
+	override def apply[Input](folding:ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart], key:StringOrInt, input:Input, parser:Parser[StringOrInt, JsonValue, Input]):Either[(String, Int), ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = key match {
 		case StringOrInt.Left("tileRand") => {
-			parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => Right(a.copy(tileRand = value))}}
+			parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => if (value > 0) {Right(folding.copy(tileRand = value))} else {Left("tileRand may not be negative", 0)}}}
 		}
 		case StringOrInt.Left("indexies") => {
 			parser.parsePrimitive(input).right.flatMap{_.stringToEither{exprStr =>
-				coordinateFunctionParser.parse(exprStr).right.map{expr => a.copy(indexEquation = expr)}
+				coordinateFunctionParser.parse(exprStr).right.map{expr => folding.copy(indexEquation = expr)}
 			}}
 		}
 		case StringOrInt.Left("surroundingSpaces") => {
 			val builder = new RectangularVisualziationRuleBuilder.SurroundingSpacesBuilder(spaceClassUnapplier)
-			parser.parse(builder, input).complex.toEither.right.map{value => a.copy(surroundingTiles = value)}
+			parser.parse(builder, input).complex.toEither.right.map{value => folding.copy(surroundingTiles = value)}
 		}
 		case StringOrInt.Left("tiles") => {
 			parser.parse(RectangularVisualziationRuleBuilder.IconPartsBuilder, input).fold(
 				{c =>
-					c.collapse(tileSeq).right.map{value => a.copy(iconParts = value)}
+					c.collapse(tileSeq).right.map{value => folding.copy(iconParts = value)}
 				},
 				{p:JsonValue => p.integerToEither{tileIndex =>
-					Right(a.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE -> Seq(tileSeq(tileIndex.intValue)))))
+					Right(folding.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE -> Seq(tileSeq(tileIndex.intValue)))))
 				}},
 				{(msg, idx) => Left((msg, idx))}
 			)
 		}
-		case _ => Right(a)
+		case _ => Right(folding)
 	}
 }
 
@@ -73,19 +74,19 @@ class RectangularVisualziationRuleBuilder[A](
  * A RectangularVisualizationRule where each of the overridable methods in represented by one of the constructor parameters
  * @version next
  */
-final case class ParamaterizedRectangularVisualizationRule[A] (
-	override val iconParts:Map[Int, Seq[Image]] = Map.empty[Int, Seq[Image]],
+final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart] (
+	override val iconParts:Map[Int, Seq[IconPart]] = Map.empty[Int, Seq[IconPart]],
 	tileRand:Int = 1,
 	indexEquation:CoordinateFunction[Boolean] = CoordinateFunction.constant(true),
-	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[A]] = Map.empty[IndexConverter, SpaceClassMatcher[A]]
-) extends RectangularVisualizationRule[A] {
+	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[SpaceClass]] = Map.empty[IndexConverter, SpaceClassMatcher[SpaceClass]]
+) extends RectangularVisualizationRule[SpaceClass, IconPart] {
 	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
 		indexEquation.apply(x, y, width, height)
 	}
 	
-	override def surroundingTilesMatch(field:RectangularField[_ <: A], x:Int, y:Int):Boolean = {
+	override def surroundingTilesMatch(field:RectangularField[_ <: SpaceClass], x:Int, y:Int):Boolean = {
 		
-		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[A]) =>
+		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[SpaceClass]) =>
 			val newIndexies = conversion( ((x,y)) )
 			if (field.contains((newIndexies._1, newIndexies._2)))
 			{
@@ -164,27 +165,27 @@ private object RectangularVisualziationRuleBuilder {
 	private sealed trait IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])):IconPartsBuilderValue
 		def seqAppend(x:Int):IconPartsBuilderValue
-		def collapse(tileIndex:Function1[Int, Image]):Either[(String, Int), Map[Int, Seq[Image]]]
+		def collapse[IconPart](tileIndex:Function1[Int, IconPart]):Either[(String, Int), Map[Int, Seq[IconPart]]]
 	}
 	private[this] object IconPartsBuilderValueNil extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueMap(Map(x))
 		def seqAppend(x:Int) = IconPartsBuilderValueSeq(Seq(x))
-		def collapse(tileIndex:Function1[Int, Image]) = Right(Map.empty)
+		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Right(Map.empty)
 	}
 	private[this] final case class IconPartsBuilderValueSeq(seq:Seq[Int]) extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueFailure
-		def seqAppend(x:Int) = IconPartsBuilderValueSeq(x +: seq)
-		def collapse(tileIndex:Function1[Int, Image]) = Right(Map(ARBITRARY_NEGATIVE_VALUE -> seq.map{tileIndex}))
+		def seqAppend(x:Int) = IconPartsBuilderValueSeq(seq :+ x)
+		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Right(Map(ARBITRARY_NEGATIVE_VALUE -> seq.map{tileIndex}))
 	}
 	private[this] final case class IconPartsBuilderValueMap(map:Map[Int, Seq[Int]]) extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueMap(map + x)
 		def seqAppend(x:Int) = IconPartsBuilderValueFailure
-		def collapse(tileIndex:Function1[Int, Image]) = Right(map.mapValues{_.map{tileIndex}})
+		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Right(map.mapValues{_.map{tileIndex}})
 	}
 	private[this] object IconPartsBuilderValueFailure extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueFailure
 		def seqAppend(x:Int) = IconPartsBuilderValueFailure
-		def collapse(tileIndex:Function1[Int, Image]) = Left(("frame indexies map parsing failed", 0))
+		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Left(("frame indexies map parsing failed", 0))
 	}
 	
 	
@@ -199,7 +200,6 @@ private object RectangularVisualziationRuleBuilder {
 			}, {(i:Int) =>
 				parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => Right(folding.seqAppend(value))}}
 			})
-			
 		}
 	}
 }
@@ -208,14 +208,14 @@ private object RectangularVisualziationRuleBuilder {
 /**
  * @version next
  */
-private[swingView] object JSONRectangularVisualizationRule
+private[view] object ParamaterizedRectangularVisualizationRule
 {
-	def PriorityOrdering:Ordering[RectangularVisualizationRule[_]] = {
-		Ordering.by[RectangularVisualizationRule[_], Int]{(x:RectangularVisualizationRule[_]) => x.priority}
+	def PriorityOrdering:Ordering[RectangularVisualizationRule[_,_]] = {
+		Ordering.by[RectangularVisualizationRule[_,_], Int]{(x:RectangularVisualizationRule[_,_]) => x.priority}
 	}
 
-	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_]] {
-		def compare(x:ParamaterizedRectangularVisualizationRule[_], y:ParamaterizedRectangularVisualizationRule[_]):Int = {
+	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_,_]] {
+		def compare(x:ParamaterizedRectangularVisualizationRule[_,_], y:ParamaterizedRectangularVisualizationRule[_,_]):Int = {
 			(x.tileRand compareTo y.tileRand) match {
 				case 0 => (x.indexEquation.toString compareTo y.indexEquation.toString) match {
 					case 0 => IterableIntOrdering.compare(x.iconParts.keys, y.iconParts.keys) match {

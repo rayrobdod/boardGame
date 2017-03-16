@@ -18,7 +18,7 @@ install:
    - sbt update
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION coverage test
+  - sbt set\ JFX.devKit\ :=\ JFX.jdk\(\"$JAVA_HOME\"\) set\ testOptions\ in\ Test\ +=\ Tests.Argument\(\"-l\"\,\ \"com.rayrobdod.boardGame.javafxView.FxTests\"\) ++$TRAVIS_SCALA_VERSION coverage test
 
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION coverageReport coveralls

@@ -15,35 +15,23 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import org.scalatest.FunSpec
 
 class NilTilesheetTest extends FunSpec {
 	describe ("NilTilesheet") {
 		it ("name is 'Nil'") {
-			assertResult("Nil"){NilTilesheet.name}
+			assertResult("Nil"){NilTilesheet(1f).name}
 		}
 		it ("getIconFor(null, 0, 0, null)._1 is BlankIcon") {
-			assertResult(NilTilesheet.BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._1}
+			assertResult(1f){NilTilesheet(1f).getIconFor(null, 0, 0, null)._1}
 		}
 		it ("getIconFor(null, 0, 1, null)._1 is BlankIcon") {
-			assertResult(NilTilesheet.BlankIcon){NilTilesheet.getIconFor(null, 0, 1, null)._1}
+			assertResult(1f){NilTilesheet(1f).getIconFor(null, 0, 1, null)._1}
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is BlankIcon") {
-			assertResult(NilTilesheet.BlankIcon){NilTilesheet.getIconFor(null, 0, 0, null)._2}
-		}
-	}
-	describe ("NilTilesheet.BlankIcon") {
-		it ("getIconWidth == 16") {
-			assertResult(16){NilTilesheet.BlankIcon.getIconWidth}
-		}
-		it ("getIconHeight == 16") {
-			assertResult(16){NilTilesheet.BlankIcon.getIconHeight}
-		}
-		it ("paintIcon does nothign") {
-			// it is incredibly hard to prove a negative...
-			NilTilesheet.BlankIcon.paintIcon(null, null, -1, -1)
+			assertResult(1f){NilTilesheet(1f).getIconFor(null, 0, 0, null)._2}
 		}
 	}
 	

@@ -17,17 +17,21 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import java.net.{URL}
-import java.awt.{GridBagLayout, GridBagConstraints}
-import java.awt.event.{ActionListener}
+import java.awt.{Dimension, Color}
+import java.net.{URL, URI}
+import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
+import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
 import java.nio.charset.StandardCharsets.UTF_8
-import javax.swing.{JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser}
-import com.rayrobdod.swing.GridBagConstraintsFactory
+import javax.swing.{Icon, JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser}
 import scala.util.Random
 import scala.collection.immutable.Seq
-import com.rayrobdod.json.parser.JsonParser;
+import com.rayrobdod.swing.GridBagConstraintsFactory
+import com.rayrobdod.json.parser.JsonParser
+import com.rayrobdod.json.union.StringOrInt
+import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame._
-import com.rayrobdod.boardGame.swingView._
+import com.rayrobdod.boardGame.view._
+import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
@@ -54,32 +58,33 @@ final class InputFields(
 	}
 	
 	
-	def tilesheet:RectangularTilesheet[SpaceClass] = {
-		tilesheetUrlBox.getSelectedItem.toString match {
-			case TAG_SHEET_NIL => NilTilesheet
-			case TAG_SHEET_INDEX => IndexesTilesheet
-			case TAG_SHEET_RAND => new RandomColorTilesheet
-			case TAG_SHEET_HASH => new HashcodeColorTilesheet
-			case CheckerboardURIMatcher(sheet) => sheet
-			case urlStr => {
-				val url = urlOrFileStringToUrl(urlStr)
-				val b = new VisualizationRuleBasedRectangularTilesheetBuilder[String](url, StringSpaceClassMatcherFactory)
-				var r:java.io.Reader = new java.io.StringReader("{}")
-				try {
-					r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-					return new JsonParser().parse(b, r).fold(
-						{c => c.apply},
-						{p => throw new java.text.ParseException("Parsed value: " + p.toString, 0)},
-						{(msg, idx) => throw new java.text.ParseException(msg, idx)}
-					)
-				} finally {
-					r.close();
-				}
+	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getSelectedItem match {
+		case TAG_SHEET_NIL => Swing.NilTilesheet
+		case TAG_SHEET_INDEX => new view.IndexesTilesheet[Icon](
+			Swing.rgbToIcon(Color.cyan, new Dimension(64, 24)),
+			Swing.rgbToIcon(Color.magenta, new Dimension(64, 24)),
+			{s:String => Swing.stringIcon(s, Color.black, new Dimension(64, 24))}
+		)
+		case TAG_SHEET_RAND => new view.RandomColorTilesheet(
+				Swing.rgbToIcon,
+				Swing.stringIcon,
+				new Dimension(64, 24)
+		)
+		case TAG_SHEET_HASH => new view.HashcodeColorTilesheet(Swing.blankIcon(new Dimension(24, 24)), {c:Color => Swing.rgbToIcon(c, new Dimension(24, 24))})
+		case CheckerboardURIMatcher(x) => x.apply(Swing.blankIcon, Swing.rgbToIcon)
+		case x:String => {
+			val url = urlOrFileStringToUrl(x)
+			val b = new view.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Swing.compostLayers, Swing.sheeturl2images).mapKey(StringOrInt.unwrapToString)
+			var r:java.io.Reader = new java.io.StringReader("{}");
+			try {
+				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
+				return new JsonParser().parse(b, r).fold({x => x},{x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException("", 0)}).apply()
+			} finally {
+				r.close();
 			}
 		}
 	}
 	def fieldIsRotationField:Boolean = {
-		// not quite sure how to do this without hardcoding anymore
 		fieldUrlBox.getSelectedItem.toString startsWith TAG_MAP_ROTATE
 	}
 	def field:RectangularField[SpaceClass] = {
@@ -197,5 +202,3 @@ final class InputFields(
 	panel.add(randBox, endOfLine)
 	panel.add(goButton, endOfLine)
 }
-
-

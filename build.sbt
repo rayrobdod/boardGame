@@ -18,13 +18,15 @@ fork := true
 // proguard doesn't see the META-INF without this
 exportJars := true
 
-mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JSONTilesheetViewer")
+mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer")
 
 resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 
 libraryDependencies += ("com.rayrobdod" %% "json" % "3.0.1")
 
 libraryDependencies += ("com.rayrobdod" %% "utilities" % "20160112")
+
+javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 
 libraryDependencies += ("com.opencsv" % "opencsv" % "3.4")
 
@@ -103,8 +105,12 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
 
+jfxSettings
+
+JFX.addJfxrtToClasspath := true
+
+
 testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 
 
 scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
-

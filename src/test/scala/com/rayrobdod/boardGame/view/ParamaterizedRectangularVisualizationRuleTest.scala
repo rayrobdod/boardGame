@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.swingView
+package com.rayrobdod.boardGame.view
 
 import org.scalatest.FunSpec
 import java.awt.Image
@@ -30,7 +30,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	
 	// TODO: equivalance partition to improve speed
 	describe ("Default Paramaterized visualization rule") {
-		val dut:ParamaterizedRectangularVisualizationRule[String] = new ParamaterizedRectangularVisualizationRule()
+		val dut:ParamaterizedRectangularVisualizationRule[String, _] = new ParamaterizedRectangularVisualizationRule()
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
