@@ -28,14 +28,14 @@ import scala.util.Random
  * @param stringIcon a function that produces an icon that displays a string
  */
 final case class IndexesTilesheet[Icon](
-	lightIcon:Icon,
-	darkIcon:Icon,
+	lightIcon:Function0[Icon],
+	darkIcon:Function0[Icon],
 	stringIcon:Function1[String, Icon]
 ) extends RectangularTilesheet[Any, Icon] {
 	override def name:String = "IndexesTilesheet"
 	override def toString:String = name
 	
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( if ((x + y) % 2 == 0) {lightIcon} else {darkIcon}, stringIcon(s"""($x, $y)""") ))
+		(( if ((x + y) % 2 == 0) {lightIcon()} else {darkIcon()}, stringIcon(s"""($x, $y)""") ))
 	}
 }

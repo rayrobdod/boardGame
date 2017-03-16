@@ -28,14 +28,14 @@ import scala.util.Random
  * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
  */
 final case class CheckerboardTilesheet[Icon](
-	transparentIcon:Icon,
-	lightIcon:Icon,
-	darkIcon:Icon
+	transparentIcon:Function0[Icon],
+	lightIcon:Function0[Icon],
+	darkIcon:Function0[Icon]
 ) extends RectangularTilesheet[Any, Icon] {
 	override def name:String = "Checkerboard"
 	override def toString:String = name
 	
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( if ((x + y) % 2 == 0) {lightIcon} else {darkIcon}, transparentIcon ))
+		(( if ((x + y) % 2 == 0) {lightIcon()} else {darkIcon()}, transparentIcon() ))
 	}
 }

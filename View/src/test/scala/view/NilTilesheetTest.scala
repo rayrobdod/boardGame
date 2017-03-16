@@ -22,16 +22,16 @@ import org.scalatest.FunSpec
 class NilTilesheetTest extends FunSpec {
 	describe ("NilTilesheet") {
 		it ("name is 'Nil'") {
-			assertResult("Nil"){NilTilesheet(1f).name}
+			assertResult("Nil"){NilTilesheet(() => 1f).name}
 		}
 		it ("getIconFor(null, 0, 0, null)._1 is BlankIcon") {
-			assertResult(1f){NilTilesheet(1f).getIconFor(null, 0, 0, null)._1}
+			assertResult(1f){NilTilesheet(() => 1f).getIconFor(null, 0, 0, null)._1}
 		}
 		it ("getIconFor(null, 0, 1, null)._1 is BlankIcon") {
-			assertResult(1f){NilTilesheet(1f).getIconFor(null, 0, 1, null)._1}
+			assertResult(1f){NilTilesheet(() => 1f).getIconFor(null, 0, 1, null)._1}
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is BlankIcon") {
-			assertResult(1f){NilTilesheet(1f).getIconFor(null, 0, 0, null)._2}
+			assertResult(1f){NilTilesheet(() => 1f).getIconFor(null, 0, 0, null)._2}
 		}
 	}
 	

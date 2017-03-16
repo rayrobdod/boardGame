@@ -46,9 +46,9 @@ object CheckerboardURIMatcher {
 			rgbToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon]
 		):CheckerboardTilesheet[Icon] = {
 			CheckerboardTilesheet(
-				transparentIcon(tileDimension),
-				rgbToIcon(light, tileDimension),
-				rgbToIcon(dark, tileDimension)
+				{() => transparentIcon(tileDimension)},
+				{() => rgbToIcon(light, tileDimension)},
+				{() => rgbToIcon(dark, tileDimension)}
 			)
 		}
 	}

@@ -43,7 +43,11 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	def blankIcon(size:Dimension):Node = new Rectangle(size.width, size.height, Color.TRANSPARENT)
 	def rgbToColor(rgb:AwtColor):Color = Color.rgb(rgb.getRed, rgb.getGreen, rgb.getBlue)
 	def rgbToIcon(rgb:AwtColor, size:Dimension):Node = new Rectangle(size.width, size.height, rgbToColor(rgb))
-	def stringIcon(text:String, rgb:AwtColor, size:Dimension):Node = new javafx.scene.text.Text(text)
+	def stringIcon(text:String, rgb:AwtColor, size:Dimension):Node = {
+		val a = new javafx.scene.text.Text(text)
+		a.setFill(rgbToColor(rgb))
+		a
+	}
 	
 	
 	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {

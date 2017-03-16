@@ -56,7 +56,8 @@ final class JsonTilesheetViewer2 extends Application {
 		val inputFields = new InputFields2(
 			initialTilesheetUrl = if (args.size > 0) args.get(0) else TAG_SHEET_NIL,
 			initialFieldUrl     = if (args.size > 1) args.get(1) else TAG_MAP_ROTATE,
-			initialRand         = if (args.size > 2) args.get(2) else ""
+			initialRand         = if (args.size > 2) args.get(2) else "",
+			stage = stage
 		)
 		val fieldComp = new StackPane()
 		
@@ -144,7 +145,9 @@ object JsonTilesheetViewer2 {
 				inputFields.rng
 			)
 			
-			fieldComp.getChildren().removeAll()
+			// `.retainAll` and `.removeAll` do the opposite of the name when they
+			// have no arguments; `.retainAll` removes all elements from the list
+			fieldComp.getChildren().retainAll()
 			fieldComp.getChildren().add(a._1)
 			fieldComp.getChildren().add(a._2)
 			
@@ -169,7 +172,7 @@ object JsonTilesheetViewer2 {
 				inputFields.rng
 			)
 			
-			fieldComp.getChildren().removeAll()
+			fieldComp.getChildren().retainAll()
 			fieldComp.getChildren().add(a._1)
 			fieldComp.getChildren().add(a._2)
 		}
@@ -201,7 +204,7 @@ object JsonTilesheetViewer2 {
 				inputFields.rng
 			)
 			
-			fieldComp.getChildren().removeAll()
+			fieldComp.getChildren().retainAll()
 			fieldComp.getChildren().add(a._1)
 			fieldComp.getChildren().add(a._2)
 			

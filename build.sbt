@@ -24,6 +24,9 @@ lazy val view = (project in file("View"))
 				, "com.rayrobdod" %% "utilities" % "20160112"
 				, "com.lihaoyi" %% "fastparse" % "0.4.2"
 			)
+			, unmanagedSourceDirectories in Test += (
+				baseDirectory.value / ".." / "ViewSwing" / "src" / "main" / "scala"
+			)
 		)
 	)
 

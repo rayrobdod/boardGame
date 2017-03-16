@@ -33,12 +33,12 @@ class JsonTilesheetViewerTest extends FunSpec {
 	describe ("allClassesInTilesheet") {
 		it ("NilTilesheet returns ['']"){
 			assertResult(List("")){
-				JsonTilesheetViewer.allClassesInTilesheet(new NilTilesheet(""))
+				JsonTilesheetViewer.allClassesInTilesheet(new NilTilesheet(() => ""))
 			}
 		}
 		it ("HashcodeColorTilesheet returns ['a','b','c','d']") {
 			assertResult(Seq("a", "b", "c", "d")){
-				JsonTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet(1,{(a) => 1}))
+				JsonTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet({() => 1},{(a) => 1}))
 			}
 		}
 		it ("VisualizationRuleBasedRectangularTilesheet() returns []") {

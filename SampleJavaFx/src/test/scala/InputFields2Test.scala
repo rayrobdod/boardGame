@@ -31,53 +31,53 @@ class InputFields2Test extends FunSpec {
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet.isInstanceOf[IndexesTilesheet[_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "", null).tilesheet.isInstanceOf[IndexesTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "", null).tilesheet.isInstanceOf[RandomColorTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null).tilesheet.isInstanceOf[NilTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "", null).tilesheet.isInstanceOf[HashcodeColorTilesheet[_]]}
 		}
 	}
 	describe ("InputFields2.rand") {
 		it ("string '' corresponds to scala.util.Random"){
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assertResult(scala.util.Random){new InputFields2("","","").rng}
+			assertResult(scala.util.Random){new InputFields2("","","", null).rng}
 		}
 		it ("string 'a' corresponds to a Random that always returns '1'"){
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assertResult(1){new InputFields2("","","a").rng.nextInt}
+			assertResult(1){new InputFields2("","","a", null).rng.nextInt}
 		}
 		it ("string 'b' corresponds to a Random that always returns '0'"){
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assertResult(0){new InputFields2("","","b").rng.nextInt}
+			assertResult(0){new InputFields2("","","b", null).rng.nextInt}
 		}
 		it ("string '123' corresponds to a Random with seed 123"){
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assertResult(new Random(123).nextInt){new InputFields2("","","123").rng.nextInt}
+			assertResult(new Random(123).nextInt){new InputFields2("","","123", null).rng.nextInt}
 		}
 		it ("errors when given input \"abc\""){
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
 			intercept[IllegalStateException]{
-				new InputFields2("","","abc").rng
+				new InputFields2("","","abc", null).rng
 			}
 		}
 	}
 	describe ("fieldIsRotationField") {
 		it ("is true if the Field is the specified string") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assertResult(true){new InputFields2("", "tag:rayrobdod.name,2013-08:map-rotate", "").fieldIsRotationField}
+			assertResult(true){new InputFields2("", "tag:rayrobdod.name,2013-08:map-rotate", "", null).fieldIsRotationField}
 		}
 		it ("is false otherwise") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assertResult(false){new InputFields2("", "", "").fieldIsRotationField}
+			assertResult(false){new InputFields2("", "", "", null).fieldIsRotationField}
 		}
 	}
 	describe ("field") {
@@ -87,7 +87,7 @@ class InputFields2Test extends FunSpec {
 			import com.rayrobdod.boardGame.RectangularField
 			val exp = RectangularField(Seq(Seq("a","b","c"), Seq("d","e","f")))
 			val url = this.getClass.getResource("abc.csv")
-			assertResult(exp){new InputFields2("", url.toString, "").field}
+			assertResult(exp){new InputFields2("", url.toString, "", null).field}
 		}
 	}
 }

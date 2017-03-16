@@ -41,9 +41,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[IconPart]
 	
 	
-	final def NilTilesheet:NilTilesheet[Icon] = new NilTilesheet[Icon](blankIcon(new Dimension(16, 16)))
+	final def NilTilesheet:NilTilesheet[Icon] = new NilTilesheet[Icon](() => blankIcon(new Dimension(16, 16)))
 	final def HashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[Icon] = {
-		new HashcodeColorTilesheet[Icon](blankIcon(dim), {x:Color => rgbToIcon(x, dim)})
+		new HashcodeColorTilesheet[Icon]({() => blankIcon(dim)}, {x:Color => rgbToIcon(x, dim)})
 	}
 	
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](

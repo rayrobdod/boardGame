@@ -26,7 +26,6 @@ import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.json.union.ParserRetVal.Complex
 import com.rayrobdod.boardGame.SpaceClassMatcher
-import com.rayrobdod.boardGame.swingView
 import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {

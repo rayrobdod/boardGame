@@ -20,6 +20,8 @@ package com.rayrobdod.jsonTilesheetViewer
 import java.awt.{Dimension, Color}
 import java.net.{URL, URI}
 import java.nio.charset.StandardCharsets.UTF_8
+import javafx.stage.Stage
+import javafx.stage.FileChooser.ExtensionFilter
 import javafx.scene.layout.GridPane
 import javafx.scene.text.Text
 import javafx.scene.control.{TextField, Button}
@@ -39,7 +41,8 @@ import com.rayrobdod.boardGame.view.Javafx._
 final class InputFields2(
 		initialTilesheetUrl:String,
 		initialFieldUrl:String,
-		initialRand:String
+		initialRand:String,
+		stage:Stage
 ) {
 	private def urlOrFileStringToUrl(s:String) = {
 		try {
@@ -51,11 +54,18 @@ final class InputFields2(
 	}
 	
 	
-	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getText match {
-		case TAG_SHEET_NIL => new NilTilesheet(Javafx.blankIcon(new Dimension(16,16)))
-		case TAG_SHEET_INDEX => new IndexesTilesheet(Javafx.rgbToIcon(Color.cyan, new Dimension(32, 32)), Javafx.rgbToIcon(Color.magenta, new Dimension(32, 32)), {s:String => Javafx.stringIcon(s, Color.black, new Dimension(32, 32))})
-		case TAG_SHEET_RAND => new RandomColorTilesheet(Javafx.rgbToIcon, Javafx.stringIcon, new Dimension(32, 32))
-		case TAG_SHEET_HASH => new HashcodeColorTilesheet(Javafx.blankIcon(new Dimension(24, 24)), {c => Javafx.rgbToIcon(c, new Dimension(24, 24))})
+	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getValue match {
+		case TAG_SHEET_NIL => Javafx.NilTilesheet
+		case TAG_SHEET_INDEX => new IndexesTilesheet(
+			{() => Javafx.rgbToIcon(Color.cyan, new Dimension(64, 24))},
+			{() => Javafx.rgbToIcon(Color.magenta, new Dimension(64, 24))},
+			{s:String => Javafx.stringIcon(s, Color.black, new Dimension(64, 24))}
+		)
+		case TAG_SHEET_RAND => new RandomColorTilesheet(
+			Javafx.rgbToIcon, Javafx.stringIcon, new Dimension(64, 24)
+		)
+		case TAG_SHEET_HASH => Javafx.HashcodeColorTilesheet(new Dimension(24, 24))
+		case CheckerboardURIMatcher(x) => x.apply(Javafx.blankIcon, Javafx.rgbToIcon)
 		case x => {
 			val url = urlOrFileStringToUrl(x)
 			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Javafx.compostLayers, Javafx.sheeturl2images).mapKey(StringOrInt.unwrapToString)
@@ -69,13 +79,13 @@ final class InputFields2(
 		}
 	}
 	def fieldIsRotationField:Boolean = {
-		fieldUrlBox.getText startsWith TAG_MAP_ROTATE
+		fieldUrlBox.getValue startsWith TAG_MAP_ROTATE
 	}
 	def field:RectangularField[SpaceClass] = {
 		import java.io.InputStreamReader
 		import com.opencsv.CSVReader
 		
-		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getText).openStream(), UTF_8)
+		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getValue).openStream(), UTF_8)
 		val layoutTable:Seq[Seq[String]] = {
 			import scala.collection.JavaConversions.collectionAsScalaIterable;
 			
@@ -109,13 +119,59 @@ final class InputFields2(
 	
 	
 	
+	private[this] val tilesheetFileChooser = new javafx.stage.FileChooser
+	tilesheetFileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+	private[this] val fieldFileChooser = new javafx.stage.FileChooser
+	fieldFileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+
 	
 	
 	
 	
 	val panel = new GridPane()
-	private val tilesheetUrlBox = new TextField(initialTilesheetUrl)
-	private val fieldUrlBox = new TextField(initialFieldUrl)
+	private val tilesheetUrlBox = {
+		val a = new javafx.scene.control.ComboBox[String]()
+		a.getItems().add(TAG_SHEET_NIL)
+		a.getItems().add(TAG_SHEET_INDEX)
+		a.getItems().add(TAG_SHEET_RAND)
+		a.getItems().add(TAG_SHEET_HASH)
+		a.getItems().add(TAG_SHEET_CHECKER)
+		a.getItems().add(TAG_SHEET_CHECKER + "?size=32&light=16711680&dark=255")
+		a.setEditable(true)
+		a.setValue(initialTilesheetUrl)
+		a
+	}
+	private val fieldUrlBox = {
+		val a = new javafx.scene.control.ComboBox[String]()
+		a.getItems().add(TAG_MAP_ROTATE)
+		a.setEditable(true)
+		a.setValue(initialFieldUrl)
+		a
+	}
+	private val tilesheetFileButton = {
+		val a = new javafx.scene.control.Button("…")
+		a.setOnAction(new javafx.event.EventHandler[javafx.event.ActionEvent]{
+			def handle(e:javafx.event.ActionEvent) = {
+				val res = tilesheetFileChooser.showOpenDialog(stage)
+				if (res != null) {
+					tilesheetUrlBox.setValue( res.toURI.toString )
+				}
+			}
+		})
+		a
+	}
+	private val fieldFileButton = {
+		val a = new javafx.scene.control.Button("…")
+		a.setOnAction(new javafx.event.EventHandler[javafx.event.ActionEvent]{
+			def handle(e:javafx.event.ActionEvent) = {
+				val res = fieldFileChooser.showOpenDialog(stage)
+				if (res != null) {
+					fieldUrlBox.setValue( res.toURI.toString )
+				}
+			}
+		})
+		a
+	}
 	private val randBox = new TextField(initialRand)
 	private val goButton = new Button("->")
 	
@@ -129,16 +185,19 @@ final class InputFields2(
 			val a = new javafx.scene.layout.ColumnConstraints()
 			a.setHgrow(javafx.scene.layout.Priority.ALWAYS)
 			a
-		}
+		},
+		new javafx.scene.layout.ColumnConstraints()
 	);
 	
 	panel.add(new Text("tilesheet: "), 0, 0, 1, 1)
 	panel.add(tilesheetUrlBox, 1, 0, 1, 1 )
+	panel.add(tilesheetFileButton, 2, 0, 1, 1)
 	panel.add(new Text("map: "), 0, 1, 1, 1)
 	panel.add(fieldUrlBox, 1, 1, 1, 1 )
+	panel.add(fieldFileButton, 2, 1, 1, 1 )
 	panel.add(new Text("seed: "), 0, 2, 1, 1)
-	panel.add(randBox, 1, 2, 1, 1 )
-	panel.add(goButton, 0, 3, 2, 1 )
+	panel.add(randBox, 1, 2, 2, 1 )
+	panel.add(goButton, 0, 3, 3, 1 )
 }
 
 

@@ -30,7 +30,11 @@ class RectangularFieldComponentTest extends FunSpec {
 	describe ("4x4 field using a default CheckerboardTilesheet") {
 		val uut = RectangularFieldComponent[Any](
 			RectangularField[Any]((0 to 3).map{x => (0 to 3).map{y => x * y}}),
-			new CheckerboardTilesheet(blankIcon(new java.awt.Dimension(16, 16)), new SolidColorIcon(Color.white, 16, 16), new SolidColorIcon(Color.black,16, 16))
+			new CheckerboardTilesheet(
+				() => blankIcon(new java.awt.Dimension(16, 16)),
+				() => new SolidColorIcon(Color.white, 16, 16),
+				() => new SolidColorIcon(Color.black,16, 16)
+			)
 		)._1
 		
 		it ("MaxSize.width is (16 * 4)"){

@@ -61,8 +61,8 @@ final class InputFields(
 	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getSelectedItem match {
 		case TAG_SHEET_NIL => Swing.NilTilesheet
 		case TAG_SHEET_INDEX => new view.IndexesTilesheet[Icon](
-			Swing.rgbToIcon(Color.cyan, new Dimension(64, 24)),
-			Swing.rgbToIcon(Color.magenta, new Dimension(64, 24)),
+			{() => Swing.rgbToIcon(Color.cyan, new Dimension(64, 24))},
+			{() => Swing.rgbToIcon(Color.magenta, new Dimension(64, 24))},
 			{s:String => Swing.stringIcon(s, Color.black, new Dimension(64, 24))}
 		)
 		case TAG_SHEET_RAND => new view.RandomColorTilesheet(
@@ -70,7 +70,7 @@ final class InputFields(
 				Swing.stringIcon,
 				new Dimension(64, 24)
 		)
-		case TAG_SHEET_HASH => new view.HashcodeColorTilesheet(Swing.blankIcon(new Dimension(24, 24)), {c:Color => Swing.rgbToIcon(c, new Dimension(24, 24))})
+		case TAG_SHEET_HASH => Swing.HashcodeColorTilesheet(new Dimension(24, 24))
 		case CheckerboardURIMatcher(x) => x.apply(Swing.blankIcon, Swing.rgbToIcon)
 		case x:String => {
 			val url = urlOrFileStringToUrl(x)
@@ -189,7 +189,7 @@ final class InputFields(
 	private val goButton = new JButton("->")
 	
 	private val label = GridBagConstraintsFactory(insets = new java.awt.Insets(0,5,0,5), fill = GridBagConstraints.BOTH)
-	private val midUrlBox = GridBagConstraintsFactory(fill = GridBagConstraints.BOTH)
+	private val midUrlBox = GridBagConstraintsFactory(fill = GridBagConstraints.BOTH, weightx = 10)
 	private val endOfLine = GridBagConstraintsFactory(gridwidth = GridBagConstraints.REMAINDER, weightx = 1, fill = GridBagConstraints.BOTH)
 	
 	panel.add(new JLabel("tilesheet: "), label)

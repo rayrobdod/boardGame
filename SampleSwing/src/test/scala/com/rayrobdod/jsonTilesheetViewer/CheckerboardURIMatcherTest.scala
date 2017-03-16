@@ -33,24 +33,28 @@ class CheckerboardURIMatcherTest extends FunSpec {
 	
 	describe ("CheckerboardTilesheetDelay") {
 		it ("Default is 24x24 black and white") {
-			assertResult( CheckerboardTilesheet( ((0, 24, 24)), ((-1, 24, 24)), ((0xFF000000, 24, 24)) ) ){
-				CheckerboardTilesheetDelay().apply(transIcon, rgbToIcon)
-			}
+			val dut = CheckerboardTilesheetDelay().apply(transIcon, rgbToIcon)
+			assertResult( ((0, 24, 24)) ){ dut.transparentIcon() }
+			assertResult( ((-1, 24, 24)) ){ dut.lightIcon() }
+			assertResult( ((0xFF000000, 24, 24)) ){ dut.darkIcon() }
 		}
 		it ("changing 'light' changes the light color") {
-			assertResult( CheckerboardTilesheet( ((0, 24, 24)), ((0xFFFF0000, 24, 24)), ((0xFF000000, 24, 24)) ) ){
-				CheckerboardTilesheetDelay(light = Color.RED).apply(transIcon, rgbToIcon)
-			}
+			val dut = CheckerboardTilesheetDelay(light = Color.RED).apply(transIcon, rgbToIcon)
+			assertResult( ((0, 24, 24)) ){ dut.transparentIcon() }
+			assertResult( ((0xFFFF0000, 24, 24)) ){ dut.lightIcon() }
+			assertResult( ((0xFF000000, 24, 24)) ){ dut.darkIcon() }
 		}
 		it ("changing 'dark' changes the dark color") {
-			assertResult( CheckerboardTilesheet( ((0, 24, 24)), ((0xFFFFFFFF, 24, 24)), ((0xFF0000FF, 24, 24)) ) ){
-				CheckerboardTilesheetDelay(dark = Color.BLUE).apply(transIcon, rgbToIcon)
-			}
+			val dut = CheckerboardTilesheetDelay(dark = Color.BLUE).apply(transIcon, rgbToIcon)
+			assertResult( ((0, 24, 24)) ){ dut.transparentIcon() }
+			assertResult( ((0xFFFFFFFF, 24, 24)) ){ dut.lightIcon() }
+			assertResult( ((0xFF0000FF, 24, 24)) ){ dut.darkIcon() }
 		}
 		it ("changing 'tileDimension' changes the dimension") {
-			assertResult( CheckerboardTilesheet( ((0, 12, 59)), ((0xFFFFFFFF, 12, 59)), ((0xFF000000, 12, 59)) ) ){
-				CheckerboardTilesheetDelay(tileDimension = new Dimension(12, 59)).apply(transIcon, rgbToIcon)
-			}
+			val dut = CheckerboardTilesheetDelay(tileDimension = new Dimension(12, 59)).apply(transIcon, rgbToIcon)
+			assertResult( ((0, 12, 59)) ){ dut.transparentIcon() }
+			assertResult( ((0xFFFFFFFF, 12, 59)) ){ dut.lightIcon() }
+			assertResult( ((0xFF000000, 12, 59)) ){ dut.darkIcon() }
 		}
 	}
 	describe ("CheckerboardURIMatcher.unapply") {

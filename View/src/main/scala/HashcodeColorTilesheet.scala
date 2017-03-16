@@ -32,14 +32,14 @@ import scala.util.Random
  * @note there is no good reason for this to have a type parameter.
  */
 final class HashcodeColorTilesheet[Icon](
-	transparentIcon:Icon,
+	transparentIcon:Function0[Icon],
 	colorToIcon:Function1[java.awt.Color, Icon]
 ) extends RectangularTilesheet[Any, Icon] {
 	override def name:String = "HashcodeColor"
 	override def toString:String = name
 	
 	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( colorToIcon(getColorFor(f,x,y)), transparentIcon ))
+		(( colorToIcon(getColorFor(f,x,y)), transparentIcon() ))
 	}
 	
 	private[this] def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):java.awt.Color = {

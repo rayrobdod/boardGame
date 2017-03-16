@@ -25,7 +25,7 @@ import com.rayrobdod.boardGame.RectangularField
 
 class IndexesTilesheetTest extends FunSpec {
 	describe ("IndexesTilesheet") {
-		val dut = new IndexesTilesheet[String]("light", "dark", {s => s})
+		val dut = new IndexesTilesheet[String]({() => "light"}, {() => "dark"}, {s => s})
 		it ("name is \"IndexesTilesheet\"") {
 			assertResult("IndexesTilesheet"){dut.name}
 		}
