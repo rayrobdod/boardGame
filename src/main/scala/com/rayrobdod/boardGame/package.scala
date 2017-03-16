@@ -35,9 +35,19 @@ package object boardGame {
 	 * @version next
 	 */
 	val ConstFalseSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(false)
+	
+	/** A CostFunction with a constant (1) cost for every move. */
+	val constantCostFunction:CostFunction[Any] = new CostFunction[Any]{def apply(from:Any, to:Any):Int = 1}
 }
 
 package boardGame {
+	
+	/**
+	 * A function that defines the 'cost' of moving from one space to the second space, under the assumption that two spaces are adjacent
+	 */
+	trait CostFunction[-A] {
+		def apply(from:A, to:A):Int
+	}
 	
 	/** A boolean match against a class */
 	trait SpaceClassMatcher[-SpaceClass] {

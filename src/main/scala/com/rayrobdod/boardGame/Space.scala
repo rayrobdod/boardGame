@@ -17,16 +17,15 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.{Set, List, Map => IMap}
+import scala.collection.immutable.{Seq, List, Map => IMap}
 import scala.collection.mutable.{Map => MMap}
-import Space.CostFunction
 
 /**
  * A spot on a board game board
- * @version 3.0.0
+ * @version 4.0
  * @tparam SpaceClass the type of domain object representing the properties of this space 
  */
-trait Space[SpaceClass] {
+trait Space[SpaceClass, Repr <: Space[SpaceClass, Repr]] {
 	/**
 	 * the domain object  representing the properties of this space 
 	 */
@@ -36,7 +35,7 @@ trait Space[SpaceClass] {
 	 * A space that is treated as adjacent to this one; such as a tile that can be directly
 	 * accessed from this tile without passing through other tiles
 	 */
-	def adjacentSpaces:Traversable[_ <: Space[SpaceClass]]
+	def adjacentSpaces:Seq[Repr]
 	
 	
 	
@@ -50,16 +49,18 @@ trait Space[SpaceClass] {
 	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return a set of all spaces that are `avaliableCost` or less spaces away according to the `costFunction`
 	 */
-	def spacesWithin(availableCost:Int, costFunction:CostFunction[SpaceClass]):Set[Space[SpaceClass]] = {
-		if (availableCost < 0) {Set.empty}
-		else if (availableCost == 0) {Set(this)}
+	def spacesWithin(availableCost:Int, costFunction:CostFunction[Repr])(implicit ev:this.type <:< Repr):Seq[Repr] = {
+		if (availableCost < 0) {Seq.empty}
+		else if (availableCost == 0) {Seq(this)}
 		else {
-			Set(this) ++ adjacentSpaces.flatMap((space:Space[SpaceClass]) => {
+			val a:Seq[Repr] = Seq(this)
+			val b:Seq[Repr] = adjacentSpaces.flatMap{(space:Repr) => 
 				space.spacesWithin(
 					availableCost - costFunction(this, space),
 					costFunction
 				)
-			})
+			}
+			(a ++ b).distinct
 		}
 	}
 	
@@ -70,16 +71,16 @@ trait Space[SpaceClass] {
 	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return Returns a set of all spaces that are exactly `avaliableCost` "movement" away according to the `costFunction`
 	 */
-	def spacesAfter(availableCost:Int, costFunction:CostFunction[SpaceClass]):Set[Space[SpaceClass]] = {
-		if (availableCost < 0) {Set.empty}
-		else if (availableCost == 0) {Set(this)}
+	def spacesAfter(availableCost:Int, costFunction:CostFunction[Repr])(implicit ev:this.type <:< Repr):Seq[Repr] = {
+		if (availableCost < 0) {Seq.empty}
+		else if (availableCost == 0) {Seq(this)}
 		else {
-			Set.empty ++ adjacentSpaces.flatMap((space:Space[SpaceClass]) => {
+			adjacentSpaces.flatMap((space:Repr) => {
 				space.spacesAfter(
 					availableCost - costFunction(this, space),
 					costFunction
 				)
-			})
+			}).to[Seq].distinct
 		}
 	}
 	
@@ -93,10 +94,10 @@ trait Space[SpaceClass] {
 	 * @param costFunction A function that defines the 'cost' of moving from the first space to the second space
 	 * @return the movementCost required to get from this space to other
 	 */
-	def distanceTo(other:Space[SpaceClass], costFunction:CostFunction[SpaceClass]):Int = {
-		val closed = MMap.empty[Space[SpaceClass], Int]
-		val open = MMap.empty[Space[SpaceClass], Int]
-		var checkingTile:(Space[SpaceClass], Int) = ((this, 0))
+	def distanceTo(other:Repr, costFunction:CostFunction[Repr])(implicit ev:this.type <:< Repr):Int = {
+		val closed = MMap.empty[Repr, Int]
+		val open = MMap.empty[Repr, Int]
+		var checkingTile:(Repr, Int) = ((this, 0))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -107,7 +108,7 @@ trait Space[SpaceClass] {
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
 			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
 			
-			unclosedNewTilesToCheck.foreach{(s:Space[SpaceClass]) => {
+			unclosedNewTilesToCheck.foreach{(s:Repr) => {
 				val newDistance = checkingTile._2 + costFunction(checkingTile._1, s)
 				val oldDistance = open.getOrElse(s, Integer.MAX_VALUE)
 				
@@ -133,10 +134,10 @@ trait Space[SpaceClass] {
 	 * @return a list of spaces such that the first space is this, the last space is other, and
 	 			the movement cost between the two is minimal
 	 */
-	def pathTo(other:Space[SpaceClass], costFunction:CostFunction[SpaceClass]):List[Space[SpaceClass]] = {
-		val closed = MMap.empty[Space[SpaceClass], (Int, Space[SpaceClass])]
-		val open = MMap.empty[Space[SpaceClass], (Int, Space[SpaceClass])]
-		var checkingTile:(Space[SpaceClass], (Int, Space[SpaceClass])) = ((this, ((0, null )) ))
+	def pathTo(other:Repr, costFunction:CostFunction[Repr])(implicit ev:this.type <:< Repr):List[Repr] = {
+		val closed = MMap.empty[Repr, (Int, Repr)]
+		val open = MMap.empty[Repr, (Int, Repr)]
+		var checkingTile:(Repr, (Int, Repr)) = ((this, ((0, null )) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -147,7 +148,7 @@ trait Space[SpaceClass] {
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
 			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
 			
-			unclosedNewTilesToCheck.foreach{(s:Space[SpaceClass]) => {
+			unclosedNewTilesToCheck.foreach{(s:Repr) => {
 				val newDistance = checkingTile._2._1 + costFunction(checkingTile._1, s)
 				val oldDistance = open.getOrElse(s, ((Integer.MAX_VALUE, None)) )._1
 				
@@ -159,8 +160,8 @@ trait Space[SpaceClass] {
 		open -= checkingTile._1
 		closed += checkingTile
 		
-		var currentTile:Space[SpaceClass] = other
-		var returnValue:List[Space[SpaceClass]] = other :: Nil
+		var currentTile:Repr = other
+		var returnValue:List[Repr] = other :: Nil
 		while ((closed(currentTile)._2) != null) {
 			currentTile = closed(currentTile)._2
 			returnValue = currentTile :: returnValue
@@ -174,11 +175,11 @@ trait Space[SpaceClass] {
 	 * @param costFunction the function defining the cost to move from one space to another
 	 * @return A map where the key is a space, and the value is the cost from here to the key, and how to get there.
 	 */
-	def rawDijkstraData(costFunction:CostFunction[SpaceClass]):IMap[Space[SpaceClass], (Int, Space[SpaceClass])] = {
+	def rawDijkstraData(costFunction:CostFunction[Repr])(implicit ev:this.type <:< Repr):IMap[Repr, (Int, Repr)] = {
 		
-		val closed = MMap.empty[Space[SpaceClass], (Int, Space[SpaceClass])]
-		val open = MMap.empty[Space[SpaceClass], (Int, Space[SpaceClass])]
-		var checkingTile:(Space[SpaceClass], (Int, Space[SpaceClass])) = ((this, ((0, null )) ))
+		val closed = MMap.empty[Repr, (Int, Repr)]
+		val open = MMap.empty[Repr, (Int, Repr)]
+		var checkingTile:(Repr, (Int, Repr)) = ((this, ((0, null )) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -188,7 +189,7 @@ trait Space[SpaceClass] {
 			val newTilesToCheck = checkingTile._1.adjacentSpaces
 			val unclosedNewTilesToCheck = newTilesToCheck.filter{! closed.contains(_)}
 			
-			unclosedNewTilesToCheck.foreach{(s:Space[SpaceClass]) => {
+			unclosedNewTilesToCheck.foreach{(s:Repr) => {
 				val newDistance = checkingTile._2._1 + costFunction(checkingTile._1, s)
 				val oldDistance = open.getOrElse(s, ((Integer.MAX_VALUE, None)) )._1
 				
@@ -202,14 +203,4 @@ trait Space[SpaceClass] {
 		
 		IMap.empty ++ closed
 	}
-}
-
-object Space {
-	
-	/** A function that defines the 'cost' of moving from one space to the second space, under the assumption that two spaces are adjacent */
-	type CostFunction[SpaceClass] = Function2[Space[_ <: SpaceClass], Space[_ <: SpaceClass], Int]
-	
-	/** A CostFunction with a constant (1) cost for every move. */
-	val constantCostFunction:CostFunction[Any] = {(from:Space[_], to:Space[_]) => 1}
-	
 }

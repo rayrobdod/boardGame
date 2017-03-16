@@ -18,30 +18,30 @@
 package com.rayrobdod.boardGame
 
 import org.scalatest.FunSpec
-import scala.collection.immutable.Set
+import scala.collection.immutable.Seq
 
 class UnidirectionalSpaceTest extends FunSpec {
 
 	val nilSpace = new UnidirectionalSpace("nilSpace", None)
 	val aSpace = new UnidirectionalSpace("a", Some(nilSpace))
 	val bSpace = new UnidirectionalSpace("b", Some(aSpace))
-	val spaceStringCostValue = {(from:Space[_ <: String], to:Space[_ <: String]) => to.typeOfSpace.toInt}
+	val spaceStringCostValue = new CostFunction[Space[String, _]]{def apply(from:Space[String, _], to:Space[String, _]) = to.typeOfSpace.toInt}
 	
 	
 	
 	describe ("UnidirectionalSpace") {
 		describe ("adjacentSpaces") {
-			it ("is Set.empty when nextSpace is None"){
+			it ("is Seq.empty when nextSpace is None"){
 				val res = None
 				val src = new UnidirectionalSpace("b", res)
 				
-				assertResult(Set.empty){src.adjacentSpaces}
+				assertResult(Seq.empty){src.adjacentSpaces}
 			}
-			it ("is Set(_) when nextSpace is Some(_)"){
+			it ("is Seq(_) when nextSpace is Some(_)"){
 				val res = Some(aSpace)
 				val src = new UnidirectionalSpace("b", res)
 				
-				assertResult(Set(aSpace)){src.adjacentSpaces}
+				assertResult(Seq(aSpace)){src.adjacentSpaces}
 			}
 		}
 		describe ("spaceAfter") {
@@ -49,32 +49,32 @@ class UnidirectionalSpaceTest extends FunSpec {
 			val spaceSeq = new UnidirectionalSpaceSeq(Some(firstSpace)) 
 			
 			describe ("is this when availiableCost is 0"){
-				it (" 0") { assertResult( Some(spaceSeq( 0)) ){spaceSeq( 0).spaceAfter(0, Space.constantCostFunction)} }
-				it (" 5") { assertResult( Some(spaceSeq( 5)) ){spaceSeq( 5).spaceAfter(0, Space.constantCostFunction)} }
-				it ("12") { assertResult( Some(spaceSeq(12)) ){spaceSeq(12).spaceAfter(0, Space.constantCostFunction)} }
-				it ("23") { assertResult( Some(spaceSeq(23)) ){spaceSeq(23).spaceAfter(0, Space.constantCostFunction)} }
-				it ("40") { assertResult( Some(spaceSeq(40)) ){spaceSeq(40).spaceAfter(0, Space.constantCostFunction)} }
+				it (" 0") { assertResult( Some(spaceSeq( 0)) ){spaceSeq( 0).spaceAfter(0, constantCostFunction)} }
+				it (" 5") { assertResult( Some(spaceSeq( 5)) ){spaceSeq( 5).spaceAfter(0, constantCostFunction)} }
+				it ("12") { assertResult( Some(spaceSeq(12)) ){spaceSeq(12).spaceAfter(0, constantCostFunction)} }
+				it ("23") { assertResult( Some(spaceSeq(23)) ){spaceSeq(23).spaceAfter(0, constantCostFunction)} }
+				it ("40") { assertResult( Some(spaceSeq(40)) ){spaceSeq(40).spaceAfter(0, constantCostFunction)} }
 			}
 			describe ("is None when availiableCost is negative"){
-				it (" 0") { assertResult( None ){spaceSeq( 0).spaceAfter(-2, Space.constantCostFunction)} }
-				it (" 5") { assertResult( None ){spaceSeq( 5).spaceAfter(-2, Space.constantCostFunction)} }
-				it ("12") { assertResult( None ){spaceSeq(12).spaceAfter(-2, Space.constantCostFunction)} }
-				it ("23") { assertResult( None ){spaceSeq(23).spaceAfter(-2, Space.constantCostFunction)} }
-				it ("40") { assertResult( None ){spaceSeq(40).spaceAfter(-2, Space.constantCostFunction)} }
+				it (" 0") { assertResult( None ){spaceSeq( 0).spaceAfter(-2, constantCostFunction)} }
+				it (" 5") { assertResult( None ){spaceSeq( 5).spaceAfter(-2, constantCostFunction)} }
+				it ("12") { assertResult( None ){spaceSeq(12).spaceAfter(-2, constantCostFunction)} }
+				it ("23") { assertResult( None ){spaceSeq(23).spaceAfter(-2, constantCostFunction)} }
+				it ("40") { assertResult( None ){spaceSeq(40).spaceAfter(-2, constantCostFunction)} }
 			}
 			describe ("is the next value when cost is one space"){
-				it (" 0") { assertResult( Some(spaceSeq( 1)) ){spaceSeq( 0).spaceAfter(1, Space.constantCostFunction)} }
-				it (" 5") { assertResult( Some(spaceSeq( 6)) ){spaceSeq( 5).spaceAfter(1, Space.constantCostFunction)} }
-				it ("12") { assertResult( Some(spaceSeq(13)) ){spaceSeq(12).spaceAfter(1, Space.constantCostFunction)} }
-				it ("23") { assertResult( Some(spaceSeq(24)) ){spaceSeq(23).spaceAfter(1, Space.constantCostFunction)} }
-				it ("40") { assertResult( None               ){spaceSeq(40).spaceAfter(1, Space.constantCostFunction)} }
+				it (" 0") { assertResult( Some(spaceSeq( 1)) ){spaceSeq( 0).spaceAfter(1, constantCostFunction)} }
+				it (" 5") { assertResult( Some(spaceSeq( 6)) ){spaceSeq( 5).spaceAfter(1, constantCostFunction)} }
+				it ("12") { assertResult( Some(spaceSeq(13)) ){spaceSeq(12).spaceAfter(1, constantCostFunction)} }
+				it ("23") { assertResult( Some(spaceSeq(24)) ){spaceSeq(23).spaceAfter(1, constantCostFunction)} }
+				it ("40") { assertResult( None               ){spaceSeq(40).spaceAfter(1, constantCostFunction)} }
 			}
 			describe ("is the next-next-next value when cost is three space"){
-				it (" 0") { assertResult( Some(spaceSeq( 3)) ){spaceSeq( 0).spaceAfter(3, Space.constantCostFunction)} }
-				it (" 5") { assertResult( Some(spaceSeq( 8)) ){spaceSeq( 5).spaceAfter(3, Space.constantCostFunction)} }
-				it ("12") { assertResult( Some(spaceSeq(15)) ){spaceSeq(12).spaceAfter(3, Space.constantCostFunction)} }
-				it ("23") { assertResult( Some(spaceSeq(26)) ){spaceSeq(23).spaceAfter(3, Space.constantCostFunction)} }
-				it ("40") { assertResult( None               ){spaceSeq(40).spaceAfter(3, Space.constantCostFunction)} }
+				it (" 0") { assertResult( Some(spaceSeq( 3)) ){spaceSeq( 0).spaceAfter(3, constantCostFunction)} }
+				it (" 5") { assertResult( Some(spaceSeq( 8)) ){spaceSeq( 5).spaceAfter(3, constantCostFunction)} }
+				it ("12") { assertResult( Some(spaceSeq(15)) ){spaceSeq(12).spaceAfter(3, constantCostFunction)} }
+				it ("23") { assertResult( Some(spaceSeq(26)) ){spaceSeq(23).spaceAfter(3, constantCostFunction)} }
+				it ("40") { assertResult( None               ){spaceSeq(40).spaceAfter(3, constantCostFunction)} }
 			}
 			describe ("takes into account the costFunction"){
 				it (" 0") { assertResult( Some(spaceSeq( 1)) ){spaceSeq( 0).spaceAfter( 1, spaceStringCostValue)} }

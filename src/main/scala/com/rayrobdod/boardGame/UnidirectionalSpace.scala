@@ -17,26 +17,26 @@
 */
 package com.rayrobdod.boardGame
 
-import scala.collection.immutable.{Set}
+import scala.collection.immutable.Seq
 
 
 /**
  * A [[com.rayrobdod.boardGame.Space]] in which a player can continue in only one direction.
  * 
  * @author Raymond Dodge
- * @version 3.0.0 rename from UnaryMovement
+ * @version 4.0
  * 
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
-final class UnidirectionalSpace[SpaceClass](override val typeOfSpace:SpaceClass, val nextSpace:Option[UnidirectionalSpace[SpaceClass]]) extends Space[SpaceClass]
+final class UnidirectionalSpace[SpaceClass](override val typeOfSpace:SpaceClass, val nextSpace:Option[UnidirectionalSpace[SpaceClass]]) extends Space[SpaceClass, UnidirectionalSpace[SpaceClass]]
 {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
 	 */
-	override def adjacentSpaces:Set[UnidirectionalSpace[SpaceClass]] = nextSpace.toList.toSet
+	override def adjacentSpaces:Seq[UnidirectionalSpace[SpaceClass]] = nextSpace.toList
 	
 	/**
 	 * Returns the space a player will reach when using a certain cost.
@@ -46,7 +46,7 @@ final class UnidirectionalSpace[SpaceClass](override val typeOfSpace:SpaceClass,
 	 * @throws ClassCastException if one of the next spaces is not an instance of UnaryMovement, which presumably means
 				there are multiple available adjacentSpaces.
 	 */
-	def spaceAfter(availableCost:Int, costFunction:Space.CostFunction[SpaceClass]):Option[UnidirectionalSpace[_]] =
+	def spaceAfter(availableCost:Int, costFunction:CostFunction[UnidirectionalSpace[SpaceClass]]):Option[UnidirectionalSpace[SpaceClass]] =
 	{
 		if (availableCost < 0) {None}
 		else if (availableCost == 0) {Option(this)}
