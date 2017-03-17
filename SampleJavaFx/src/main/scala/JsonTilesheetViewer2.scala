@@ -152,7 +152,7 @@ object JsonTilesheetViewer2 {
 			fieldComp.getChildren().add(a._2)
 			
 			
-			currentRotationState.indexies.foreach{index =>
+			currentRotationState.foreachIndex{index =>
 				import scala.collection.JavaConversions.collectionAsScalaIterable;
 				a._2.getChildren().filter{x =>
 					GridPane.getColumnIndex(x) == index._1 &&
@@ -208,7 +208,7 @@ object JsonTilesheetViewer2 {
 			fieldComp.getChildren().add(a._1)
 			fieldComp.getChildren().add(a._2)
 			
-			nextRotationState.indexies.foreach{index =>
+			nextRotationState.foreachIndex{index =>
 				import scala.collection.JavaConversions.collectionAsScalaIterable;
 				a._2.getChildren().filter{x =>
 					GridPane.getColumnIndex(x) == index._1 &&

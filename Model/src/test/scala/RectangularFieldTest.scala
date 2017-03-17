@@ -100,31 +100,31 @@ class RectangularFieldTest extends FunSpec {
 	describe ("RectangularField") {
 		it ("space above 0,1 is space 0,0"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.getSpaceAt(0,0)){a.getSpaceAt(0,1).get.up}
+			assertResult(a.getSpaceAt(0,0)){a.getSpaceAt(0,1).get.north}
 		}
 		it ("space above 1,1 is space 1,0"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.getSpaceAt(1,0)){a.getSpaceAt(1,1).get.up}
+			assertResult(a.getSpaceAt(1,0)){a.getSpaceAt(1,1).get.north}
 		}
 		it ("space below 1,1 is space 1,2"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.getSpaceAt(1,2)){a.getSpaceAt(1,1).get.down}
+			assertResult(a.getSpaceAt(1,2)){a.getSpaceAt(1,1).get.south}
 		}
-		it ("space left of 1,1 is space 0,1"){
+		it ("space west of 1,1 is space 0,1"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.getSpaceAt(0,1)){a.getSpaceAt(1,1).get.left}
+			assertResult(a.getSpaceAt(0,1)){a.getSpaceAt(1,1).get.west}
 		}
-		it ("space right of 1,1 is space 2,1"){
+		it ("space east of 1,1 is space 2,1"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.getSpaceAt(2,1)){a.getSpaceAt(1,1).get.right}
+			assertResult(a.getSpaceAt(2,1)){a.getSpaceAt(1,1).get.east}
 		}
-		it ("space right space left of 1,1 is space 1,1"){
+		it ("space east space west of 1,1 is space 1,1"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.getSpaceAt(1,1)){a.getSpaceAt(1,1).get.left.get.right}
+			assertResult(a.getSpaceAt(1,1)){a.getSpaceAt(1,1).get.west.get.east}
 		}
 		it ("space above of 0,0 is None"){
 			val a = RectangularField(threeByThree)
-			assertResult(None){a.getSpaceAt(0,0).get.up}
+			assertResult(None){a.getSpaceAt(0,0).get.north}
 		}
 		describe ("Space") {
 			it ("is equal to itself") {

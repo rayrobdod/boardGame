@@ -31,24 +31,26 @@ import scala.collection.immutable.{Seq, Map}
 final class RectangularField[SpaceClass](private val classes:Map[(Int, Int), SpaceClass]) {
 	def getSpaceAt(x:Int, y:Int):Option[StrictRectangularSpace[SpaceClass]] = classes.get( ((x,y)) ).map{sc => new Space(x, y)}
 	
+	/** @todo a lot of things assume minX and minY are 0. Either fix, or canonialize */
 	val minX = classes.map{_._1._1}.min
 	val maxX = classes.map{_._1._1}.max
+	/** @todo a lot of things assume minX and minY are 0. Either fix, or canonialize */
 	val minY = classes.map{_._1._2}.min
 	val maxY = classes.map{_._1._2}.max
 	val width = maxX - minX
 	val height = maxY - minY
 	def containsIndex(x:Int, y:Int):Boolean = classes.keySet.contains( ((x,y)) )
 	def mapIndex[A](f:((Int,Int)) => A) = classes.keySet.map(f)
-	def indexies:Set[(Int, Int)] = classes.keySet
+	def foreachIndex(f:((Int, Int)) => Unit) = classes.keySet.foreach(f)
 	
 	private final class Space(private val x:Int, private val y:Int) extends StrictRectangularSpace[SpaceClass] {
 		private val field = RectangularField.this
 		override def typeOfSpace:SpaceClass = RectangularField.this.classes.apply( ((x,y)) )
 		
-		override def left:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x - 1, y)
-		override def up:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y - 1)
-		override def right:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x + 1, y)
-		override def down:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y + 1)
+		override def west:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x - 1, y)
+		override def north:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y - 1)
+		override def east:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x + 1, y)
+		override def south:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y + 1)
 		
 		override def toString:String = s"RectangularField.Space(typ = $typeOfSpace, x = $x, y = $y, field = ${RectangularField.this})"
 		override def hashCode:Int = x * 31 + y

@@ -86,7 +86,7 @@ object JsonTilesheetViewer {
 			fieldComp.add(a._1)
 			
 			
-			currentRotationState.indexies.foreach{index =>
+			currentRotationState.foreachIndex{index =>
 				a._1.addMouseListener(index, new FieldRotationMouseListener(
 						index, currentRotationRotation, currentRotationState, fieldComp, inputFields
 				))
@@ -173,7 +173,7 @@ object JsonTilesheetViewer {
 			fieldComp.validate()
 			
 			
-			nextRotationState.indexies.foreach{index =>
+			nextRotationState.foreachIndex{index =>
 				a._1.addMouseListener(index, new FieldRotationMouseListener(
 						index, currentRotationRotation, nextRotationState, fieldComp, inputFields
 				))

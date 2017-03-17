@@ -24,6 +24,7 @@ import scala.collection.mutable.{Map => MMap}
  * A spot on a board game board
  * @version 4.0
  * @tparam SpaceClass the type of domain object representing the properties of this space 
+ * @tparam Repr the type of space representing every other space reachable from this space
  */
 trait Space[SpaceClass, Repr <: Space[SpaceClass, Repr]] {
 	/**
@@ -137,7 +138,7 @@ trait Space[SpaceClass, Repr <: Space[SpaceClass, Repr]] {
 	def pathTo(other:Repr, costFunction:CostFunction[Repr])(implicit ev:this.type <:< Repr):List[Repr] = {
 		val closed = MMap.empty[Repr, (Int, Repr)]
 		val open = MMap.empty[Repr, (Int, Repr)]
-		var checkingTile:(Repr, (Int, Repr)) = ((this, ((0, null )) ))
+		var checkingTile:(Repr, (Int, Repr)) = ((this, ((0, ev(null))) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		
@@ -179,7 +180,7 @@ trait Space[SpaceClass, Repr <: Space[SpaceClass, Repr]] {
 		
 		val closed = MMap.empty[Repr, (Int, Repr)]
 		val open = MMap.empty[Repr, (Int, Repr)]
-		var checkingTile:(Repr, (Int, Repr)) = ((this, ((0, null )) ))
+		var checkingTile:(Repr, (Int, Repr)) = ((this, ((0, ev(null))) ))
 		
 		// (Space, Int) is Space and a distance to the tile from this
 		

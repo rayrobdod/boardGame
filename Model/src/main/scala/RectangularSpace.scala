@@ -23,7 +23,7 @@ import scala.collection.immutable.Seq
  * A [[com.rayrobdod.boardGame.Space]] in a rectangular board, such that
  * it can have zero or one bordering space in each of the four cardinal directions.
  * 
- * Euclidean geometry says that `this.left.right == this` and `this.up.down == this`, similarly for each other
+ * Euclidean geometry says that `this.west.east == this` and `this.north.south == this`, similarly for each other
  * direction, but this makes no specific checks to that effect.
  * 
  * @author Raymond Dodge
@@ -32,20 +32,20 @@ import scala.collection.immutable.Seq
  * @tparam SpaceClass the type of spaceclass used by this class
  */
 trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Space[SpaceClass, Repr] {
-	/** The space that is located to the left  of this space, whatever 'left'  means */
-	def left:Option[Repr]
-	/** The space that is located to the up    of this space, whatever 'up'    means */
-	def up:Option[Repr]
-	/** The space that is located to the right of this space, whatever 'right' means */
-	def right:Option[Repr]
-	/** The space that is located to the down  of this space, whatever 'down'  means */
-	def down:Option[Repr]
+	/** The space that is located to the west  of this space */
+	def west:Option[Repr]
+	/** The space that is located to the north of this space */
+	def north:Option[Repr]
+	/** The space that is located to the east  of this space */
+	def east:Option[Repr]
+	/** The space that is located to the south of this space */
+	def south:Option[Repr]
 	
 	/**
-	 * the union of `this.left`, `this.up`, `this.right`, `this.down`
+	 * the union of `this.west`, `this.north`, `this.east`, `this.south`
 	 */
 	override def adjacentSpaces:Seq[Repr] = {
-		Seq(left, up, right, down).flatMap{_.to[Seq]}
+		Seq(west, north, east, south).flatMap{_.to[Seq]}
 	}
 }
 
@@ -59,46 +59,46 @@ trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, St
 }
 
 /**
- * A RectangularSpace where the values of `left`, `right`, `up` and `down` are
+ * A RectangularSpace where the values of `west`, `east`, `north` and `south` are
  * lazily evaluated from `scala.Function0`s
  * 
  * @version 4.0
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space 
- * @param leftFuture  A function that is called to determine the result of the `left`  method
- * @param upFuture    A function that is called to determine the result of the `up`    method
- * @param rightFuture A function that is called to determine the result of the `right` method
- * @param downFuture  A function that is called to determine the result of the `down`  method 
+ * @param westFuture  A function that is called to determine the result of the `west`  method
+ * @param northFuture A function that is called to determine the result of the `north` method
+ * @param eastFuture  A function that is called to determine the result of the `east`  method
+ * @param southFuture A function that is called to determine the result of the `south` method 
  */
 class RectangularSpaceViaFutures[SpaceClass, Repr <: Space[SpaceClass, Repr]](
 		val typeOfSpace:SpaceClass,
-		leftFuture:Function0[Option[Repr]],
-		upFuture:Function0[Option[Repr]],
-		rightFuture:Function0[Option[Repr]],
-		downFuture:Function0[Option[Repr]]
+		westFuture:Function0[Option[Repr]],
+		northFuture:Function0[Option[Repr]],
+		eastFuture:Function0[Option[Repr]],
+		southFuture:Function0[Option[Repr]]
 ) extends RectangularSpace[SpaceClass, Repr] {
-	lazy override val left:Option[Repr] = leftFuture()
-	lazy override val up:Option[Repr] = upFuture()
-	lazy override val right:Option[Repr] = rightFuture()
-	lazy override val down:Option[Repr] = downFuture()
+	lazy override val west:Option[Repr] = westFuture()
+	lazy override val north:Option[Repr] = northFuture()
+	lazy override val east:Option[Repr] = eastFuture()
+	lazy override val south:Option[Repr] = southFuture()
 }
 
 /**
- * A StrictRectangularSpace where the values of `left`, `right`, `up` and `down` are
+ * A StrictRectangularSpace where the values of `west`, `east`, `north` and `south` are
  * lazily evaluated from scala.Function0s
  * 
  * @version 4.0
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space
- * @param leftFuture  A function that is called to determine the result of the `left`  method
- * @param upFuture    A function that is called to determine the result of the `up`    method
- * @param rightFuture A function that is called to determine the result of the `right` method
- * @param downFuture  A function that is called to determine the result of the `down`  method 
+ * @param westFuture  A function that is called to determine the result of the `west`  method
+ * @param northFuture A function that is called to determine the result of the `north` method
+ * @param eastFuture  A function that is called to determine the result of the `east`  method
+ * @param southFuture A function that is called to determine the result of the `south` method 
  */
 final class StrictRectangularSpaceViaFutures[SpaceClass](
 		typeOfSpace:SpaceClass,
-		leftFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
-		upFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
-		rightFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
-		downFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]]
-) extends RectangularSpaceViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](typeOfSpace, leftFuture, upFuture, rightFuture, downFuture) with StrictRectangularSpace[SpaceClass]
+		westFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
+		northFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
+		eastFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
+		southFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]]
+) extends RectangularSpaceViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](typeOfSpace, westFuture, northFuture, eastFuture, southFuture) with StrictRectangularSpace[SpaceClass]

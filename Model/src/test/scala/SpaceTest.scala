@@ -104,8 +104,8 @@ class SpaceTest extends FunSpec {
 						assertResult(0){distance}
 					} else {
 						assert(
-							(target.asInstanceOf[RectangularSpace[(Int,Int), _]].up == Option(from)) ||
-							(target.asInstanceOf[RectangularSpace[(Int,Int), _]].left == Option(from))
+							(target.asInstanceOf[RectangularSpace[(Int,Int), _]].north == Option(from)) ||
+							(target.asInstanceOf[RectangularSpace[(Int,Int), _]].west == Option(from))
 						)
 						assertResult(uniformField.getSpaceAt(0,0).get.distanceTo(target, constantCostFunction)){distance}
 					}
