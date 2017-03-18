@@ -38,11 +38,11 @@ final class HashcodeColorTilesheet[Icon](
 	override def name:String = "HashcodeColor"
 	override def toString:String = name
 	
-	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+	def getIconFor(f:RectangularTilable[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
 		(( colorToIcon(getColorFor(f,x,y)), transparentIcon() ))
 	}
 	
-	private[this] def getColorFor(f:RectangularField[_ <: Any], x:Int, y:Int):java.awt.Color = {
+	private[this] def getColorFor(f:RectangularTilable[_ <: Any], x:Int, y:Int):java.awt.Color = {
 		val hash = f.getSpaceAt(x,y).map{_.typeOfSpace.hashCode}.getOrElse{0}
 		// reorder bits to make most colors not really close to black
 		val set1 = BitSet.fromBitMask(Array(hash))

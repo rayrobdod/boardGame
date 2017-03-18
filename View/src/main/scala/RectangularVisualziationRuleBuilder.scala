@@ -84,7 +84,7 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 		indexEquation.apply(x, y, width, height)
 	}
 	
-	override def surroundingTilesMatch(field:RectangularField[_ <: SpaceClass], x:Int, y:Int):Boolean = {
+	override def surroundingTilesMatch(field:RectangularTilable[_ <: SpaceClass], x:Int, y:Int):Boolean = {
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[SpaceClass]) =>
 			val newIndexies = conversion( ((x,y)) )

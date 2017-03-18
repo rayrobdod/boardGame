@@ -23,25 +23,22 @@ import scala.collection.immutable.{Seq, Map}
 /**
  * A RectangularField is a set of [[com.rayrobdod.boardGame.StrictRectangularSpace]]s,
  * such that each space is connected to adjacent spaces Euclidean-geometry wise
- * and that the spaces are arranged in a fully-filled n×m grid.
+ * and that the spaces are arranged in a n×m grid.
+ * 
+ * An examle of what this kind of board is appropriate for is the average turn-based strategy
+ * 
  * 
  * @since 4.0
  * @see [[com.rayrobdod.boardGame.StrictRectangularSpace]]
  */
-final class RectangularField[SpaceClass](private val classes:Map[(Int, Int), SpaceClass]) {
-	def getSpaceAt(x:Int, y:Int):Option[StrictRectangularSpace[SpaceClass]] = classes.get( ((x,y)) ).map{sc => new Space(x, y)}
+final class RectangularField[SpaceClass](
+	private val classes:Map[(Int, Int), SpaceClass]
+) extends RectangularTilable[SpaceClass] {
 	
-	/** @todo a lot of things assume minX and minY are 0. Either fix, or canonialize */
-	val minX = classes.map{_._1._1}.min
-	val maxX = classes.map{_._1._1}.max
-	/** @todo a lot of things assume minX and minY are 0. Either fix, or canonialize */
-	val minY = classes.map{_._1._2}.min
-	val maxY = classes.map{_._1._2}.max
-	val width = maxX - minX
-	val height = maxY - minY
-	def containsIndex(x:Int, y:Int):Boolean = classes.keySet.contains( ((x,y)) )
-	def mapIndex[A](f:((Int,Int)) => A) = classes.keySet.map(f)
-	def foreachIndex(f:((Int, Int)) => Unit) = classes.keySet.foreach(f)
+	override def getSpaceAt(x:Int, y:Int):Option[StrictRectangularSpace[SpaceClass]] = classes.get( ((x,y)) ).map{sc => new Space(x, y)}
+	
+	override def mapIndex[A](f:((Int,Int)) => A):Seq[A] = classes.keySet.to[Seq].map(f)
+	override def foreachIndex(f:((Int,Int)) => Unit):Unit = classes.keySet.foreach(f)
 	
 	private final class Space(private val x:Int, private val y:Int) extends StrictRectangularSpace[SpaceClass] {
 		private val field = RectangularField.this

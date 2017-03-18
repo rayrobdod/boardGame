@@ -34,7 +34,7 @@ final case class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon]
 ) extends RectangularTilesheet[SpaceClass, Icon] {
 	
-	override def getIconFor(field:RectangularField[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+	override def getIconFor(field:RectangularTilable[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon) = {
 		type ImageFrames = Seq[IconPart]
 		
 		val layers:Map[Int, ImageFrames] = {

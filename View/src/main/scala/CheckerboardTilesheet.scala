@@ -35,7 +35,7 @@ final case class CheckerboardTilesheet[Icon](
 	override def name:String = "Checkerboard"
 	override def toString:String = name
 	
-	def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+	def getIconFor(f:RectangularTilable[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
 		(( if ((x + y) % 2 == 0) {lightIcon()} else {darkIcon()}, transparentIcon() ))
 	}
 }

@@ -19,7 +19,7 @@ package com.rayrobdod.boardGame.view
 
 import java.awt.Color
 import scala.util.Random
-import com.rayrobdod.boardGame.RectangularField
+import com.rayrobdod.boardGame.RectangularTilable
 
 /**
  * A tilesheet for testing randoms. Isolating the problem.
@@ -33,7 +33,7 @@ final class RandomColorTilesheet[Icon](
 	override def name:String = "Random Color";
 	override def toString:String = name;
 	
-	override def getIconFor(f:RectangularField[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+	override def getIconFor(f:RectangularTilable[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
 		val background = new java.awt.Color(rng.nextInt)
 		val foreground = this.foreground(background)
 		val text = ("000000" + background.getRGB.toHexString).takeRight(6)
