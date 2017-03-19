@@ -25,8 +25,8 @@ import scala.collection.immutable.{Seq, Map}
  * such that each space is connected to adjacent spaces Euclidean-geometry wise
  * and that the spaces are arranged in a n×m grid.
  * 
- * An examle of what this kind of board is appropriate for is the average turn-based strategy
- * 
+ * An example of what this kind of board is appropriate for is the average
+ * turn-based strategy map
  * 
  * @since 4.0
  * @see [[com.rayrobdod.boardGame.StrictRectangularSpace]]
@@ -35,32 +35,15 @@ final class RectangularField[SpaceClass](
 	private val classes:Map[(Int, Int), SpaceClass]
 ) extends RectangularTilable[SpaceClass] {
 	
-	override def getSpaceAt(x:Int, y:Int):Option[StrictRectangularSpace[SpaceClass]] = classes.get( ((x,y)) ).map{sc => new Space(x, y)}
+	override def getSpaceAt(x:Int, y:Int):Option[StrictRectangularSpace[SpaceClass]] = {
+		classes.get( ((x,y)) ).map{sc => new RectangularField.Space(this, x, y)}
+	}
 	
-	override def mapIndex[A](f:((Int,Int)) => A):Seq[A] = classes.keySet.to[Seq].map(f)
-	override def foreachIndex(f:((Int,Int)) => Unit):Unit = classes.keySet.foreach(f)
-	
-	private final class Space(private val x:Int, private val y:Int) extends StrictRectangularSpace[SpaceClass] {
-		private val field = RectangularField.this
-		override def typeOfSpace:SpaceClass = RectangularField.this.classes.apply( ((x,y)) )
-		
-		override def west:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x - 1, y)
-		override def north:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y - 1)
-		override def east:Option[StrictRectangularSpace[SpaceClass]]  = RectangularField.this.getSpaceAt(x + 1, y)
-		override def south:Option[StrictRectangularSpace[SpaceClass]] = RectangularField.this.getSpaceAt(x, y + 1)
-		
-		override def toString:String = s"RectangularField.Space(typ = $typeOfSpace, x = $x, y = $y, field = ${RectangularField.this})"
-		override def hashCode:Int = x * 31 + y
-		override def equals(other:Any):Boolean = {
-			if (other.isInstanceOf[Space]) {
-				val other2 = other.asInstanceOf[Space]
-				other2.field == this.field &&
-					other2.x == this.x &&
-					other2.y == this.y
-			} else {
-				false
-			}
-		}
+	override def mapIndex[A](f:((Int,Int)) => A):Seq[A] = {
+		classes.keySet.to[Seq].map(f)
+	}
+	override def foreachIndex(f:((Int,Int)) => Unit):Unit = {
+		classes.keySet.foreach(f)
 	}
 	
 	override def hashCode:Int = this.classes.hashCode
@@ -73,6 +56,30 @@ final class RectangularField[SpaceClass](
 }
 
 object RectangularField {
+	
+	private[RectangularField] final class Space[SpaceClass](
+		private val field:RectangularField[SpaceClass],
+		private val x:Int,
+		private val y:Int
+	) extends StrictRectangularSpace[SpaceClass] {
+		
+		override def typeOfSpace:SpaceClass = field.classes.apply( ((x,y)) )
+		
+		override def west:Option[StrictRectangularSpace[SpaceClass]]  = field.getSpaceAt(x - 1, y)
+		override def north:Option[StrictRectangularSpace[SpaceClass]] = field.getSpaceAt(x, y - 1)
+		override def east:Option[StrictRectangularSpace[SpaceClass]]  = field.getSpaceAt(x + 1, y)
+		override def south:Option[StrictRectangularSpace[SpaceClass]] = field.getSpaceAt(x, y + 1)
+		
+		override def toString:String = s"RectangularField.Space(typ = $typeOfSpace, x = $x, y = $y, field = $field)"
+		override def hashCode:Int = x * 31 + y
+		override def equals(other:Any):Boolean = other match {
+			case other2:Space[_] =>
+				other2.field == this.field &&
+					other2.x == this.x &&
+					other2.y == this.y
+			case _ => false
+		}
+	}
 	
 	/**
 	 * A factory method for Rectangular Fields
