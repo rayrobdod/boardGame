@@ -27,15 +27,13 @@ import scala.util.Random
  * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
  * @param stringIcon a function that produces an icon that displays a string
  */
-final class IndexesTilesheet[Icon](
-	lightIcon:Function0[Icon],
-	darkIcon:Function0[Icon],
+final class IndexesTilesheet[Index, Icon](
+	fillIcon:Function1[Index, Icon],
 	stringIcon:Function1[String, Icon]
-) extends RectangularTilesheet[Any, Icon] {
-	override def name:String = "IndexesTilesheet"
-	override def toString:String = name
+) extends Tilesheet[Any, Index, Icon] {
+	override def toString:String = "IndexesTilesheet"
 	
-	def getIconFor(f:RectangularTiling[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( if ((x + y) % 2 == 0) {lightIcon()} else {darkIcon()}, stringIcon(s"""($x, $y)""") ))
+	override def getIconFor(f:Tiling[_ <: Any, Index, _], idx:Index, rng:Random):(Icon, Icon) = {
+		(( fillIcon(idx), stringIcon(idx.toString) ))
 	}
 }

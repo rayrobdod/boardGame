@@ -79,19 +79,19 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 	tileRand:Int = 1,
 	indexEquation:CoordinateFunction[Boolean] = CoordinateFunction.constant(true),
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[SpaceClass]] = Map.empty[IndexConverter, SpaceClassMatcher[SpaceClass]]
-) extends RectangularVisualizationRule[SpaceClass, IconPart] {
+) extends VisualizationRule[SpaceClass, RectangularIndex, IconPart] {
 	def indexiesMatch(x:Int, y:Int, w:Int, h:Int):Boolean = this.indexiesMatch(x,y)
 	
-	override def indexiesMatch(x:Int, y:Int):Boolean = {
-		indexEquation.apply(x, y, 100, 100)
+	override def indexiesMatch(xy:RectangularIndex):Boolean = {
+		indexEquation.apply(xy._1, xy._2, 100, 100)
 	}
 	
-	override def surroundingTilesMatch(field:RectangularTiling[_ <: SpaceClass], x:Int, y:Int):Boolean = {
+	override def surroundingTilesMatch(field:Tiling[_ <: SpaceClass, RectangularIndex, _], xy:RectangularIndex):Boolean = {
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[SpaceClass]) =>
-			val newIndexies = conversion( ((x,y)) )
-			field.space(newIndexies._1, newIndexies._2).map{space =>
-				scc.unapply(space.typeOfSpace)
+			val newIndexies = conversion( xy )
+			field.spaceClass(newIndexies._1, newIndexies._2).map{spaceClass =>
+				scc.unapply(spaceClass)
 			}.getOrElse(true)
 		}.tupled)
 	}
@@ -209,8 +209,8 @@ private object RectangularVisualziationRuleBuilder {
  */
 private[view] object ParamaterizedRectangularVisualizationRule
 {
-	def PriorityOrdering:Ordering[RectangularVisualizationRule[_,_]] = {
-		Ordering.by[RectangularVisualizationRule[_,_], Int]{(x:RectangularVisualizationRule[_,_]) => x.priority}
+	def PriorityOrdering:Ordering[VisualizationRule[_,_,_]] = {
+		Ordering.by[VisualizationRule[_,_,_], Int]{(x:VisualizationRule[_,_,_]) => x.priority}
 	}
 
 	object FullOrdering extends Ordering[ParamaterizedRectangularVisualizationRule[_,_]] {

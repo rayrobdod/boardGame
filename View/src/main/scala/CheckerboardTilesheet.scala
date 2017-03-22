@@ -31,11 +31,10 @@ final class CheckerboardTilesheet[Icon](
 	transparentIcon:Function0[Icon],
 	lightIcon:Function0[Icon],
 	darkIcon:Function0[Icon]
-) extends RectangularTilesheet[Any, Icon] {
-	override def name:String = "Checkerboard"
-	override def toString:String = name
+) extends Tilesheet[Any, RectangularIndex, Icon] {
+	override def toString:String = "Checkerboard"
 	
-	def getIconFor(f:RectangularTiling[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( if ((x + y) % 2 == 0) {lightIcon()} else {darkIcon()}, transparentIcon() ))
+	override def getIconFor(f:Tiling[_ <: Any, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = {
+		(( if ((xy._1 + xy._2) % 2 == 0) {lightIcon()} else {darkIcon()}, transparentIcon() ))
 	}
 }

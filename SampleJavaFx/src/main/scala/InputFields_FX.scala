@@ -54,11 +54,10 @@ final class InputFields2(
 	}
 	
 	
-	def tilesheet:RectangularTilesheet[SpaceClass, javafx.scene.Node] = tilesheetUrlBox.getValue match {
+	def tilesheet:Tilesheet[SpaceClass, RectangularIndex, javafx.scene.Node] = tilesheetUrlBox.getValue match {
 		case TAG_SHEET_NIL => Javafx.NilTilesheet
 		case TAG_SHEET_INDEX => new IndexesTilesheet(
-			{() => Javafx.rgbToIcon(Color.cyan, new Dimension(64, 24))},
-			{() => Javafx.rgbToIcon(Color.magenta, new Dimension(64, 24))},
+			{(xy:RectangularIndex) => Javafx.rgbToIcon(if ((xy._1 + xy._2) % 2 == 0) {Color.cyan} else {Color.magenta}, new Dimension(64, 24))},
 			{s:String => Javafx.stringIcon(s, Color.black, new Dimension(64, 24))}
 		)
 		case TAG_SHEET_RAND => new RandomColorTilesheet(

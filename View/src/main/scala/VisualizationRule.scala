@@ -19,7 +19,7 @@ package com.rayrobdod.boardGame.view
 
 import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
-import com.rayrobdod.boardGame.RectangularTiling
+import com.rayrobdod.boardGame.Tiling
 
 /**
  * A single rule for associating images with spots on a RectangularTiling
@@ -28,15 +28,15 @@ import com.rayrobdod.boardGame.RectangularTiling
  * @tparam SpaceClass the types of spaces to deal with
  * @tparam ImagePart icon parts
  */
-abstract class RectangularVisualizationRule[SpaceClass, IconPart] {
+abstract class VisualizationRule[SpaceClass, Index, IconPart] {
 	
 	/**
 	 * Returns the images to be used if this visualization rule applies 
 	 */
 	def iconParts:Map[Int, Seq[IconPart]]
 	
-	protected def indexiesMatch(x:Int, y:Int):Boolean
-	protected def surroundingTilesMatch(field:RectangularTiling[_ <: SpaceClass], x:Int, y:Int):Boolean
+	protected def indexiesMatch(xy:Index):Boolean
+	protected def surroundingTilesMatch(field:Tiling[_ <: SpaceClass, Index, _], xy:Index):Boolean
 	protected def randsMatch(rng:Random):Boolean
 	
 	/**
@@ -48,9 +48,9 @@ abstract class RectangularVisualizationRule[SpaceClass, IconPart] {
 	 * @param y the y-coordinate of the tile to check
 	 * @param rng a Random to allow for randomness
 	 */
-	final def matches(field:RectangularTiling[_ <: SpaceClass], x:Int, y:Int, rng:Random):Boolean = {
-		indexiesMatch(x, y) &&
-				surroundingTilesMatch(field, x, y) &&
+	final def matches(field:Tiling[_ <: SpaceClass, Index, _], xy:Index, rng:Random):Boolean = {
+		indexiesMatch(xy) &&
+				surroundingTilesMatch(field, xy) &&
 				randsMatch(rng)
 	}
 	

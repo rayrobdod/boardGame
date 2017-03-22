@@ -39,7 +39,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				Nil,
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -54,7 +54,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -69,7 +69,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -84,7 +84,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -99,7 +99,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -114,7 +114,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -129,7 +129,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -148,7 +148,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -167,7 +167,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareImages(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -182,7 +182,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareAnimImage(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -197,7 +197,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareAnimImage(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))
@@ -212,7 +212,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 				),
 				compostLayers
 			)
-			val result = dut.getIconFor(singleRectangularField, 0,0, Random)
+			val result = dut.getIconFor(singleRectangularField, (0,0), Random)
 			
 			assert(compareAnimImage(expected._1, result._1))
 			assert(compareImages(expected._2, result._2))

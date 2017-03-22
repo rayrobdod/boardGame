@@ -29,19 +29,19 @@ import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
  * @version 3.0.0
  */
 final class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](
-		override val name:String,
-		val visualizationRules:Seq[view.RectangularVisualizationRule[SpaceClass, IconPart]],
+		name:String,
+		val visualizationRules:Seq[view.VisualizationRule[SpaceClass, RectangularIndex, IconPart]],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon]
-) extends RectangularTilesheet[SpaceClass, Icon] {
+) extends Tilesheet[SpaceClass, RectangularIndex, Icon] {
 	
-	override def getIconFor(field:RectangularTiling[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+	override def getIconFor(field:Tiling[_ <: SpaceClass, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = {
 		type ImageFrames = Seq[IconPart]
 		
 		val layers:Map[Int, ImageFrames] = {
 			import ParamaterizedRectangularVisualizationRule.PriorityOrdering
 			
 			visualizationRules.filter{
-				_.matches(field, x, y, rng)
+				_.matches(field, xy, rng)
 			}.toSeq.sorted(PriorityOrdering).foldLeft(Map.empty[Int, ImageFrames]){
 				_ ++ _.iconParts
 			}

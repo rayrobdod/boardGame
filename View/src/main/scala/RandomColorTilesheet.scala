@@ -19,21 +19,21 @@ package com.rayrobdod.boardGame.view
 
 import java.awt.Color
 import scala.util.Random
-import com.rayrobdod.boardGame.RectangularTiling
+import com.rayrobdod.boardGame.Space
+import com.rayrobdod.boardGame.Tiling
 
 /**
  * A tilesheet for testing randoms. Isolating the problem.
  * 
  */
-final class RandomColorTilesheet[Icon](
+final class RandomColorTilesheet[Index, Icon](
 		colorToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon],
 		stringIcon:Function3[String, java.awt.Color, java.awt.Dimension, Icon],
 		iconDimension:java.awt.Dimension = new java.awt.Dimension(64, 24)
-) extends RectangularTilesheet[Any, Icon] {
-	override def name:String = "Random Color";
-	override def toString:String = name;
+) extends Tilesheet[Any, Index, Icon] {
+	override def toString:String = "Random Color"
 	
-	override def getIconFor(f:RectangularTiling[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
+	override def getIconFor(f:Tiling[_ <: Any, Index, _], x:Index, rng:Random):(Icon, Icon) = {
 		val background = new java.awt.Color(rng.nextInt)
 		val foreground = this.foreground(background)
 		val text = ("000000" + background.getRGB.toHexString).takeRight(6)

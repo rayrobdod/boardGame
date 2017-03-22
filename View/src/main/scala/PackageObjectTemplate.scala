@@ -15,7 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.rayrobdod.boardGame.view
+package com.rayrobdod.boardGame
+package view
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
@@ -42,8 +43,11 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	
 	
 	final def NilTilesheet:NilTilesheet[Icon] = new NilTilesheet[Icon](() => blankIcon(new Dimension(16, 16)))
-	final def HashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[Icon] = {
-		new HashcodeColorTilesheet[Icon]({() => blankIcon(dim)}, {x:Color => rgbToIcon(x, dim)})
+	final def HashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[RectangularIndex, Icon] = {
+		new HashcodeColorTilesheet[RectangularIndex, Icon](
+			{() => blankIcon(dim)},
+			{x:Color => rgbToIcon(x, dim)}
+		)
 	}
 	
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](

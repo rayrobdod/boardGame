@@ -72,7 +72,6 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 			)
 			val result = source.apply()
 			
-			assertResult("name"){result.name}
 			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[String, _]]}
 			assertResult("(x == 0)"){resRules(0).indexEquation.toString}
 			assertResult("true"){resRules(1).indexEquation.toString}

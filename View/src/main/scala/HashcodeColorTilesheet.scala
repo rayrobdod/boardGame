@@ -25,25 +25,22 @@ import scala.util.Random
  * A tilesheet that makes solid color tile images, where the color of each
  * tile is dependent upon that tile's space's spaceClass's hashcode. 
  * 
- * @version 3.0.0
- * 
  * @constructor Creates a CheckerboardTilesheet
  * @param dim the size of each tile in the checkerboard
  * @note there is no good reason for this to have a type parameter.
  */
-final class HashcodeColorTilesheet[Icon](
+final class HashcodeColorTilesheet[Index, Icon](
 	transparentIcon:Function0[Icon],
 	colorToIcon:Function1[java.awt.Color, Icon]
-) extends RectangularTilesheet[Any, Icon] {
-	override def name:String = "HashcodeColor"
-	override def toString:String = name
+) extends Tilesheet[Any, Index, Icon] {
+	override def toString:String = "HashcodeColor"
 	
-	def getIconFor(f:RectangularTiling[_ <: Any], x:Int, y:Int, rng:Random):(Icon, Icon) = {
-		(( colorToIcon(getColorFor(f,x,y)), transparentIcon() ))
+	def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
+		(( colorToIcon(getColorFor(f,xy)), transparentIcon() ))
 	}
 	
-	private[this] def getColorFor(f:RectangularTiling[_ <: Any], x:Int, y:Int):java.awt.Color = {
-		val hash = f.space(x,y).map{_.typeOfSpace.hashCode}.getOrElse{0}
+	private[this] def getColorFor(f:Tiling[_ <: Any, Index, _], xy:Index):java.awt.Color = {
+		val hash = f.spaceClass(xy).map{_.hashCode}.getOrElse{0}
 		// reorder bits to make most colors not really close to black
 		val set1 = BitSet.fromBitMask(Array(hash))
 		val color = Seq(

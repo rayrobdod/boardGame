@@ -48,6 +48,10 @@ class RectangularFieldTest extends FunSpec {
 			val a = RectangularField(twoByTwoMap)
 			intercept[NoSuchElementException]{a.space(3,0).get}
 		}
+		it ("mapIndex") {
+			val a = RectangularField(twoByTwoMap)
+			assertResult( Seq((0,0), (0,1), (1,0), (1,1)) ){a.mapIndex{x => x}}
+		}
 	}
 	describe ("The RectangularField Seq[Seq[_]] Factory") {
 		it ("resultant space class 0,0 matches input"){

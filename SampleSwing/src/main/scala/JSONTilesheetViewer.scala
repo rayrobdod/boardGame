@@ -109,7 +109,7 @@ object JsonTilesheetViewer {
 	
 	
 	
-	def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass, _]):Seq[SpaceClass] = {
+	def allClassesInTilesheet(f:Tilesheet[SpaceClass, RectangularIndex, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.view.ParamaterizedRectangularVisualizationRule
 		import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheet
@@ -133,7 +133,7 @@ object JsonTilesheetViewer {
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet[_] => Seq("a", "b", "c", "d")
+			case x:HashcodeColorTilesheet[_, _] => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		

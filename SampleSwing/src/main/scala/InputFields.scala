@@ -58,11 +58,10 @@ final class InputFields(
 	}
 	
 	
-	def tilesheet:RectangularTilesheet[SpaceClass, Icon] = tilesheetUrlBox.getSelectedItem match {
+	def tilesheet:Tilesheet[SpaceClass, RectangularIndex, Icon] = tilesheetUrlBox.getSelectedItem match {
 		case TAG_SHEET_NIL => Swing.NilTilesheet
-		case TAG_SHEET_INDEX => new view.IndexesTilesheet[Icon](
-			{() => Swing.rgbToIcon(Color.cyan, new Dimension(64, 24))},
-			{() => Swing.rgbToIcon(Color.magenta, new Dimension(64, 24))},
+		case TAG_SHEET_INDEX => new view.IndexesTilesheet(
+			{(xy:RectangularIndex) => Swing.rgbToIcon(if ((xy._1 + xy._2) % 2 == 0) {Color.cyan} else {Color.magenta}, new Dimension(64, 24))},
 			{s:String => Swing.stringIcon(s, Color.black, new Dimension(64, 24))}
 		)
 		case TAG_SHEET_RAND => new view.RandomColorTilesheet(

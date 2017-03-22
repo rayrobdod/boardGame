@@ -39,7 +39,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 				width <- x to 10;
 				height <- y to 10
 			 ) {
-				assert( dut.indexiesMatch(x, y) )
+				assert( dut.indexiesMatch((x,y)) )
 			}
 		}
 		it ("rands always match") {
@@ -54,7 +54,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => rng.nextString(rng.nextInt(10))}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				assert( dut.surroundingTilesMatch(map, x, y) )
+				assert( dut.surroundingTilesMatch(map, (x,y)) )
 			}}
 		}
 		it ("overall always match") {
@@ -62,7 +62,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => rng.nextString(rng.nextInt(10))}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				dut.matches(map, x, y, rng)
+				dut.matches(map, (x,y), rng)
 			}}
 		}
 		it ("has a priority of 1") {
@@ -93,7 +93,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => rng.nextString(rng.nextInt(10))}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				assert( dut.surroundingTilesMatch(map, x, y) )
+				assert( dut.surroundingTilesMatch(map, (x,y)) )
 			}}
 		}
 		it ("overall always match") {
@@ -101,7 +101,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => rng.nextString(rng.nextInt(10))}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				dut.matches(map, x, y, rng)
+				dut.matches(map, (x,y), rng)
 			}}
 		}
 		it ("has a priority of 2") {
@@ -133,9 +133,9 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.space(x, y).get.typeOfSpace == "a"
+				val expected = map.space((x,y)).get.typeOfSpace == "a"
 				
-				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
 			}}
 		}
 		it ("has a priority of 10001") {
@@ -151,9 +151,9 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.space(x, y - 1).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space((x, y - 1)).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
-				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
 			}}
 		}
 		it ("has a priority of 10001") {
@@ -169,9 +169,9 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.space(x, y + 1).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space((x, y + 1)).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
-				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
 			}}
 		}
 		it ("has a priority of 10001") {
@@ -189,7 +189,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
 				val expected = map.space(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
-				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
 			}}
 		}
 		it ("has a priority of 10001") {
@@ -206,9 +206,9 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
 				val expected = map.space(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a" &&
-				               map.space(x, y).map{_.typeOfSpace}.getOrElse("a") == "a"
+				               map.space((x,y)).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
-				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
+				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
 			}}
 		}
 		it ("has a priority of 20001") {

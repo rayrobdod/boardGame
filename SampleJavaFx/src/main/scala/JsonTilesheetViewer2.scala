@@ -39,6 +39,7 @@ import java.nio.file.{Path, Paths, Files}
 import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Javafx._
 import com.rayrobdod.boardGame.{
+		RectangularIndex,
 		RectangularField, RectangularSpace
 }
 import com.rayrobdod.json.parser.JsonParser
@@ -98,7 +99,7 @@ object JsonTilesheetViewer2 {
 		Application.launch(classOf[JsonTilesheetViewer2], args:_*)
 	}
 	
-	private def allClassesInTilesheet(f:RectangularTilesheet[SpaceClass, _]):Seq[SpaceClass] = {
+	private def allClassesInTilesheet(f:Tilesheet[SpaceClass, RectangularIndex, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.view.ParamaterizedRectangularVisualizationRule
 		import com.rayrobdod.boardGame.view.VisualizationRuleBasedRectangularTilesheet
@@ -122,7 +123,7 @@ object JsonTilesheetViewer2 {
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet[_] => Seq("a", "b", "c", "d")
+			case x:HashcodeColorTilesheet[_,_] => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		

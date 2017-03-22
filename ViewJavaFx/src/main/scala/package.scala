@@ -109,11 +109,11 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	
 	def RectangularFieldComponent[A](
 			field:RectangularField[A],
-			tilesheet:RectangularTilesheet[A, javafx.scene.Node],
+			tilesheet:Tilesheet[A, RectangularIndex, javafx.scene.Node],
 			rng:Random = Random
 	):(GridPane, GridPane) = {
 		
-		val a:Map[(Int, Int), (Node, Node)] = field.mapIndex{x => ((x, tilesheet.getIconFor(field, x._1, x._2, rng) )) }.toMap
+		val a:Map[(Int, Int), (Node, Node)] = field.mapIndex{xy => ((xy, tilesheet.getIconFor(field, xy, rng) )) }.toMap
 		val top = a.mapValues{_._1}
 		val bot = a.mapValues{_._2}
 		

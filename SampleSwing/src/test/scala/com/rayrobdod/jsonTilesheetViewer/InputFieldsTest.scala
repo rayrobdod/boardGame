@@ -26,16 +26,16 @@ class InputFieldsTest extends FunSpec {
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet.isInstanceOf[IndexesTilesheet[_]]}
+			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet.isInstanceOf[IndexesTilesheet[_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_]]}
+			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
 			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_]]}
+			assert{new InputFields("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_]]}
 		}
 	}
 	describe ("InputFields.rand") {
