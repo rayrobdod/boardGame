@@ -28,7 +28,7 @@ import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
  * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
  * @version 3.0.0
  */
-final case class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](
+final class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](
 		override val name:String,
 		val visualizationRules:Seq[view.RectangularVisualizationRule[SpaceClass, IconPart]],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon]

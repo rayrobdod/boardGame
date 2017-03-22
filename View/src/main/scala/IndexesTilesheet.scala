@@ -27,7 +27,7 @@ import scala.util.Random
  * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
  * @param stringIcon a function that produces an icon that displays a string
  */
-final case class IndexesTilesheet[Icon](
+final class IndexesTilesheet[Icon](
 	lightIcon:Function0[Icon],
 	darkIcon:Function0[Icon],
 	stringIcon:Function1[String, Icon]

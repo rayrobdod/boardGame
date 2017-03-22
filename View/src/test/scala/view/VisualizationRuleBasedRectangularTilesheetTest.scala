@@ -35,7 +35,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 	describe("VisualizationRuleBasedRectangularTilesheet") {
 		it ("empty input results in two transparent images") {
 			val expected = (solidTrans, solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Nil,
 				compostLayers
 			)
@@ -46,7 +46,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("single image on a negative layer is on the bottom icon") {
 			val expected = (solidRed, solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(solidRed))
@@ -61,7 +61,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("single image on a positive layer is on the bottom icon") {
 			val expected = (solidTrans, solidRed)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(0 -> Seq(solidRed))
@@ -76,7 +76,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("single image on a positive layer is on the top icon") {
 			val expected = (solidTrans, solidRed)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(0 -> Seq(solidRed))
@@ -91,7 +91,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("one image each on -1 and 0") {
 			val expected = (solidRed, solidRed)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(solidRed), 0 -> Seq(solidRed))
@@ -106,7 +106,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("lower layers are below higher layers") {
 			val expected = (topGreenBottomRed, solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-5 -> Seq(solidRed), -1 -> Seq(topGreen))
@@ -121,7 +121,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("lower layers are below higher layers (2)") {
 			val expected = (solidRed, solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-5 -> Seq(topGreen), -1 -> Seq(solidRed))
@@ -136,7 +136,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("thing with higher priority is used") {
 			val expected = (topGreen, solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(solidRed))
@@ -155,7 +155,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("thing with non-matching parameters is ignored") {
 			val expected = (topGreen, solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(topGreen))
@@ -174,7 +174,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("a single two-frame animation") {
 			val expected = (Seq(solidRed, solidBlue), solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-1 -> Seq(solidRed, solidBlue))
@@ -189,7 +189,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("combining a two-frame and a one-frame animations") {
 			val expected = (Seq(solidRed, topGreenBottomRed), solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-5 -> Seq(solidRed), -1 -> Seq(solidTrans, topGreen))
@@ -204,7 +204,7 @@ class VisualizationRuleBasedRectangularTilesheetTest extends FunSpec {
 		}
 		it ("combining a two-frame and a two-frame animations") {
 			val expected = (Seq(solidBlue, topGreenBottomRed), solidTrans)
-			val dut = VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
+			val dut = new VisualizationRuleBasedRectangularTilesheet[String, Image, Icon]("blarg",
 				Seq(
 					new ParamaterizedRectangularVisualizationRule[String, Image](
 						iconParts = Map(-5 -> Seq(solidBlue, solidRed), -1 -> Seq(solidTrans, topGreen))

@@ -23,30 +23,21 @@ import java.awt.{Color}
 
 class CheckerboardTilesheetTest extends FunSpec {
 	describe ("CheckerboardTilesheet()") {
-		val dut = CheckerboardTilesheet(() => Color.yellow, () => Color.red, () => Color.blue)
+		val dut = new CheckerboardTilesheet(() => Color.yellow, () => Color.red, () => Color.blue)
 		it ("name is \"Checkerboard\"") {
 			assertResult("Checkerboard"){dut.name}
 		}
 		it ("toString is \"Checkerboard\"") {
 			assertResult("Checkerboard"){dut.toString}
 		}
-		it ("light color is red") {
-			assertResult(Color.red){dut.lightIcon()}
-		}
-		it ("dark color is blue") {
-			assertResult(Color.blue){dut.darkIcon()}
-		}
-		it ("transparentIcon is yellow") {
-			assertResult(Color.yellow){dut.transparentIcon()}
-		}
 		it ("getIconFor(null, 0, 0, null)._1 is lightIcon") {
-			assertResult(dut.lightIcon()){dut.getIconFor(null, 0, 0, null)._1}
+			assertResult(Color.red){dut.getIconFor(null, 0, 0, null)._1}
 		}
 		it ("getIconFor(null, 0, 1, null)._1 is darkIcon") {
-			assertResult(dut.darkIcon()){dut.getIconFor(null, 0, 1, null)._1}
+			assertResult(Color.blue){dut.getIconFor(null, 0, 1, null)._1}
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is transparentIcon") {
-			assertResult(dut.transparentIcon()){dut.getIconFor(null, 0, 0, null)._2}
+			assertResult(Color.yellow){dut.getIconFor(null, 0, 0, null)._2}
 		}
 	}
 }

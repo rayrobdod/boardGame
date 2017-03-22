@@ -27,7 +27,7 @@ import scala.util.Random
  * @param lightIcon the icon that is returned for even `getIconFor(...)._1`
  * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
  */
-final case class CheckerboardTilesheet[Icon](
+final class CheckerboardTilesheet[Icon](
 	transparentIcon:Function0[Icon],
 	lightIcon:Function0[Icon],
 	darkIcon:Function0[Icon]

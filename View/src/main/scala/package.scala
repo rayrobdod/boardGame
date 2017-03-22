@@ -44,7 +44,7 @@ package view {
 	}
 	
 	/** A tilesheet which will always return the Icon specified in the constructor */
-	final case class NilTilesheet[Icon](val tile:Function0[Icon]) extends RectangularTilesheet[Any, Icon] {
+	final class NilTilesheet[Icon](val tile:Function0[Icon]) extends RectangularTilesheet[Any, Icon] {
 		override val name:String = "Nil"
 		override def getIconFor(f:RectangularTilable[_ <: Any], x:Int, y:Int, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
 	}

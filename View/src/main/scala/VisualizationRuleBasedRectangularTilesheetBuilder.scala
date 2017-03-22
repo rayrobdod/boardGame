@@ -52,7 +52,7 @@ final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPa
 
 object VisualizationRuleBasedRectangularTilesheetBuilder {
 	
-	case class Delayed[SpaceClass, IconPart, Icon] (
+	final case class Delayed[SpaceClass, IconPart, Icon] (
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],
 		urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]],
@@ -63,7 +63,7 @@ object VisualizationRuleBasedRectangularTilesheetBuilder {
 		name:String = "???"
 	) {
 		def apply():VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon] = {
-			VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](name, visualizationRules, compostLayers)
+			new VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](name, visualizationRules, compostLayers)
 		}
 		
 		private def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = {
