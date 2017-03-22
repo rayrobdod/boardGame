@@ -18,7 +18,7 @@
 package com.rayrobdod.boardGame.view
 
 import scala.util.Random
-import com.rayrobdod.boardGame.RectangularTilable
+import com.rayrobdod.boardGame.RectangularTiling
 
 /**
  * A class that contains a method to create an image appropriate for representing
@@ -34,7 +34,7 @@ trait RectangularTilesheet[-SpaceClass, Icon]
 	def name:String
 	
 	/**
-	 * Finds the icon for a particular space on a RectangularTilable
+	 * Finds the icon for a particular space on a RectangularTiling
 	 * @param field the field on the space to lookup
 	 * @param x the x coordinate of the space to lookup
 	 * @param y the y coordinate of the space to lookup
@@ -43,5 +43,5 @@ trait RectangularTilesheet[-SpaceClass, Icon]
 		- the part of the image that goes below the movable controlled tokens
 		- the part of the image that goes above the movable controlled tokens
 	 */
-	def getIconFor(field:RectangularTilable[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon)
+	def getIconFor(field:RectangularTiling[_ <: SpaceClass], x:Int, y:Int, rng:Random):(Icon, Icon)
 }

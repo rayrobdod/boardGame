@@ -187,13 +187,13 @@ object JsonTilesheetViewer2 {
 	) extends EventHandler[MouseEvent] {
 		override def handle(e:MouseEvent):Unit = {
 			
-			val currentSpace:SpaceClass = currentRotationState.getSpaceAt(index._1, index._2).get.typeOfSpace
+			val currentSpace:SpaceClass = currentRotationState.space(index._1, index._2).get.typeOfSpace
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
 			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
 			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
 			
 			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
-					currentRotationState.mapIndex{x => ((x, currentRotationState.getSpaceAt(x._1, x._2).get.typeOfSpace))}.toMap +
+					currentRotationState.mapIndex{x => ((x, currentRotationState.space(x._1, x._2).get.typeOfSpace))}.toMap +
 							((index, nextSpace))
 			
 			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)

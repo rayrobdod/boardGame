@@ -33,11 +33,14 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		val dut:ParamaterizedRectangularVisualizationRule[String, _] = new ParamaterizedRectangularVisualizationRule()
 		
 		it ("indexies always match") {
-			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-			(x to 10).foreach{width => (y to 10).foreach{height =>
-				assert( dut.indexiesMatch(x, y, width, height) )
-			}}
-			}}
+			for (
+				x <- 0 to 10;
+				y <- 0 to 10;
+				width <- x to 10;
+				height <- y to 10
+			 ) {
+				assert( dut.indexiesMatch(x, y) )
+			}
 		}
 		it ("rands always match") {
 			val rng = new Random()
@@ -130,7 +133,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.getSpaceAt(x, y).get.typeOfSpace == "a"
+				val expected = map.space(x, y).get.typeOfSpace == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -148,7 +151,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.getSpaceAt(x, y - 1).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space(x, y - 1).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -166,7 +169,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.getSpaceAt(x, y + 1).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space(x, y + 1).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -184,7 +187,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.getSpaceAt(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -202,8 +205,8 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.getSpaceAt(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a" &&
-				               map.getSpaceAt(x, y).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a" &&
+				               map.space(x, y).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, x, y)}
 			}}
@@ -257,7 +260,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 			assertResult(2007){dut.priority}
 		}
 	}
-	describe ("indexEquation = 'w == 2 && h == 4'") {
+	ignore ("indexEquation = 'w == 2 && h == 4'") {
 		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("w == 2 && h == 4").right.get)
 		
 		it ("indexiesMatch is true when w is 2 and h is 4") {

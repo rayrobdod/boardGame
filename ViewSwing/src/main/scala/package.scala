@@ -116,7 +116,7 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	
 	def RectangularFieldComponent[A](
-			field:RectangularField[A],
+			field:RectangularTiling[A],
 			tilesheet:RectangularTilesheet[A, Icon],
 			rng:Random = Random
 	):(SwingRectangularTilemapComponent, SwingRectangularTilemapComponent) = {

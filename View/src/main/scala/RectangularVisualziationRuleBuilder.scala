@@ -80,15 +80,17 @@ final case class ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]
 	indexEquation:CoordinateFunction[Boolean] = CoordinateFunction.constant(true),
 	surroundingTiles:Map[IndexConverter, SpaceClassMatcher[SpaceClass]] = Map.empty[IndexConverter, SpaceClassMatcher[SpaceClass]]
 ) extends RectangularVisualizationRule[SpaceClass, IconPart] {
-	override def indexiesMatch(x:Int, y:Int, width:Int, height:Int):Boolean = {
-		indexEquation.apply(x, y, width, height)
+	def indexiesMatch(x:Int, y:Int, w:Int, h:Int):Boolean = this.indexiesMatch(x,y)
+	
+	override def indexiesMatch(x:Int, y:Int):Boolean = {
+		indexEquation.apply(x, y, 100, 100)
 	}
 	
-	override def surroundingTilesMatch(field:RectangularTilable[_ <: SpaceClass], x:Int, y:Int):Boolean = {
+	override def surroundingTilesMatch(field:RectangularTiling[_ <: SpaceClass], x:Int, y:Int):Boolean = {
 		
 		surroundingTiles.forall({(conversion:IndexConverter, scc:SpaceClassMatcher[SpaceClass]) =>
 			val newIndexies = conversion( ((x,y)) )
-			field.getSpaceAt(newIndexies._1, newIndexies._2).map{space =>
+			field.space(newIndexies._1, newIndexies._2).map{space =>
 				scc.unapply(space.typeOfSpace)
 			}.getOrElse(true)
 		}.tupled)

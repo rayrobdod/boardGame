@@ -21,13 +21,13 @@ import java.awt.{Component, Graphics, Dimension}
 import java.awt.event.{MouseListener, MouseEvent}
 import javax.swing.{JComponent, Icon}
 import scala.collection.immutable.Map
-import com.rayrobdod.boardGame.RectangularFieldIndex
+import com.rayrobdod.boardGame.RectangularIndex
 
 /**
  * A JComponent which, when painted, paints a grid of icons
  */
 private[view] class SwingRectangularTilemapComponent(
-		tiles:Map[RectangularFieldIndex, Icon]
+		tiles:Map[RectangularIndex, Icon]
 ) extends JComponent {
 	
 	private val mapX = tiles.map{_._1._1}.min
@@ -41,7 +41,7 @@ private[view] class SwingRectangularTilemapComponent(
 	
 	override def paintComponent(g:Graphics):Unit = {
 		// tiles should not overlap
-		tiles.foreach({(index:RectangularFieldIndex, icon:Icon) =>
+		tiles.foreach({(index:RectangularIndex, icon:Icon) =>
 			val iconX = index._1 * tileWidth
 			val iconY = index._2 * tileHeight
 			
@@ -66,7 +66,7 @@ private[view] class SwingRectangularTilemapComponent(
 	}
 	
 	
-	def spaceBounds(index:RectangularFieldIndex):java.awt.Shape = {
+	def spaceBounds(index:RectangularIndex):java.awt.Shape = {
 		val iconX = index._1 * tileWidth
 		val iconY = index._2 * tileHeight
 		
@@ -75,8 +75,8 @@ private[view] class SwingRectangularTilemapComponent(
 	
 	
 	
-	private var mouseListeners:Map[RectangularFieldIndex, Seq[MouseListener]] = Map.empty.withDefaultValue(Nil)
-	def addMouseListener(index:RectangularFieldIndex, ml:MouseListener) {
+	private var mouseListeners:Map[RectangularIndex, Seq[MouseListener]] = Map.empty.withDefaultValue(Nil)
+	def addMouseListener(index:RectangularIndex, ml:MouseListener) {
 		if (mouseListeners.isEmpty) {this.addMouseListener(IndexForwardMouseListener)}
 		mouseListeners = mouseListeners + ((index, mouseListeners(index) :+ ml))
 	}
@@ -98,7 +98,7 @@ private[view] class SwingRectangularTilemapComponent(
 		}
 		private def translate(e:MouseEvent, f:Function2[MouseListener, MouseEvent, Unit]):Unit = {
 			// tiles should not overlap
-			mouseListeners.foreach({(index:RectangularFieldIndex, ml:Seq[MouseListener]) =>
+			mouseListeners.foreach({(index:RectangularIndex, ml:Seq[MouseListener]) =>
 				val iconX = index._1 * tileWidth
 				val iconY = index._2 * tileHeight
 				

@@ -21,7 +21,73 @@ package com.rayrobdod
  * 
  */
 package object boardGame {
-	type RectangularFieldIndex = Tuple2[Int, Int]
+	type RectangularIndex = Tuple2[Int, Int]
+	type HorizontalHexagonalIndex = Tuple2[Int, Int]
+	
+	type RectangularTiling[SpaceClass] = Tiling[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
+	type HorizontalHexagonalTiling[SpaceClass] = Tiling[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
+	type ElongatedTriangularTiling[SpaceClass] = Tiling[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
+	
+	type RectangularField[SpaceClass] = Field[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
+	type HorizontalHexagonalField[SpaceClass] = Field[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
+	type ElongatedTriangularField[SpaceClass] = Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
+	
+	def RectangularField[SpaceClass](
+		classes:Map[RectangularIndex, SpaceClass]
+	):RectangularField[SpaceClass] = {
+		new Field(classes)
+	}
+	
+	def RectangularField[SpaceClass](
+		classes:Seq[Seq[SpaceClass]]
+	):RectangularField[SpaceClass] = {
+		val remap = for (
+			(clss, j) <- classes.zipWithIndex;
+			(cls, i) <- clss.zipWithIndex
+		) yield {
+			(i, j) -> cls
+		}
+		RectangularField(remap.toMap)
+	}
+	
+	def HorizontalHexagonalField[SpaceClass](
+		classes:Map[HorizontalHexagonalIndex, SpaceClass]
+	):HorizontalHexagonalField[SpaceClass] = {
+		new Field(classes)
+	}
+	
+	def ElongatedTriangularField[SpaceClass](
+		classes:Map[ElongatedTriangularIndex, SpaceClass]
+	):ElongatedTriangularField[SpaceClass] = {
+		new Field(classes)
+	}
+	
+	def RectangularRoom[SpaceClass](
+		classes:Map[RectangularIndex, SpaceClass],
+		warps:Map[RectangularIndex, Function0[StrictRectangularSpace[SpaceClass]]]
+	):RectangularTiling[SpaceClass] = {
+		new Room(classes, warps)
+	}
+	
+	def RectangularRoom[SpaceClass](
+		classes:Seq[Seq[SpaceClass]],
+		warps:Map[RectangularIndex, Function0[StrictRectangularSpace[SpaceClass]]]
+	):RectangularTiling[SpaceClass] = {
+		val remap = for (
+			(clss, j) <- classes.zipWithIndex;
+			(cls, i) <- clss.zipWithIndex
+		) yield {
+			(i, j) -> cls
+		}
+		RectangularRoom(remap.toMap, warps)
+	}
+	
+	def HorizontalHexagonalRoom[SpaceClass](
+		classes:Map[HorizontalHexagonalIndex, SpaceClass],
+		warps:Map[HorizontalHexagonalIndex, Function0[StrictHorizontalHexagonalSpace[SpaceClass]]]
+	):HorizontalHexagonalTiling[SpaceClass] = {
+		new Room(classes, warps)
+	}
 	
 	/**
 	 * A SpaceClassMatcher that always returns true
@@ -60,5 +126,19 @@ package boardGame {
 	 */
 	private[this] final class ConstSpaceClassMatcher(value:Boolean) extends SpaceClassMatcher[Any] {
 		def unapply(sc:Any):Boolean = value
+	}
+	
+	
+	final case class ElongatedTriangularIndex(
+		x:Int,
+		y:Int,
+		typ:ElongatedTriangularType
+	)
+	
+	sealed trait ElongatedTriangularType
+	object ElongatedTriangularType {
+		final object Square extends ElongatedTriangularType
+		final object NorthTri extends ElongatedTriangularType
+		final object SouthTri extends ElongatedTriangularType
 	}
 }

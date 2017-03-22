@@ -113,6 +113,7 @@ lazy val commonSettings = Seq(
 		"-doc-version", version.value,
 		"-doc-root-content", ((scalaSource in Compile).value / "rootdoc.txt").toString,
 		"-diagrams",
+		"-implicits",
 		"-sourcepath", baseDirectory.value.toString,
 		"-doc-source-url", "https://github.com/rayrobdod/boardGame/tree/" + version.value + "€{FILE_PATH}.scala"
 	)
