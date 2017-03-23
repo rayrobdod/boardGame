@@ -40,6 +40,8 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	// `object swingView extends PackageObjectTemplate[Image, Icon]`
 	// how is that even possible?
 	
+	override type RenderableComponentType = javafx.scene.Node
+	
 	override def blankIcon:Node = new Rectangle(1, 1, Color.TRANSPARENT)
 	
 	def rgbToColor(rgb:AwtColor):Color = Color.rgb(rgb.getRed, rgb.getGreen, rgb.getBlue)
@@ -123,34 +125,12 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	
 	
 	
-	def RectangularFieldComponent[A](
-			field:RectangularField[A],
-			tilesheet:Tilesheet[A, RectangularIndex, RectangularDimension, javafx.scene.Node],
-			rng:Random = Random
-	):(javafx.scene.layout.Pane, javafx.scene.layout.Pane) = {
-		
-		val a:Map[(Int, Int), (Node, Node)] = field.mapIndex{xy => ((xy, tilesheet.getIconFor(field, xy, rng) )) }.toMap
-		val top = a.mapValues{_._1}
-		val bot = a.mapValues{_._2}
-		
-		val topComp = new GridPane()
-		top.foreach{case ((x,y), node) =>
-			topComp.add(node, x, y)
-			GridPane.setHgrow(node, javafx.scene.layout.Priority.ALWAYS)
-			GridPane.setVgrow(node, javafx.scene.layout.Priority.ALWAYS)
-			GridPane.setHalignment(node, javafx.geometry.HPos.CENTER)
-			GridPane.setValignment(node, javafx.geometry.VPos.CENTER)
-		}
-		val botComp = new GridPane()
-		bot.foreach{case ((x,y), node) =>
-			botComp.add(node, x, y)
-			GridPane.setHgrow(node, javafx.scene.layout.Priority.ALWAYS)
-			GridPane.setVgrow(node, javafx.scene.layout.Priority.ALWAYS)
-			GridPane.setHalignment(node, javafx.geometry.HPos.CENTER)
-			GridPane.setValignment(node, javafx.geometry.VPos.CENTER)
-		}
-		
-		((topComp, botComp))
+	override def renderable[Index, Dimension](
+			  tiles:Map[Index, Node]
+			, dimension:Dimension
+	)(implicit
+			iconLocation:IconLocation[Index, Dimension]
+	):Renderable[Index, RenderableComponentType] = {
+		new JavaFxRenderable(tiles, dimension)(iconLocation)
 	}
-	
 }

@@ -30,6 +30,8 @@ import java.net.URL
  */
 abstract class PackageObjectTemplate[IconPart, Icon] {
 	
+	type RenderableComponentType
+	
 	/** Returns a transparent icon of the specified size */
 	def blankIcon():Icon
 	/** Returns a solid-colored icon of the specified size */
@@ -85,4 +87,31 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 			, new VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionBuilder
 		)
 	}
+	
+	
+	
+	final def renderable[SpaceClass, Index, Dimension](
+			  field:Tiling[SpaceClass, Index, _]
+			, tilesheet:Tilesheet[SpaceClass, Index, Dimension, Icon]
+			, rng:Random = Random
+	)(implicit
+			iconLocation:IconLocation[Index, Dimension]
+	):Tuple2[
+		  Renderable[Index, RenderableComponentType]
+		, Renderable[Index, RenderableComponentType]
+	] = {
+		
+		val a:Map[Index, (Icon, Icon)] = field.mapIndex{x => ((x, tilesheet.getIconFor(field, x, rng) )) }.toMap
+		val top = a.mapValues{_._1}
+		val bot = a.mapValues{_._2}
+		
+		(( this.renderable(top, tilesheet.iconDimensions), this.renderable(bot, tilesheet.iconDimensions) ))
+	}
+	
+	def renderable[Index, Dimension](
+			  tiles:Map[Index, Icon]
+			, dimension:Dimension
+	)(implicit
+			iconLocation:IconLocation[Index, Dimension]
+	):Renderable[Index, RenderableComponentType]
 }

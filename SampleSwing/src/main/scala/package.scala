@@ -17,6 +17,8 @@
 */
 package com.rayrobdod
 
+import scala.collection.immutable.Seq
+
 /**
  * 
  */
@@ -36,4 +38,37 @@ package object jsonTilesheetViewer {
 	val TAG_SHEET_HASH:String = "tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor"
 	/** @since next */
 	val TAG_SHEET_CHECKER:String = "tag:rayrobdod.name,2013-08:tilesheet-checker"
+	
+	
+	
+	def allClassesInTilesheet(f:com.rayrobdod.boardGame.view.Tilesheet[SpaceClass, _, _, _]):Seq[SpaceClass] = {
+		import com.rayrobdod.boardGame.SpaceClassMatcher
+		import com.rayrobdod.boardGame.view.ParamaterizedVisualizationRule
+		import com.rayrobdod.boardGame.view.VisualizationRuleBasedTilesheet
+		import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
+		import StringSpaceClassMatcherFactory.EqualsMatcher
+		
+		val a = f match {
+			case x:VisualizationRuleBasedTilesheet[SpaceClass, _, _, _, _] => {
+				val a:Seq[ParamaterizedVisualizationRule[SpaceClass, _, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[SpaceClass, _, _]]}
+				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
+				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
+				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
+				
+				val e:Seq[Option[SpaceClass]] = d.map{_ match {
+					case EqualsMatcher(ref) => Option(ref)
+					case _ => None
+				}}
+				val f:Seq[SpaceClass] = e.flatten.distinct
+				
+				f
+			}
+			// designed to be one of each color // green, blue, red, white
+			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
+			case x:HashcodeColorTilesheet[_, _, _] => Seq("a", "b", "c", "d")
+			case _ => Seq("")
+		}
+		
+		a
+	}
 }

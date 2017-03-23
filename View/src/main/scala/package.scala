@@ -50,25 +50,44 @@ package object view {
 	}
 	
 	trait IconLocation[Index, Dimension] {
-		def centerOfSpace(idx:Index, dim:Dimension)
+		def bounds(idx:Index, dim:Dimension):java.awt.Rectangle
+		def hit(point:(Int, Int), dim:Dimension):Index
 	}
+	
 	implicit def rectangularIconLocation:IconLocation[RectangularIndex, RectangularDimension] = RectangularIconLocation
 	object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
-		def centerOfSpace(idx:RectangularIndex, dim:RectangularDimension) = ((
-			idx._1 * dim.width + dim.width / 2,
-			idx._2 * dim.height + dim.height / 2
+		
+		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
+			new java.awt.Rectangle(
+				idx._1 * dim.width,
+				idx._2 * dim.height,
+				dim.width,
+				dim.height
+			)
+		}
+		
+		override def hit(point:(Int, Int), dim:RectangularDimension):RectangularIndex = ((
+			point._1 / dim.width,
+			point._2 / dim.height
 		))
 	}
 	
 	implicit def horizontalHexagonalIconLocation:IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] = HorizontalHexagonalIconLocation
 	object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
-		def centerOfSpace(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
+		
+		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
 			val (ew, nwse) = idx
-			((
+			new java.awt.Rectangle(
 				dim.width * ew + (dim.width / 2) * nwse,
-				dim.verticalOffset * nwse
-			))
+				dim.verticalOffset * nwse,
+				dim.width,
+				dim.height
+			)
 		}
+		
+		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = ((
+			0,0 //TODO
+		))
 	}
 	
 	

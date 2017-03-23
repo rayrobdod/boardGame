@@ -99,37 +99,6 @@ object JsonTilesheetViewer2 {
 		Application.launch(classOf[JsonTilesheetViewer2], args:_*)
 	}
 	
-	private def allClassesInTilesheet(f:Tilesheet[SpaceClass, _, _, _]):Seq[SpaceClass] = {
-		import com.rayrobdod.boardGame.SpaceClassMatcher
-		import com.rayrobdod.boardGame.view.ParamaterizedVisualizationRule
-		import com.rayrobdod.boardGame.view.VisualizationRuleBasedTilesheet
-		import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
-		import StringSpaceClassMatcherFactory.EqualsMatcher
-		
-		val a = f match {
-			case x:VisualizationRuleBasedTilesheet[SpaceClass, _, _, _, _] => {
-				val a:Seq[ParamaterizedVisualizationRule[SpaceClass, _, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[SpaceClass, _, _]]}
-				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
-				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
-				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
-				
-				val e:Seq[Option[SpaceClass]] = d.map{_ match {
-					case EqualsMatcher(ref) => Option(ref)
-					case _ => None
-				}}
-				val f:Seq[SpaceClass] = e.flatten.distinct
-				
-				f
-			}
-			// designed to be one of each color // green, blue, red, white
-			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet[_,_,_] => Seq("a", "b", "c", "d")
-			case _ => Seq("")
-		}
-		
-		a
-	}
-	
 	def loadNewTilesheet(inputFields:InputFields2, fieldComp:StackPane):Unit = {
 		if (inputFields.fieldIsRotationField) {
 			
@@ -140,7 +109,7 @@ object JsonTilesheetViewer2 {
 				RectangularField(Seq.fill(14, 12){currentRotationRotation.head})
 			}
 			
-			val a = RectangularFieldComponent(
+			val a = renderable(
 				currentRotationState,
 				inputFields.tilesheet,
 				inputFields.rng
@@ -149,33 +118,27 @@ object JsonTilesheetViewer2 {
 			// `.retainAll` and `.removeAll` do the opposite of the name when they
 			// have no arguments; `.retainAll` removes all elements from the list
 			fieldComp.getChildren().retainAll()
-			fieldComp.getChildren().add(a._1)
-			fieldComp.getChildren().add(a._2)
+			fieldComp.getChildren().add(a._1.component)
+			fieldComp.getChildren().add(a._2.component)
 			
 			
 			currentRotationState.foreachIndex{index =>
-				import scala.collection.JavaConversions.collectionAsScalaIterable;
-				a._2.getChildren().filter{x =>
-					GridPane.getColumnIndex(x) == index._1 &&
-					GridPane.getRowIndex(x) == index._2
-				}.foreach{x => 
-					x.setOnMouseClicked(new FieldRotationMouseListener(
+				a._1.addOnClickHandler(index, new FieldRotationMouseListener(
 						inputFields, fieldComp,
 						index, currentRotationRotation, currentRotationState
-					))
-				}
+				))
 			}
 			
 		} else {
-			val a = RectangularFieldComponent(
+			val a = renderable(
 				inputFields.field,
 				inputFields.tilesheet,
 				inputFields.rng
 			)
 			
 			fieldComp.getChildren().retainAll()
-			fieldComp.getChildren().add(a._1)
-			fieldComp.getChildren().add(a._2)
+			fieldComp.getChildren().add(a._1.component)
+			fieldComp.getChildren().add(a._2.component)
 		}
 	}
 	
@@ -185,8 +148,8 @@ object JsonTilesheetViewer2 {
 			index:(Int,Int),
 			currentRotationRotation:Seq[SpaceClass],
 			currentRotationState:RectangularField[SpaceClass]
-	) extends EventHandler[MouseEvent] {
-		override def handle(e:MouseEvent):Unit = {
+	) extends Function0[Unit] {
+		override def apply():Unit = {
 			
 			val currentSpace:SpaceClass = currentRotationState.space(index._1, index._2).get.typeOfSpace
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
@@ -199,27 +162,21 @@ object JsonTilesheetViewer2 {
 			
 			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)
 			
-			val a = RectangularFieldComponent(
+			val a = renderable(
 				nextRotationState,
 				inputFields.tilesheet,
 				inputFields.rng
 			)
 			
 			fieldComp.getChildren().retainAll()
-			fieldComp.getChildren().add(a._1)
-			fieldComp.getChildren().add(a._2)
+			fieldComp.getChildren().add(a._1.component)
+			fieldComp.getChildren().add(a._2.component)
 			
 			nextRotationState.foreachIndex{index =>
-				import scala.collection.JavaConversions.collectionAsScalaIterable;
-				a._2.getChildren().filter{x =>
-					GridPane.getColumnIndex(x) == index._1 &&
-					GridPane.getRowIndex(x) == index._2
-				}.foreach{x => 
-					x.setOnMouseClicked(new FieldRotationMouseListener(
+				a._1.addOnClickHandler(index, new FieldRotationMouseListener(
 						inputFields, fieldComp,
 						index, currentRotationRotation, nextRotationState
-					))
-				}
+				))
 			}
 		}
 	}

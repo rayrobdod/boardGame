@@ -42,6 +42,8 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	// `object swingView extends PackageObjectTemplate[Image, Icon]`
 	// how is that even possible?
 	
+	override type RenderableComponentType = javax.swing.JComponent
+	
 	override def blankIcon:Icon = new Icon{
 		import java.awt.{Component, Graphics}
 		def getIconWidth:Int = 1
@@ -115,16 +117,13 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	}
 	
 	
-	def RectangularFieldComponent[A](
-			field:RectangularTiling[A],
-			tilesheet:Tilesheet[A, RectangularIndex, RectangularDimension, Icon],
-			rng:Random = Random
-	):(SwingRectangularTilemapComponent, SwingRectangularTilemapComponent) = {
-		
-		val a:Map[(Int, Int), (Icon, Icon)] = field.mapIndex{x => ((x, tilesheet.getIconFor(field, x, rng) )) }.toMap
-		val top = a.mapValues{_._1}
-		val bot = a.mapValues{_._2}
-		
-		(( new SwingRectangularTilemapComponent(top), new SwingRectangularTilemapComponent(bot) ))
+	
+	override def renderable[Index, Dimension](
+			  tiles:Map[Index, Icon]
+			, dimension:Dimension
+	)(implicit
+			iconLocation:IconLocation[Index, Dimension]
+	):Renderable[Index, RenderableComponentType] = {
+		new SwingRenderable(tiles, dimension)(iconLocation)
 	}
 }

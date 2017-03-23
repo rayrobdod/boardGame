@@ -35,17 +35,17 @@ class JsonTilesheetViewerTest extends FunSpec {
 	describe ("allClassesInTilesheet") {
 		it ("NilTilesheet returns ['']"){
 			assertResult(List("")){
-				JsonTilesheetViewer.allClassesInTilesheet(new NilTilesheet(() => "", RectangularDimension(-1,-1)))
+				allClassesInTilesheet(new NilTilesheet(() => "", RectangularDimension(-1,-1)))
 			}
 		}
 		it ("HashcodeColorTilesheet returns ['a','b','c','d']") {
 			assertResult(Seq("a", "b", "c", "d")){
-				JsonTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet({() => 1},{(a) => 1}, RectangularDimension(-1,-1)))
+				allClassesInTilesheet(new HashcodeColorTilesheet({() => 1},{(a) => 1}, RectangularDimension(-1,-1)))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet() returns []") {
 			assertResult(Seq()){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> ConstTrueSpaceClassMatcher))
@@ -57,7 +57,7 @@ class JsonTilesheetViewerTest extends FunSpec {
 		}
 		it ("VisualizationRuleBasedTilesheet('a') returns ['a']") {
 			assertResult(Seq("a")){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a")))
@@ -69,7 +69,7 @@ class JsonTilesheetViewerTest extends FunSpec {
 		}
 		it ("VisualizationRuleBasedTilesheet('a','b') returns ['a','b']") {
 			assertResult(Seq("a","b")){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
@@ -82,7 +82,7 @@ class JsonTilesheetViewerTest extends FunSpec {
 		}
 		it ("VisualizationRuleBasedTilesheet('a','!b') returns ['a']") {
 			assertResult(Seq("a")){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
