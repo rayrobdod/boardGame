@@ -24,20 +24,18 @@ import scala.collection.immutable.Seq
 import scala.util.Random
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.RectangularField
-import com.rayrobdod.boardGame.view.{CoordinateFunctionSpecifierParser => coordinateFunctionParser}
 
-class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
+class ParamaterizedVisualizationRuleTest extends FunSpec {
+	def CfspParse(s:String) = new CoordinateFunctionSpecifierParser(CoordinateFunctionSpecifierParser.rectangularVars).parse(s)
 	
 	// TODO: equivalance partition to improve speed
 	describe ("Default Paramaterized visualization rule") {
-		val dut:ParamaterizedRectangularVisualizationRule[String, _] = new ParamaterizedRectangularVisualizationRule()
+		val dut:ParamaterizedVisualizationRule[String, RectangularIndex, _] = new ParamaterizedVisualizationRule()
 		
 		it ("indexies always match") {
 			for (
 				x <- 0 to 10;
-				y <- 0 to 10;
-				width <- x to 10;
-				height <- y to 10
+				y <- 0 to 10
 			 ) {
 				assert( dut.indexiesMatch((x,y)) )
 			}
@@ -70,13 +68,11 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("tileRand = 2") {
-		val dut = new ParamaterizedRectangularVisualizationRule(tileRand = 2)
+		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](tileRand = 2)
 		
 		it ("indexies always match") {
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-			(x to 10).foreach{width => (y to 10).foreach{height =>
-				assert( dut.indexiesMatch(x, y, width, height) )
-			}}
+				assert( dut.indexiesMatch((x,y)) )
 			}}
 		}
 		it ("rands") {
@@ -109,7 +105,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("tileRand = 5") {
-		val dut = new ParamaterizedRectangularVisualizationRule(tileRand = 5)
+		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](tileRand = 5)
 		
 		it ("rands") {
 			val seed = Random.nextInt()
@@ -126,7 +122,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	}
 	describe ("surroundingTiles = Map(identity -> \"a\")") {
 		val surroundingTiles = Map(surroundingTilePart(0, 0, "a"))
-		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		val dut = new ParamaterizedVisualizationRule(surroundingTiles = surroundingTiles)
 		
 		it ("surroundingTilesMatch match when current tile is 'a'") {
 			val rng = new Random()
@@ -144,7 +140,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	}
 	describe ("surroundingTiles = Map(above -> \"a\")") {
 		val surroundingTiles = Map(surroundingTilePart(0, -1, "a"))
-		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		val dut = new ParamaterizedVisualizationRule(surroundingTiles = surroundingTiles)
 		
 		it ("surroundingTilesMatch match when above tile is 'a'") {
 			val rng = new Random()
@@ -162,7 +158,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	}
 	describe ("surroundingTiles = Map(below -> \"a\")") {
 		val surroundingTiles = Map(surroundingTilePart(0, 1, "a"))
-		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		val dut = new ParamaterizedVisualizationRule(surroundingTiles = surroundingTiles)
 		
 		it ("surroundingTilesMatch match when below tile is 'a'") {
 			val rng = new Random()
@@ -180,7 +176,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	}
 	describe ("surroundingTiles = Map(left -> \"a\")") {
 		val surroundingTiles = Map(surroundingTilePart(-1, 0, "a"))
-		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		val dut = new ParamaterizedVisualizationRule(surroundingTiles = surroundingTiles)
 		
 		it ("surroundingTilesMatch match when left tile is 'a'") {
 			val rng = new Random()
@@ -198,7 +194,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	}
 	describe ("surroundingTiles = Map(left -> \"a\", this -> 'a')") {
 		val surroundingTiles = Map(surroundingTilePart(-1, 0, "a"), surroundingTilePart(0, 0, "a"))
-		val dut = new ParamaterizedRectangularVisualizationRule(surroundingTiles = surroundingTiles)
+		val dut = new ParamaterizedVisualizationRule(surroundingTiles = surroundingTiles)
 		
 		it ("surroundingTilesMatch match when current tile is 'a' and left tile is 'a'") {
 			val rng = new Random()
@@ -216,58 +212,45 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 		}
 	}
 	describe ("indexEquation = 'x == 0'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("x == 0").right.get)
+		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](indexEquation = CfspParse("x == 0").right.get)
 		
 		it ("indexiesMatch is true when x is 0") {
-			assert(dut.indexiesMatch(0, -1, -1, -1))
+			assert(dut.indexiesMatch(0, -1))
 		}
 		it ("indexiesMatch is true when x is 0 (2)") {
-			assert(dut.indexiesMatch(0, 1, 1, 1))
+			assert(dut.indexiesMatch(0, 1))
 		}
 		it ("indexiesMatch is false when x is 1") {
-			assert(! dut.indexiesMatch(1, -1, -1, -1))
+			assert(! dut.indexiesMatch(1, -1))
 		}
 		it ("has a priority of 1001") {
 			assertResult(1001){dut.priority}
 		}
 	}
 	describe ("indexEquation = 'x % 2 == 0'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("x % 2 == 0").right.get)
+		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](indexEquation = CfspParse("x % 2 == 0").right.get)
 		
 		it ("indexiesMatch is true when x is 0") {
-			assert(dut.indexiesMatch(0, -1, -1, -1))
+			assert(dut.indexiesMatch(0, -1))
 		}
 		it ("indexiesMatch is false when x is 1") {
-			assert(! dut.indexiesMatch(1, -1, -1, -1))
+			assert(! dut.indexiesMatch(1, -1))
 		}
 		it ("indexiesMatch is true when x is 2") {
-			assert(dut.indexiesMatch(2, -1, -1, -1))
+			assert(dut.indexiesMatch(2, -1))
 		}
 		it ("has a priority of 503") {
 			assertResult(503){dut.priority}
 		}
 	}
 	describe ("indexEquation = 'x == 2 && y == 4'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("x == 2 && y == 4").right.get)
+		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](indexEquation = CfspParse("x == 2 && y == 4").right.get)
 		
 		it ("indexiesMatch is true when x is 2 and y is 4") {
-			assert(dut.indexiesMatch(2, 4, -1, -1))
+			assert(dut.indexiesMatch(2, 4))
 		}
-		it ("indexiesMatch is false otherwise x is 1") {
-			assert(! dut.indexiesMatch(-1, -1, -1, -1))
-		}
-		it ("has a priority of 2007") {
-			assertResult(2007){dut.priority}
-		}
-	}
-	ignore ("indexEquation = 'w == 2 && h == 4'") {
-		val dut = new ParamaterizedRectangularVisualizationRule(indexEquation = coordinateFunctionParser.parse("w == 2 && h == 4").right.get)
-		
-		it ("indexiesMatch is true when w is 2 and h is 4") {
-			assert(dut.indexiesMatch(-1, -1, 2, 4))
-		}
-		it ("indexiesMatch is false otherwise x is 1") {
-			assert(! dut.indexiesMatch(-1, -1, -1, -1))
+		it ("indexiesMatch is false otherwise") {
+			assert(! dut.indexiesMatch(-1, -1))
 		}
 		it ("has a priority of 2007") {
 			assertResult(2007){dut.priority}
@@ -305,7 +288,7 @@ class ParamaterizedRectangularVisualizationRuleTest extends FunSpec {
 	
 	def mockImageSeq:Seq[Image] = (0 to 63).map{new MockImage(_)}
 	
-	def surroundingTilePart(deltaX:Int, deltaY:Int, spaceClass:String):Tuple2[IndexConverter, SpaceClassMatcher[String]] = {
+	def surroundingTilePart(deltaX:Int, deltaY:Int, spaceClass:String):Tuple2[IndexConverter[RectangularIndex], SpaceClassMatcher[String]] = {
 		val f = new Function1[(Int, Int), (Int, Int)] {
 			def apply(xy:(Int, Int)) = ((xy._1 + deltaX), (xy._2 + deltaY))
 		}

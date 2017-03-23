@@ -32,7 +32,7 @@ class InputFieldsTest extends FunSpec {
 			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_]]}
+			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
 			assert{new InputFields("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_]]}

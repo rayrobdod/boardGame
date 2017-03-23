@@ -73,7 +73,7 @@ final class InputFields(
 		case CheckerboardURIMatcher(x) => x.apply(Swing.blankIcon, Swing.rgbToIcon)
 		case x:String => {
 			val url = urlOrFileStringToUrl(x)
-			val b = new view.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Swing.compostLayers, Swing.sheeturl2images).mapKey(StringOrInt.unwrapToString)
+			val b = Swing.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);

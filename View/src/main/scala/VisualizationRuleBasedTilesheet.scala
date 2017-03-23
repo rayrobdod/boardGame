@@ -28,17 +28,17 @@ import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
  * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
  * @version 3.0.0
  */
-final class VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](
+final class VisualizationRuleBasedTilesheet[SpaceClass, Index, IconPart, Icon](
 		name:String,
-		val visualizationRules:Seq[view.VisualizationRule[SpaceClass, RectangularIndex, IconPart]],
+		val visualizationRules:Seq[view.VisualizationRule[SpaceClass, Index, IconPart]],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon]
-) extends Tilesheet[SpaceClass, RectangularIndex, Icon] {
+) extends Tilesheet[SpaceClass, Index, Icon] {
 	
-	override def getIconFor(field:Tiling[_ <: SpaceClass, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = {
+	override def getIconFor(field:Tiling[_ <: SpaceClass, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
 		type ImageFrames = Seq[IconPart]
 		
 		val layers:Map[Int, ImageFrames] = {
-			import ParamaterizedRectangularVisualizationRule.PriorityOrdering
+			import ParamaterizedVisualizationRule.PriorityOrdering
 			
 			visualizationRules.filter{
 				_.matches(field, xy, rng)

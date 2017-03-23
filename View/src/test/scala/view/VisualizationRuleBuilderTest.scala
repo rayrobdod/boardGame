@@ -25,11 +25,16 @@ import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.json.union.ParserRetVal.Complex
 
-class RectangularVisualizationRuleBuilderTest extends FunSpec {
+class VisualizationRuleBuilderTest extends FunSpec {
 	
-	describe("RectangularVisualizationRuleBuilder") {
+	describe("VisualizationRuleBuilder") {
 		describe ("tileRand") {
-			val dut = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)
+			val dut = new VisualizationRuleBuilder(
+					  Nil
+					, MySpaceClassMatcherFactory
+					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
+					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
+			)
 			
 			it ("Accepts positive integer value") {
 				assertResult(4){dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[JsonValue]).right.get.tileRand}
@@ -48,7 +53,12 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			}
 		}
 		describe ("indexies") {
-			val dut = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)
+			val dut = new VisualizationRuleBuilder(
+					  Nil
+					, MySpaceClassMatcherFactory
+					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
+					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
+			)
 			
 			it ("Accepts string") {
 				assertResult("(x == y)"){dut.apply(dut.init, "indexies", JsonValue("x == y"), new IdentityParser[JsonValue]).right.get.indexEquation.toString}
@@ -58,7 +68,12 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 			}
 		}
 		describe ("surroundingSpaces") {
-			val dut = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory)
+			val dut = new VisualizationRuleBuilder(
+					  Nil
+					, MySpaceClassMatcherFactory
+					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
+					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
+			)
 			val jsonParser = new JsonParser()
 			
 			it ("Rejects primitive") {
@@ -84,7 +99,13 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 		}
 		describe ("tiles") {
 			val tiles = ('a' to 'z').map{_.toString}
-			val dut = new RectangularVisualziationRuleBuilder(tiles, MySpaceClassMatcherFactory)
+			val dut = new VisualizationRuleBuilder(
+					  tiles
+					, MySpaceClassMatcherFactory
+					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
+					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
+			)
+			
 			val jsonParser = new JsonParser()
 			
 			it ("Accepts a primitive int value, treating it as a not-animated tile at some negative layer") {
@@ -123,7 +144,7 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 		}
 	}
 	
-	describe("RectangularVisualizationRuleBuilder + JsonParser") {
+	describe("VisualizationRuleBuilder + JsonParser") {
 		it ("do a thing") {
 			val src = """{
 				"tileRand":5,
@@ -133,11 +154,16 @@ class RectangularVisualizationRuleBuilderTest extends FunSpec {
 					"(1,1)":"b"
 				}
 			}"""
-			val builder = new RectangularVisualziationRuleBuilder(Nil, MySpaceClassMatcherFactory).mapKey[StringOrInt](StringOrInt.unwrapToString)
+			val builder = new VisualizationRuleBuilder(
+					  Nil
+					, MySpaceClassMatcherFactory
+					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
+					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
+			).mapKey[StringOrInt](StringOrInt.unwrapToString)
 			val res = new JsonParser().parse(builder, src).fold({x => x}, {x => throw new IllegalArgumentException("Was primitiive" + x)}, {(s,i) => throw new java.text.ParseException(s,i)})
 			
 			res match {
-				case ParamaterizedRectangularVisualizationRule(
+				case ParamaterizedVisualizationRule(
 						MapUnapplyer(),
 						5,
 						indexFun,

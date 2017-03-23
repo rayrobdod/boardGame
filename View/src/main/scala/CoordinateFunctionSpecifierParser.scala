@@ -21,7 +21,7 @@ import fastparse.all._
 import scala.language.implicitConversions
 
 /**
- * A parser that converts CoordinateFunctionSpecifier strings into a `(Int,Int,Int,Int) => Boolean` function.
+ * A parser that converts CoordinateFunctionSpecifier strings into a `Index => Boolean` function.
  * 
  * Basically, think the smallest subset of C-styled languages to create a boolean-returning
  * expression consisting of integer and boolean algebra.
@@ -31,109 +31,82 @@ import scala.language.implicitConversions
  * 
  * @since next
  */
-object CoordinateFunctionSpecifierParser {
+final class CoordinateFunctionSpecifierParser[Index](vars:Map[Char, CoordinateFunction[Index, Int]]) {
 	// apparently, scala 2.10 has trouble with finding `parserApi`
 	private implicit def strToParserApi(s: String): fastparse.core.ParserApi[Unit, Char, String] = parserApi(s)
 	private implicit def parserToParserApi[T](s: Parser[T]): fastparse.core.ParserApi[T, Char, String] = parserApi(s)
 	
 	
-	trait CoordinateFunction[@specialized(Int, Boolean) A] {
-		def apply(x:Int, y:Int, w:Int, h:Int):A
-		private[CoordinateFunctionSpecifierParser] def divCount:Int = 0
-		private[CoordinateFunctionSpecifierParser] def andCount:Int = 0
-		private[CoordinateFunctionSpecifierParser] def primitiveSum:Int = 0
-		private[CoordinateFunctionSpecifierParser] def isJustTrue:Boolean = false
-		
-		final def priority = if (isJustTrue) {0} else {(1000) / (divCount + 1) * (andCount + 1) + primitiveSum}
-
-		private[CoordinateFunctionSpecifierParser] def zipMap[@specialized(Int, Boolean) B, @specialized(Int, Boolean) C](
-				rhs:CoordinateFunction[B],
-				mapping:(A,B) => C,
-				name:String,
-				incrementDivCount:Int = 0,
-				incrementAndCount:Int = 0
-		) = {
-			new CoordinateFunction[C]{
-				override def apply(x:Int, y:Int, w:Int, h:Int):C =
-					mapping(CoordinateFunction.this.apply(x,y,w,h), rhs.apply(x,y,w,h))
-				override def divCount:Int = CoordinateFunction.this.divCount + rhs.divCount + incrementDivCount
-				override def andCount:Int = CoordinateFunction.this.andCount + rhs.andCount + incrementAndCount
-				override def primitiveSum:Int = CoordinateFunction.this.primitiveSum + rhs.primitiveSum
-				override def toString = name
-			}
-		}
-	}
-	object CoordinateFunction {
-		def constant[@specialized(Int, Boolean) A](a:A) = new CoordinateFunction[A]{
-			override def apply(x:Int, y:Int, w:Int, h:Int):A = a
-			override def primitiveSum:Int = {
-				if (a.isInstanceOf[Int]) {a.asInstanceOf[Int]} else {0}
-			}
-			override def isJustTrue:Boolean = if (a.isInstanceOf[Boolean]) {a.asInstanceOf[Boolean]} else {false}
-			override def toString:String = a.toString
-		}
-	}
-	
 	// Two `P`s containing "(" means that neither can be followed by a cut
 	
 	private[this] val whitespace:P[Unit] = CharPred{_.isWhitespace}.opaque("whitespace")
-	private[this] val variable:P[CoordinateFunction[Int]] = CharIn("xywh").!.map{_ match {
-		case "x" => new CoordinateFunction[Int]{def apply(x:Int, y:Int, w:Int, h:Int) = x; override def toString = "x"}
-		case "y" => new CoordinateFunction[Int]{def apply(x:Int, y:Int, w:Int, h:Int) = y; override def toString = "y"}
-		case "w" => new CoordinateFunction[Int]{def apply(x:Int, y:Int, w:Int, h:Int) = w; override def toString = "w"}
-		case "h" => new CoordinateFunction[Int]{def apply(x:Int, y:Int, w:Int, h:Int) = h; override def toString = "h"}
-	}}
-	private[this] val number:P[CoordinateFunction[Int]] = CharIn('0' to '9').rep(1).!.map{str => CoordinateFunction.constant(str.toInt)}
+	private[this] val variable:P[CoordinateFunction[Index, Int]] = CharIn(vars.keySet.to[Seq]).!.map{x => vars(x.charAt(0))}
+	private[this] val number:P[CoordinateFunction[Any, Int]] = CharIn('0' to '9').rep(1).!.map{str => CoordinateFunction.constant(str.toInt)}
 	
-	private[this] val parensInt:P[CoordinateFunction[Int]] = P( "(" ~ addSub ~ ")" )
-	private[this] val factor:P[CoordinateFunction[Int]] = variable | number | parensInt
+	private[this] val parensInt:P[CoordinateFunction[Index, Int]] = P( "(" ~ addSub ~ ")" )
+	private[this] val factor:P[CoordinateFunction[Index, Int]] = variable | number | parensInt
 	
-	private[this] val divMul:P[CoordinateFunction[Int]] = P(
+	private[this] val divMul:P[CoordinateFunction[Index, Int]] = P(
 		factor ~ (whitespace.rep ~ CharIn("*/%").! ~/ whitespace.rep ~ factor).rep
 	).map{case (a, bcSeq) => bcSeq.foldLeft(a){case (folding, (b,c)) => b match {
-		case "*" => folding.zipMap(c, {(x,y:Int) => x * y}, s"($folding * $c)")
-		case "/" => folding.zipMap(c, {(x,y:Int) => x / y}, s"($folding / $c)", incrementDivCount = 1)
-		case "%" => folding.zipMap(c, {(x,y:Int) => x % y}, s"($folding % $c)", incrementDivCount = 1)
+		case "*" => folding.zipWith(c, {(x,y:Int) => x * y}, s"($folding * $c)")
+		case "/" => folding.zipWith(c, {(x,y:Int) => x / y}, s"($folding / $c)", incrementDivCount = 1)
+		case "%" => folding.zipWith(c, {(x,y:Int) => x % y}, s"($folding % $c)", incrementDivCount = 1)
 	}}}
 	
-	private[this] val addSub:P[CoordinateFunction[Int]] = P(
+	private[this] val addSub:P[CoordinateFunction[Index, Int]] = P(
 		divMul ~ (whitespace.rep ~ CharIn("+-").! ~/ whitespace.rep ~ divMul).rep
 	).map{case (a, bcSeq) => bcSeq.foldLeft(a){(folding, bc) => bc._1 match {
-		case "+" => folding.zipMap(bc._2, {(x,y:Int) => x + y}, s"($folding + ${bc._2})")
-		case "-" => folding.zipMap(bc._2, {(x,y:Int) => x - y}, s"($folding - ${bc._2})")
+		case "+" => folding.zipWith(bc._2, {(x,y:Int) => x + y}, s"($folding + ${bc._2})")
+		case "-" => folding.zipWith(bc._2, {(x,y:Int) => x - y}, s"($folding - ${bc._2})")
 	}}}
 	
-	private[this] val comparisons:P[CoordinateFunction[Boolean]] = P(
+	private[this] val comparisons:P[CoordinateFunction[Index, Boolean]] = P(
 		addSub ~ whitespace.rep ~ StringIn("==","<=",">=",">","<","!=").! ~/ whitespace.rep ~ addSub
 	).map{case (a,b,c) => b match {
-		case "==" => a.zipMap(c, {(x,y:Int) => x == y}, s"($a == $c)")
-		case "!=" => a.zipMap(c, {(x,y:Int) => x != y}, s"($a != $c)")
-		case ">=" => a.zipMap(c, {(x,y:Int) => x >= y}, s"($a >= $c)")
-		case "<=" => a.zipMap(c, {(x,y:Int) => x <= y}, s"($a <= $c)")
-		case ">"  => a.zipMap(c, {(x,y:Int) => x >  y}, s"($a > $c)")
-		case "<"  => a.zipMap(c, {(x,y:Int) => x <  y}, s"($a < $c)")
+		case "==" => a.zipWith(c, {(x,y:Int) => x == y}, s"($a == $c)")
+		case "!=" => a.zipWith(c, {(x,y:Int) => x != y}, s"($a != $c)")
+		case ">=" => a.zipWith(c, {(x,y:Int) => x >= y}, s"($a >= $c)")
+		case "<=" => a.zipWith(c, {(x,y:Int) => x <= y}, s"($a <= $c)")
+		case ">"  => a.zipWith(c, {(x,y:Int) => x >  y}, s"($a > $c)")
+		case "<"  => a.zipWith(c, {(x,y:Int) => x <  y}, s"($a < $c)")
 	}}
 	
-	private[this] val trueP:P[CoordinateFunction[Boolean]] = P("true").map{x => CoordinateFunction.constant(true)}
-	private[this] val falseP:P[CoordinateFunction[Boolean]] = P("false").map{x => CoordinateFunction.constant(false)}
-	private[this] val parensBool:P[CoordinateFunction[Boolean]] = P( "(" ~ and ~ ")" )
-	private[this] val boolUnit:P[CoordinateFunction[Boolean]] = comparisons | trueP | falseP | parensBool
+	private[this] val trueP:P[CoordinateFunction[Index, Boolean]] = P("true").map{x => CoordinateFunction.constant(true)}
+	private[this] val falseP:P[CoordinateFunction[Index, Boolean]] = P("false").map{x => CoordinateFunction.constant(false)}
+	private[this] val parensBool:P[CoordinateFunction[Index, Boolean]] = P( "(" ~ and ~ ")" )
+	private[this] val boolUnit:P[CoordinateFunction[Index, Boolean]] = comparisons | trueP | falseP | parensBool
 	
-	private[this] val or:P[CoordinateFunction[Boolean]] = P(
+	private[this] val or:P[CoordinateFunction[Index, Boolean]] = P(
 		boolUnit ~ (whitespace.rep ~ "||" ~/ whitespace.rep ~ boolUnit).rep
 	).map{case (a, cSeq) => cSeq.foldLeft(a){(folding, c) =>
-		folding.zipMap(c, {(x,y:Boolean) => x || y}, s"($folding || $c)")
+		folding.zipWith(c, {(x,y:Boolean) => x || y}, s"($folding || $c)")
 	}}
 	
-	private[this] val and:P[CoordinateFunction[Boolean]] = P(
+	private[this] val and:P[CoordinateFunction[Index, Boolean]] = P(
 		or ~ (whitespace.rep ~ "&&" ~/ whitespace.rep ~ or).rep
 	).map{case (a, cSeq) => cSeq.foldLeft(a){(folding, c) =>
-		folding.zipMap(c, {(x,y:Boolean) => x && y}, s"($folding && $c)", incrementAndCount = 1)
+		folding.zipWith(c, {(x,y:Boolean) => x && y}, s"($folding && $c)", incrementAndCount = 1)
 	}}
 	
-	private[this] val parser:P[CoordinateFunction[Boolean]] = and ~ End
+	private[this] val parser:P[CoordinateFunction[Index, Boolean]] = and ~ End
 	
-	def parse(spec:String):Either[(String,Int), CoordinateFunction[Boolean]] = {
+	def parse(spec:String):Either[(String,Int), CoordinateFunction[Index, Boolean]] = {
 		parser.parse(spec).fold({(_, idx, extra) => Left(extra.toString, idx)}, {(res, idx) => Right(res)})
 	}
+}
+
+object CoordinateFunctionSpecifierParser {
+	import com.rayrobdod.boardGame.RectangularIndex
+	import com.rayrobdod.boardGame.HorizontalHexagonalIndex
+	
+	val rectangularVars:Map[Char, CoordinateFunction[RectangularIndex, Int]] = Map(
+		'x' -> new CoordinateFunction[RectangularIndex, Int]{def apply(xy:(Int, Int)) = xy._1; override def toString = "x"},
+		'y' -> new CoordinateFunction[RectangularIndex, Int]{def apply(xy:(Int, Int)) = xy._2; override def toString = "y"}
+	)
+	
+	val hexagonalVars:Map[Char, CoordinateFunction[HorizontalHexagonalIndex, Int]] = Map(
+		'i' -> new CoordinateFunction[HorizontalHexagonalIndex, Int]{def apply(ij:(Int, Int)) = ij._1; override def toString = "i"},
+		'j' -> new CoordinateFunction[HorizontalHexagonalIndex, Int]{def apply(ij:(Int, Int)) = ij._2; override def toString = "j"}
+	)
 }

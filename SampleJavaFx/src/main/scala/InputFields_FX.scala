@@ -67,7 +67,7 @@ final class InputFields2(
 		case CheckerboardURIMatcher(x) => x.apply(Javafx.blankIcon, Javafx.rgbToIcon)
 		case x => {
 			val url = urlOrFileStringToUrl(x)
-			val b = new VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory, Javafx.compostLayers, Javafx.sheeturl2images).mapKey(StringOrInt.unwrapToString)
+			val b = Javafx.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);

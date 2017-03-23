@@ -25,20 +25,24 @@ import scala.collection.immutable.Seq
 import com.rayrobdod.json.parser.JsonParser;
 import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.json.union.ParserRetVal.Complex
-import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.json.union.ParserRetVal.Complex
+import com.rayrobdod.boardGame.SpaceClassMatcher
+import com.rayrobdod.boardGame.RectangularIndex
 
-class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
+class VisualizationRuleBasedTilesheetBuilderTest extends FunSpec {
 	
-	describe("VisualizationRuleBasedRectangularTilesheetBuilder + JsonParser") {
+	describe("VisualizationRuleBasedTilesheetBuilder + JsonParser") {
 		it ("do a thing") {
 			val compostLayersFun = {x:Seq[Seq[Float]] => "apple"}
 			val urlToFrameImagesFun = {(u:URL, d:java.awt.Dimension) => Seq(0.5f)}
+			val strToIndexTranslationFun = VisualizationRuleBuilder.stringToRectangularIndexTranslation _
 			
-			val expected = Complex(new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
+			val expected = Complex(new VisualizationRuleBasedTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
 				compostLayers = compostLayersFun,
 				urlToFrameImages = urlToFrameImagesFun,
+				stringToIndexConverter = strToIndexTranslationFun,
+				coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars,
 				sheetUrl = new URL("http://localhost/tiles"),
 				tileWidth = 32,
 				tileHeight = 48,
@@ -52,18 +56,27 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 				"rules":"rules",
 				"name":"name"
 			}"""
-			val builder = new VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost/"), StubSpaceClassMatcherFactory, compostLayersFun, urlToFrameImagesFun).mapKey[StringOrInt](StringOrInt.unwrapToString)
+			val builder = new VisualizationRuleBasedTilesheetBuilder(
+				  baseUrl = new URL("http://localhost/")
+				, classMap = StubSpaceClassMatcherFactory
+				, compostLayers = compostLayersFun
+				, urlToFrameImages = urlToFrameImagesFun
+				, stringToIndexConverter = strToIndexTranslationFun
+				, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
+			).mapKey[StringOrInt](StringOrInt.unwrapToString)
 			val result = new JsonParser().parse(builder, src)
 			
 			assertResult(expected){result}
 		}
 	}
-	describe("VisualizationRuleBasedRectangularTilesheetBuilder.Delayed") {
+	describe("VisualizationRuleBasedTilesheetBuilder.Delayed") {
 		it ("can apply() using a two-image, two-rule pair of files") {
-			val source = new VisualizationRuleBasedRectangularTilesheetBuilder.Delayed(
+			val source = new VisualizationRuleBasedTilesheetBuilder.Delayed(
 				classMap = StubSpaceClassMatcherFactory,
 				compostLayers = Swing.compostLayers,
 				urlToFrameImages = Swing.sheeturl2images,
+				stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation,
+				coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars,
 				sheetUrl = this.getClass.getResource("/com/rayrobdod/boardGame/swingView/whiteBlackTiles.png"),
 				tileWidth = 32,
 				tileHeight = 32,
@@ -72,7 +85,7 @@ class VisualizationRuleBasedRectangularTilesheetBuilderTest extends FunSpec {
 			)
 			val result = source.apply()
 			
-			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedRectangularVisualizationRule[String, _]]}
+			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[String, RectangularIndex, _]]}
 			assertResult("(x == 0)"){resRules(0).indexEquation.toString}
 			assertResult("true"){resRules(1).indexEquation.toString}
 			assertResult(java.awt.Color.white.getRGB){resRules(0).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}

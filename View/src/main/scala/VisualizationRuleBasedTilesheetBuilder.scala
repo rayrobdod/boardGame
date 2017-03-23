@@ -26,16 +26,31 @@ import scala.util.{Either, Left, Right}
 import com.rayrobdod.json.parser.{Parser, JsonParser}
 import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder, ThrowBuilder}
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}
-import VisualizationRuleBasedRectangularTilesheetBuilder.Delayed
+import VisualizationRuleBasedTilesheetBuilder.Delayed
 
-final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPart, Icon](
+final class VisualizationRuleBasedTilesheetBuilder[SpaceClass, Index, IconPart, Icon](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],
 		urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]]
-) extends Builder[String, JsonValue, Delayed[SpaceClass, IconPart, Icon]] {
-	override def init:Delayed[SpaceClass, IconPart, Icon] = new Delayed[SpaceClass, IconPart, Icon](classMap, compostLayers, urlToFrameImages)
-	override def apply[Input](a:Delayed[SpaceClass, IconPart, Icon], key:String, input:Input, parser:Parser[String, JsonValue, Input]):Either[(String, Int), Delayed[SpaceClass, IconPart, Icon]] = {
+		, stringToIndexConverter:Function1[String, Either[(String, Int), IndexConverter[Index]]]
+		, coordFunVars:Map[Char, CoordinateFunction[Index, Int]]
+) extends Builder[String, JsonValue, Delayed[SpaceClass, Index, IconPart, Icon]] {
+	override def init:Delayed[SpaceClass, Index, IconPart, Icon] = {
+		new Delayed[SpaceClass, Index, IconPart, Icon](
+			  classMap
+			, compostLayers
+			, urlToFrameImages
+			, stringToIndexConverter
+			, coordFunVars
+		)
+	}
+	override def apply[Input](
+			a:Delayed[SpaceClass, Index, IconPart, Icon],
+			key:String,
+			input:Input,
+			parser:Parser[String, JsonValue, Input]
+	):Either[(String, Int), Delayed[SpaceClass, Index, IconPart, Icon]] = {
 		parser.parsePrimitive(input).right.flatMap{value => Right{
 			import JsonValue._
 			(key, value) match {
@@ -50,24 +65,31 @@ final class VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPa
 	}
 }
 
-object VisualizationRuleBasedRectangularTilesheetBuilder {
+object VisualizationRuleBasedTilesheetBuilder {
 	
-	final case class Delayed[SpaceClass, IconPart, Icon] (
+	final case class Delayed[SpaceClass, Index, IconPart, Icon] (
 		classMap:SpaceClassMatcherFactory[SpaceClass],
 		compostLayers:Function1[Seq[Seq[IconPart]], Icon],
 		urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]],
+		stringToIndexConverter:Function1[String, Either[(String, Int), IndexConverter[Index]]],
+		coordFunVars:Map[Char, CoordinateFunction[Index, Int]],
 		sheetUrl:URL = new URL("http://localhost:80/"),
 		tileWidth:Int = 1,
 		tileHeight:Int = 1,
 		rules:URL = new URL("http://localhost:80/"),
 		name:String = "???"
 	) {
-		def apply():VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon] = {
-			new VisualizationRuleBasedRectangularTilesheet[SpaceClass, IconPart, Icon](name, visualizationRules, compostLayers)
+		def apply():VisualizationRuleBasedTilesheet[SpaceClass, Index, IconPart, Icon] = {
+			new VisualizationRuleBasedTilesheet[SpaceClass, Index, IconPart, Icon](name, visualizationRules, compostLayers)
 		}
 		
-		private def visualizationRules:Seq[ParamaterizedRectangularVisualizationRule[SpaceClass, IconPart]] = {
-			val b = new RectangularVisualziationRuleBuilder[SpaceClass, IconPart](urlToFrameImages(sheetUrl, new java.awt.Dimension(tileWidth, tileHeight)), classMap).mapKey{StringOrInt.unwrapToString}
+		private def visualizationRules:Seq[ParamaterizedVisualizationRule[SpaceClass, Index, IconPart]] = {
+			val b = new VisualizationRuleBuilder[SpaceClass, Index, IconPart](
+				  urlToFrameImages(sheetUrl, new java.awt.Dimension(tileWidth, tileHeight))
+				, classMap
+				, stringToIndexConverter
+				, coordFunVars
+			).mapKey{StringOrInt.unwrapToString}
 			var r:Reader = new java.io.StringReader("{}")
 			try {
 				r = new java.io.InputStreamReader(rules.openStream(), UTF_8)

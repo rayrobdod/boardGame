@@ -39,7 +39,7 @@ class InputFields2Test extends FunSpec {
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null).tilesheet.isInstanceOf[NilTilesheet[_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null).tilesheet.isInstanceOf[NilTilesheet[_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }

@@ -42,7 +42,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[IconPart]
 	
 	
-	final def NilTilesheet:NilTilesheet[Icon] = new NilTilesheet[Icon](() => blankIcon(new Dimension(16, 16)))
+	final def NilTilesheet:NilTilesheet[RectangularIndex, Icon] = new NilTilesheet[RectangularIndex, Icon](() => blankIcon(new Dimension(16, 16)))
 	final def HashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[RectangularIndex, Icon] = {
 		new HashcodeColorTilesheet[RectangularIndex, Icon](
 			{() => blankIcon(dim)},
@@ -53,12 +53,28 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
-	):VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPart, Icon] = {
-		new VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass, IconPart, Icon](
-			baseUrl,
-			classMap,
-			this.compostLayers _,
-			this.sheeturl2images _
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, IconPart, Icon](
+			  baseUrl
+			, classMap
+			, this.compostLayers _
+			, this.sheeturl2images _
+			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
+			, CoordinateFunctionSpecifierParser.rectangularVars
+		)
+	}
+	
+	final def VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder[SpaceClass](
+		baseUrl:URL,
+		classMap:SpaceClassMatcherFactory[SpaceClass]
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, IconPart, Icon](
+			  baseUrl
+			, classMap
+			, this.compostLayers _
+			, this.sheeturl2images _
+			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
+			, CoordinateFunctionSpecifierParser.hexagonalVars
 		)
 	}
 }

@@ -23,7 +23,7 @@ import scala.annotation.tailrec
  * 
  */
 package object view {
-	type IndexConverter = Function1[(Int, Int), (Int, Int)]
+	type IndexConverter[Index] = Function1[Index, Index]
 	
 	/** Least Common Multiple */
 	def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
@@ -44,8 +44,9 @@ package view {
 	}
 	
 	/** A tilesheet which will always return the Icon specified in the constructor */
-	final class NilTilesheet[Icon](val tile:Function0[Icon]) extends Tilesheet[Any, RectangularIndex, Icon] {
+	final class NilTilesheet[Index, Icon](val tile:Function0[Icon]) extends Tilesheet[Any, Index, Icon] {
 		override def toString:String = "NilTilesheet"
-		override def getIconFor(f:Tiling[_ <: Any, RectangularIndex, _], xy:RectangularIndex, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
+		override def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
 	}
+	
 }
