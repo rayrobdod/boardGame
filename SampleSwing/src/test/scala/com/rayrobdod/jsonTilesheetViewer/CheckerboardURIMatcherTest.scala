@@ -17,11 +17,8 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color}
-import scala.util.Random
-import scala.collection.immutable.Seq
+import org.scalatest.FunSpec
+import java.awt.Color
 import com.rayrobdod.boardGame.view._
 import CheckerboardURIMatcher.CheckerboardTilesheetDelay
 

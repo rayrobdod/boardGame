@@ -17,14 +17,11 @@
 */
 package com.rayrobdod.boardGame.view
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color}
+import org.scalatest.FunSpec
+import java.awt.Color
 import javax.swing.Icon;
 import scala.util.Random
 import com.rayrobdod.swing.SolidColorIcon
-import com.rayrobdod.boardGame.StrictRectangularSpace
-import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularIndex
 
 class RandomColorTilesheetTest extends FunSpec {

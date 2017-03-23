@@ -18,7 +18,6 @@
 package com.rayrobdod.boardGame.view
 
 import scala.util.Random
-import com.rayrobdod.boardGame.Space
 import com.rayrobdod.boardGame.Tiling
 
 /**

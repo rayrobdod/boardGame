@@ -19,9 +19,7 @@ package com.rayrobdod.boardGame.view
 
 import com.rayrobdod.boardGame._
 import scala.util.Random
-import scala.{Function0 => Future}
-import scala.annotation.tailrec
-import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
+import scala.collection.immutable.{Seq, Map, Vector}
 
 
 /**

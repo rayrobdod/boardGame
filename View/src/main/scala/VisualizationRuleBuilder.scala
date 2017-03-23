@@ -20,7 +20,6 @@ package view
 
 import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
-import java.awt.Image
 import com.rayrobdod.json.builder.{Builder, PrimitiveSeqBuilder}
 import com.rayrobdod.json.parser.Parser
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}

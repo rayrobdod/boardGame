@@ -18,31 +18,18 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import scala.collection.immutable.Seq
-import scala.util.Random
 
-import java.net.{URL, URI}
-import javafx.stage.Window
 import javafx.stage.Stage
-import javafx.scene.{Scene, Node}
-import javafx.scene.layout.{GridPane, BorderPane, StackPane}
+import javafx.scene.Scene
+import javafx.scene.layout.{BorderPane, StackPane}
 import javafx.scene.text.Text
-import javafx.scene.control.{TextField, Button, ScrollPane}
-import javafx.beans.property.ObjectProperty
+import javafx.scene.control.ScrollPane
 import javafx.application.Application
 import javafx.event.{EventHandler, ActionEvent}
-import javafx.scene.input.MouseEvent
 
-import java.io.File
-import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.file.{Path, Paths, Files}
-
+import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Javafx._
-import com.rayrobdod.boardGame.{
-		RectangularIndex,
-		RectangularField, RectangularSpace
-}
-import com.rayrobdod.json.parser.JsonParser
 
 
 /**
@@ -151,13 +138,13 @@ object JsonTilesheetViewer2 {
 	) extends Function0[Unit] {
 		override def apply():Unit = {
 			
-			val currentSpace:SpaceClass = currentRotationState.space(index._1, index._2).get.typeOfSpace
+			val currentSpace:SpaceClass = currentRotationState.space(index).get.typeOfSpace
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
 			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
 			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
 			
 			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
-					currentRotationState.mapIndex{x => ((x, currentRotationState.space(x._1, x._2).get.typeOfSpace))}.toMap +
+					currentRotationState.mapIndex{x => ((x, currentRotationState.space(x).get.typeOfSpace))}.toMap +
 							((index, nextSpace))
 			
 			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)

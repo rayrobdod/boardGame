@@ -18,10 +18,6 @@
 package com.rayrobdod.boardGame.view
 
 import org.scalatest.FunSpec
-import scala.collection.immutable.Seq
-import java.awt.{Color}
-import com.rayrobdod.boardGame.StrictRectangularSpace
-import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularIndex
 
 class IndexesTilesheetTest extends FunSpec {

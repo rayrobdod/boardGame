@@ -17,13 +17,11 @@
 */
 package com.rayrobdod.boardGame.view
 
-import com.rayrobdod.boardGame.view
-import org.scalatest.{FunSuite, FunSpec}
+import org.scalatest.FunSpec
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.{JsonParser, IdentityParser}
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import com.rayrobdod.boardGame.SpaceClassMatcher
-import com.rayrobdod.json.union.ParserRetVal.Complex
 
 class VisualizationRuleBuilderTest extends FunSpec {
 	

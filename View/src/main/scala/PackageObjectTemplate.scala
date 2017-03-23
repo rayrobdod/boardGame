@@ -18,10 +18,9 @@
 package com.rayrobdod.boardGame
 package view
 
-import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 import scala.util.Random
-import java.awt.Dimension
+import java.awt.{Dimension => AwtDimension}
 import java.awt.Color
 import java.net.URL
 
@@ -34,14 +33,16 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	
 	/** Returns a transparent icon of the specified size */
 	def blankIcon():Icon
-	/** Returns a solid-colored icon of the specified size */
+	/** Returns a solid-colored rectangular icon of the specified size */
 	def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon
+	/** Returns a solid-colored hexagonal icon of the specified size */
+	def rgbToHorizontalHexagonalIcon(rgb:Color, size:HorizontalHexagonalDimension):Icon
 	/** Returns an icon that displays the specified string */
 	def stringIcon(text:String, rgb:Color, size:RectangularDimension):Icon
 	/**  */
 	def compostLayers(layersWithLCMFrames:Seq[Seq[IconPart]]):Icon
 	/** Reads an image from the specified URL and splits it into dimension-sized images */
-	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[IconPart]
+	def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[IconPart]
 	
 	
 	final def RectangularNilTilesheet:NilTilesheet[RectangularIndex, RectangularDimension, Icon] = {
@@ -50,13 +51,22 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 			new RectangularDimension(16, 16)
 		)
 	}
-	final def RectangularHashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon] = {
+	final def RectangularHashcodeColorTilesheet(dim:java.awt.Dimension):HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon] = {
 		new HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon](
 			  {() => blankIcon}
 			, {x:Color => rgbToRectangularIcon(x, RectangularDimension(dim.width, dim.height))}
 			, new RectangularDimension(dim.width, dim.height)
 		)
 	}
+	final def HorizontalHexagonalHashcodeColorTilesheet(dim:HorizontalHexagonalDimension):HashcodeColorTilesheet[HorizontalHexagonalIndex, HorizontalHexagonalDimension, Icon] = {
+		new HashcodeColorTilesheet[HorizontalHexagonalIndex, HorizontalHexagonalDimension, Icon](
+			  {() => blankIcon}
+			, {x:Color => rgbToHorizontalHexagonalIcon(x, dim)}
+			, dim
+		)
+	}
+	
+	
 	
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](
 		baseUrl:URL,

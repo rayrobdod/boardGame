@@ -17,7 +17,6 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import java.awt.{Color, Dimension}
 import com.rayrobdod.boardGame.view.CheckerboardTilesheet
 import com.rayrobdod.boardGame.view.RectangularDimension
 

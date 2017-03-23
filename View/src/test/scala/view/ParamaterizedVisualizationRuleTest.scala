@@ -183,7 +183,7 @@ class ParamaterizedVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.space(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a"
+				val expected = map.space((x - 1, y)).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
 			}}
@@ -201,7 +201,7 @@ class ParamaterizedVisualizationRuleTest extends FunSpec {
 			val map = RectangularField((0 to 10).map{x => (0 to 10).map{y => if (rng.nextBoolean()) {"a"} else {"b"}}})
 			
 			(0 to 10).foreach{x => (0 to 10).foreach{y =>
-				val expected = map.space(x - 1, y).map{_.typeOfSpace}.getOrElse("a") == "a" &&
+				val expected = map.space((x - 1, y)).map{_.typeOfSpace}.getOrElse("a") == "a" &&
 				               map.space((x,y)).map{_.typeOfSpace}.getOrElse("a") == "a"
 				
 				assertResult(expected){dut.surroundingTilesMatch(map, (x,y))}
@@ -215,13 +215,13 @@ class ParamaterizedVisualizationRuleTest extends FunSpec {
 		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](indexEquation = CfspParse("x == 0").right.get)
 		
 		it ("indexiesMatch is true when x is 0") {
-			assert(dut.indexiesMatch(0, -1))
+			assert(dut.indexiesMatch((0, -1)))
 		}
 		it ("indexiesMatch is true when x is 0 (2)") {
-			assert(dut.indexiesMatch(0, 1))
+			assert(dut.indexiesMatch((0, 1)))
 		}
 		it ("indexiesMatch is false when x is 1") {
-			assert(! dut.indexiesMatch(1, -1))
+			assert(! dut.indexiesMatch((1, -1)))
 		}
 		it ("has a priority of 1001") {
 			assertResult(1001){dut.priority}
@@ -231,13 +231,13 @@ class ParamaterizedVisualizationRuleTest extends FunSpec {
 		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](indexEquation = CfspParse("x % 2 == 0").right.get)
 		
 		it ("indexiesMatch is true when x is 0") {
-			assert(dut.indexiesMatch(0, -1))
+			assert(dut.indexiesMatch((0, -1)))
 		}
 		it ("indexiesMatch is false when x is 1") {
-			assert(! dut.indexiesMatch(1, -1))
+			assert(! dut.indexiesMatch((1, -1)))
 		}
 		it ("indexiesMatch is true when x is 2") {
-			assert(dut.indexiesMatch(2, -1))
+			assert(dut.indexiesMatch((2, -1)))
 		}
 		it ("has a priority of 503") {
 			assertResult(503){dut.priority}
@@ -247,10 +247,10 @@ class ParamaterizedVisualizationRuleTest extends FunSpec {
 		val dut = new ParamaterizedVisualizationRule[String, RectangularIndex, Nothing](indexEquation = CfspParse("x == 2 && y == 4").right.get)
 		
 		it ("indexiesMatch is true when x is 2 and y is 4") {
-			assert(dut.indexiesMatch(2, 4))
+			assert(dut.indexiesMatch((2, 4)))
 		}
 		it ("indexiesMatch is false otherwise") {
-			assert(! dut.indexiesMatch(-1, -1))
+			assert(! dut.indexiesMatch((-1, -1)))
 		}
 		it ("has a priority of 2007") {
 			assertResult(2007){dut.priority}

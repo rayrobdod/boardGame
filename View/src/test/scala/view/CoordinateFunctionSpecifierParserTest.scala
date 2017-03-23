@@ -28,7 +28,7 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("true").right.get
 			it ("returns true for all inputs") {
 				forAll{(x:Int, y:Int) =>
-					assert( parserResult(x,y) )
+					assert( parserResult((x,y)) )
 				}
 			}
 		}
@@ -36,7 +36,7 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("false").right.get
 			it ("returns false for all inputs") {
 				forAll{(x:Int, y:Int) =>
-					assert(! parserResult(x,y) )
+					assert(! parserResult((x,y)) )
 				}
 			}
 		}
@@ -44,12 +44,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x==2").right.get
 			it ("returns true when x is 2") {
 				forAll{(y:Int) =>
-					assert(parserResult(2, y) )
+					assert(parserResult((2, y)) )
 				}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(x != 2) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -57,12 +57,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("y==2").right.get
 			it ("returns true when y is 2") {
 				forAll{(x:Int) =>
-					assert(parserResult(x, 2) )
+					assert(parserResult((x, 2)) )
 				}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(y != 2) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -70,12 +70,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x != 2").right.get
 			it ("returns false when x is 2") {
 				forAll{(y:Int) =>
-					assert(! parserResult(2, y) )
+					assert(! parserResult((2, y)) )
 				}
 			}
 			it ("returns true otherwise") {
 				forAll{(x:Int, y:Int) => whenever(x != 2) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 		}
@@ -83,12 +83,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x <= 2").right.get
 			it ("returns true when x is <= 2") {
 				forAll{(x:Int, y:Int) => whenever(x <= 2) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(! (x <= 2)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -96,12 +96,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x >= 2").right.get
 			it ("returns true when x is >= 2") {
 				forAll{(x:Int, y:Int) => whenever(x >= 2) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(! (x >= 2)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -109,12 +109,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x < 2").right.get
 			it ("returns true when x is < 2") {
 				forAll{(x:Int, y:Int) => whenever(x < 2) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(! (x < 2)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -122,12 +122,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x > 2").right.get
 			it ("returns true when x is > 2") {
 				forAll{(x:Int, y:Int) => whenever(x > 2) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(! (x > 2)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -136,12 +136,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			it ("returns true when y == 2 - x") {
 				forAll{(x:Int) => {
 					val y = 2 - x
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(x + y != 2) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -150,12 +150,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			it ("returns true when x == 2 + y") {
 				forAll{(y:Int) => {
 					val x = y + 2
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false otherwise") {
 				forAll{(x:Int, y:Int) => whenever(x - y != 2) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -164,12 +164,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			it ("returns true when x * 2 == y") {
 				forAll{(x:Int) => {
 					val y = x * 2
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false when x * 2 == y") {
 				forAll{(x:Int, y:Int) => whenever(! (x * 2 == y)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -177,12 +177,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x / 2 == 0").right.get
 			it ("returns true when x / 2 == 0") {
 				forAll{(x:Int, y:Int) => whenever(x / 2 == 0) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false when x / 2 == 0") {
 				forAll{(x:Int, y:Int) => whenever(! (x / 2 == 0)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -190,12 +190,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x % 2 == 0").right.get
 			it ("returns true when x is even") {
 				forAll{(x:Int, y:Int) => whenever(x % 2 == 0) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false when x is odd") {
 				forAll{(x:Int, y:Int) => whenever(! (x % 2 == 0)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -203,12 +203,12 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("(x + y) % 2 == 0").right.get
 			it ("returns true when x is even") {
 				forAll{(x:Int, y:Int) => whenever((x + y) % 2 == 0) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false when y is odd") {
 				forAll{(x:Int, y:Int) => whenever(! ((x + y) % 2 == 0)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -216,15 +216,15 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x == 0 || y == 0").right.get
 			it ("returns true when either x or y is zero") {
 				forAll{(whichIsZero:Boolean, xy:Int) => {
-					assert(parserResult(
+					assert(parserResult((
 						if(whichIsZero) {xy} else {0},
 						if(whichIsZero) {0} else {xy}
-					))
+					)))
 				}}
 			}
 			it ("returns false when neither x nor y is zero") {
 				forAll{(x:Int, y:Int) => whenever(! (x == 0 || y == 0)) {
-					assert(! parserResult(x, y) )
+					assert(! parserResult((x, y)) )
 				}}
 			}
 		}
@@ -232,15 +232,15 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			val parserResult = parse("x != 0 && y != 0").right.get
 			it ("returns true when neither x nor y is zero") {
 				forAll{(x:Int, y:Int) => whenever(x != 0 && y != 0) {
-					assert(parserResult(x, y) )
+					assert(parserResult((x, y)) )
 				}}
 			}
 			it ("returns false when either x or y is zero") {
 				forAll{(whichIsZero:Boolean, xy:Int) => {
-					assert(! parserResult(
+					assert(! parserResult((
 						if(whichIsZero) {xy} else {0},
 						if(whichIsZero) {0} else {xy}
-					))
+					)))
 				}}
 			}
 		}
@@ -249,20 +249,20 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			it ("returns true when ???") {
 				forAll{(x:Int, y:Int) =>
 					if (x < 0 && y < 0) {
-						assert( parserResult(x, y))
+						assert( parserResult((x, y)))
 					} else {
-						assert( parserResult(x, x))
+						assert( parserResult((x, x)))
 					}
 				}
 			}
 			it ("returns false when ???") {
 				forAll{(x:Int, y:Int) => whenever(x != y) {
 					if (!(x < 0 && y < 0)) {
-						assert(! parserResult(x, y))
+						assert(! parserResult((x, y)))
 					} else {
 						whenever(x != java.lang.Integer.MIN_VALUE && y != java.lang.Integer.MIN_VALUE) {
 							// java.lang.Integer.MIN_VALUE == - java.lang.Integer.MIN_VALUE
-							assert(! parserResult(-x, -y))
+							assert(! parserResult((-x, -y)))
 						}
 					}}
 				}

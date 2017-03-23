@@ -38,8 +38,24 @@ package object view {
 	}
 	
 	
+	implicit def rectangularIconLocation:IconLocation[RectangularIndex, RectangularDimension] = RectangularIconLocation
+	implicit def horizontalHexagonalIconLocation:IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] = HorizontalHexagonalIconLocation
 	
+}
+
+package view {
+	trait SpaceClassMatcherFactory[-SpaceClass] {
+		def apply(reference:String):SpaceClassMatcher[SpaceClass]
+	}
 	
+	/** A tilesheet which will always return the Icon specified in the constructor */
+	final class NilTilesheet[Index, Dimension, Icon](
+			  private[this] val tile:Function0[Icon]
+			, override val iconDimensions:Dimension
+	) extends Tilesheet[Any, Index, Dimension, Icon] {
+		override def toString:String = "NilTilesheet"
+		override def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
+	}
 	
 	
 	
@@ -54,7 +70,6 @@ package object view {
 		def hit(point:(Int, Int), dim:Dimension):Index
 	}
 	
-	implicit def rectangularIconLocation:IconLocation[RectangularIndex, RectangularDimension] = RectangularIconLocation
 	object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
 		
 		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
@@ -72,7 +87,6 @@ package object view {
 		))
 	}
 	
-	implicit def horizontalHexagonalIconLocation:IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] = HorizontalHexagonalIconLocation
 	object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
 		
 		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
@@ -88,23 +102,6 @@ package object view {
 		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = ((
 			0,0 //TODO
 		))
-	}
-	
-	
-}
-
-package view {
-	trait SpaceClassMatcherFactory[-SpaceClass] {
-		def apply(reference:String):SpaceClassMatcher[SpaceClass]
-	}
-	
-	/** A tilesheet which will always return the Icon specified in the constructor */
-	final class NilTilesheet[Index, Dimension, Icon](
-			  private[this] val tile:Function0[Icon]
-			, override val iconDimensions:Dimension
-	) extends Tilesheet[Any, Index, Dimension, Icon] {
-		override def toString:String = "NilTilesheet"
-		override def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
 	}
 	
 }

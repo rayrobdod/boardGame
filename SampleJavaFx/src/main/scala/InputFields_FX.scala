@@ -18,7 +18,7 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import java.awt.{Dimension, Color}
-import java.net.{URL, URI}
+import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
 import javafx.stage.Stage
 import javafx.stage.FileChooser.ExtensionFilter
@@ -32,7 +32,6 @@ import com.rayrobdod.json.parser.JsonParser
 import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.view.Javafx._
 
 
 /**
@@ -81,7 +80,7 @@ final class InputFields2(
 	def fieldIsRotationField:Boolean = {
 		fieldUrlBox.getValue startsWith TAG_MAP_ROTATE
 	}
-	def field:RectangularField[SpaceClass] = {
+	def field:Tiling[SpaceClass, RectangularIndex, _] = {
 		import java.io.InputStreamReader
 		import com.opencsv.CSVReader
 		

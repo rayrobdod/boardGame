@@ -1,10 +1,9 @@
 package com.rayrobdod.boardGame.view
 
-import java.awt.{Component, Graphics, Dimension}
+import java.awt.Graphics
 import java.awt.event.{MouseListener, MouseEvent}
 import javax.swing.{JComponent, Icon}
 import scala.collection.immutable.Map
-import com.rayrobdod.boardGame.RectangularIndex
 
 private[view] final class SwingRenderable[Index, Dimension](
 		  tiles:Map[Index, Icon]

@@ -20,8 +20,8 @@ package com.rayrobdod.jsonTilesheetViewer
 import scala.collection.immutable.Seq
 
 import java.awt.{BorderLayout}
-import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
-import javax.swing.{JFrame, JPanel, JTextField, JLabel, JButton, JOptionPane, JScrollPane}
+import java.awt.event.{ActionListener, ActionEvent}
+import javax.swing.{JFrame, JPanel, JScrollPane}
 
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
@@ -118,13 +118,13 @@ object JsonTilesheetViewer {
 	) extends Function0[Unit] {
 		override def apply():Unit = {
 			
-			val currentSpace:SpaceClass = currentRotationState.space(index._1, index._2).get.typeOfSpace
+			val currentSpace:SpaceClass = currentRotationState.space(index).get.typeOfSpace
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
 			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
 			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
 			
 			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
-					currentRotationState.mapIndex{x => ((x, currentRotationState.space(x._1, x._2).get.typeOfSpace))}.toMap +
+					currentRotationState.mapIndex{x => ((x, currentRotationState.space(x).get.typeOfSpace))}.toMap +
 							((index, nextSpace))
 			
 			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)

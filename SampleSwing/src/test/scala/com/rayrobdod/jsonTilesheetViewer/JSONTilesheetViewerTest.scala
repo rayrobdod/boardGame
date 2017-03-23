@@ -17,8 +17,7 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.FunSpec
 import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.RectangularIndex
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher

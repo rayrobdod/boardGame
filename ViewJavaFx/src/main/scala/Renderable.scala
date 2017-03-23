@@ -4,7 +4,6 @@ import javafx.scene.Node
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
 import scala.collection.immutable.{Seq, Map}
-import com.rayrobdod.boardGame.RectangularIndex
 
 private[view] final class JavaFxRenderable[Index, Dimension](
 		  tiles:Map[Index, Node]

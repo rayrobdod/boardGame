@@ -18,9 +18,9 @@
 package com.rayrobdod.jsonTilesheetViewer
 
 import java.awt.{Dimension, Color}
-import java.net.{URL, URI}
-import java.awt.{BorderLayout, GridLayout, GridBagLayout, GridBagConstraints, Component}
-import java.awt.event.{ActionListener, ActionEvent, MouseAdapter, MouseEvent}
+import java.net.URL
+import java.awt.{GridBagLayout, GridBagConstraints}
+import java.awt.event.ActionListener
 import java.nio.charset.StandardCharsets.UTF_8
 import javax.swing.{Icon, JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser}
 import scala.util.Random
@@ -31,7 +31,6 @@ import com.rayrobdod.json.union.StringOrInt
 import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
@@ -87,7 +86,7 @@ final class InputFields(
 	def fieldIsRotationField:Boolean = {
 		fieldUrlBox.getSelectedItem.toString startsWith TAG_MAP_ROTATE
 	}
-	def field:RectangularField[SpaceClass] = {
+	def field:Tiling[SpaceClass, RectangularIndex, _] = {
 		import java.io.InputStreamReader
 		import com.opencsv.CSVReader
 		

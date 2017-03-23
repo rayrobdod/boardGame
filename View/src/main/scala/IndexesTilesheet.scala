@@ -18,7 +18,6 @@
 package com.rayrobdod.boardGame
 package view
 
-import scala.collection.immutable.BitSet
 import scala.util.Random
 
 /**

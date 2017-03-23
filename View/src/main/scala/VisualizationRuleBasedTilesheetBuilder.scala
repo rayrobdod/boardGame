@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.immutable.Seq
 import scala.util.{Either, Left, Right}
 import com.rayrobdod.json.parser.{Parser, JsonParser}
-import com.rayrobdod.json.builder.{Builder, SeqBuilder, MapBuilder, ThrowBuilder}
+import com.rayrobdod.json.builder.{Builder, SeqBuilder}
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import VisualizationRuleBasedTilesheetBuilder.Delayed
 

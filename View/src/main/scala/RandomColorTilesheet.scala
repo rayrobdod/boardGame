@@ -19,7 +19,6 @@ package com.rayrobdod.boardGame.view
 
 import java.awt.Color
 import scala.util.Random
-import com.rayrobdod.boardGame.Space
 import com.rayrobdod.boardGame.Tiling
 
 /**

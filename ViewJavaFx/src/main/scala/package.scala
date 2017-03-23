@@ -19,12 +19,9 @@ package com.rayrobdod.boardGame
 package view
 
 import java.net.URL
-import java.awt.{Dimension, Color => AwtColor}
-import scala.annotation.tailrec
+import java.awt.{Dimension => AwtDimension, Color => AwtColor}
 import scala.collection.immutable.{Seq, Map}
-import scala.util.Random
 import javafx.scene.Node
-import javafx.scene.layout.GridPane
 import javafx.scene.image.{Image, ImageView, WritableImage}
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
@@ -48,7 +45,7 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	
 	override def rgbToRectangularIcon(rgb:AwtColor, size:RectangularDimension):Node = new Rectangle(size.width, size.height, rgbToColor(rgb))
 	
-	def rgbToIcon(rgb:AwtColor, dim:HorizontalHexagonalDimension):Node = {
+	override def rgbToHorizontalHexagonalIcon(rgb:AwtColor, dim:HorizontalHexagonalDimension):Node = {
 		val retVal = new javafx.scene.shape.Polygon(
 			dim.width / 2, 0,
 			dim.width, dim.hinset,
@@ -103,10 +100,8 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 		}
 	}
 	
-	override def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
+	override def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[Image] = {
 		val sheetImage:Image = new Image(sheetUrl.toString)
-		val tilesX = sheetImage.getWidth.intValue / tileDimension.width
-		val tilesY = sheetImage.getHeight.intValue / tileDimension.height
 		
 		(0 to (sheetImage.getWidth.intValue - tileDimension.width) by tileDimension.width).flatMap{x:Int =>
 			(0 to (sheetImage.getHeight.intValue - tileDimension.height) by tileDimension.height).map{y:Int =>

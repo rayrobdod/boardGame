@@ -17,9 +17,8 @@
 */
 package com.rayrobdod.boardGame.javafxView
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Dimension, Color => AwtColor}
+import org.scalatest.FunSpec
+import java.awt.{Color => AwtColor}
 import javafx.scene.shape.Rectangle
 import javafx.scene.paint.Color
 import com.rayrobdod.boardGame.view.RectangularDimension

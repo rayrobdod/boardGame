@@ -34,19 +34,19 @@ class RectangularFieldTest extends FunSpec {
 	describe ("The RectangularField Map[Index, _] Factory") {
 		it ("resultant space class 0,0 matches input"){
 			val a = RectangularField(twoByTwoMap)
-			assertResult('a'){a.space(0,0).get.typeOfSpace}
+			assertResult('a'){a.space((0,0)).get.typeOfSpace}
 		}
 		it ("resultant space class 0,1 matches input"){
 			val a = RectangularField(twoByTwoMap)
-			assertResult('b'){a.space(0,1).get.typeOfSpace}
+			assertResult('b'){a.space((0,1)).get.typeOfSpace}
 		}
 		it ("resultant space class 1,0 matches input"){
 			val a = RectangularField(twoByTwoMap)
-			assertResult('c'){a.space(1,0).get.typeOfSpace}
+			assertResult('c'){a.space((1,0)).get.typeOfSpace}
 		}
 		it ("resultant space 3,0 doesn't exist, for input 2x2"){
 			val a = RectangularField(twoByTwoMap)
-			intercept[NoSuchElementException]{a.space(3,0).get}
+			intercept[NoSuchElementException]{a.space((3,0)).get}
 		}
 		it ("mapIndex") {
 			val a = RectangularField(twoByTwoMap)
@@ -56,88 +56,88 @@ class RectangularFieldTest extends FunSpec {
 	describe ("The RectangularField Seq[Seq[_]] Factory") {
 		it ("resultant space class 0,0 matches input"){
 			val a = RectangularField(threeByThree)
-			assertResult('a'){a.space(0,0).get.typeOfSpace}
+			assertResult('a'){a.space((0,0)).get.typeOfSpace}
 		}
 		it ("resultant space class 0,1 matches input"){
 			val a = RectangularField(threeByThree)
-			assertResult('d'){a.space(0,1).get.typeOfSpace}
+			assertResult('d'){a.space((0,1)).get.typeOfSpace}
 		}
 		it ("resultant space class 1,0 matches input"){
 			val a = RectangularField(threeByThree)
-			assertResult('b'){a.space(1,0).get.typeOfSpace}
+			assertResult('b'){a.space((1,0)).get.typeOfSpace}
 		}
 		it ("resultant space 3,0 doesn't exist, for input 3x3"){
 			val a = RectangularField(threeByThree)
-			intercept[NoSuchElementException]{a.space(3,0).get}
+			intercept[NoSuchElementException]{a.space((3,0)).get}
 		}
 		it ("resultant space 0,3 doesn't exist, for input 3x3"){
 			val a = RectangularField(threeByThree)
-			intercept[NoSuchElementException]{a.space(0,3).get}
+			intercept[NoSuchElementException]{a.space((0,3)).get}
 		}
 		it ("resultant space 0,1 doesn't exist, for input 6x1"){
 			val a = RectangularField(sixByOne)
-			intercept[NoSuchElementException]{a.space(0,1).get}
+			intercept[NoSuchElementException]{a.space((0,1)).get}
 		}
 		it ("resultant space 3,0 does exist, for input 6x1"){
 			val a = RectangularField(sixByOne)
-			assertResult('d'){a.space(3,0).get.typeOfSpace}
+			assertResult('d'){a.space((3,0)).get.typeOfSpace}
 		}
 	}
 	describe ("The RectangularField Seq[Seq[_]] Factory, from a CSV") {
 		it ("resultant space class 0,0 matches input"){
 			val a = RectangularField(twoByTwoCsv)
-			assertResult("a"){a.space(0,0).get.typeOfSpace}
+			assertResult("a"){a.space((0,0)).get.typeOfSpace}
 		}
 		it ("resultant space class 1,0 matches input"){
 			val a = RectangularField(twoByTwoCsv)
-			assertResult("b"){a.space(1,0).get.typeOfSpace}
+			assertResult("b"){a.space((1,0)).get.typeOfSpace}
 		}
 		it ("resultant space class 0,1 matches input"){
 			val a = RectangularField(twoByTwoCsv)
-			assertResult("c"){a.space(0,1).get.typeOfSpace}
+			assertResult("c"){a.space((0,1)).get.typeOfSpace}
 		}
 		it ("resultant space 3,0 doesn't exist, for input 2x2"){
 			val a = RectangularField(twoByTwoCsv)
-			intercept[NoSuchElementException]{a.space(3,0).get}
+			intercept[NoSuchElementException]{a.space((3,0)).get}
 		}
 	}
 	describe ("RectangularField") {
 		it ("space above 0,1 is space 0,0"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.space(0,0)){a.space(0,1).get.north}
+			assertResult(a.space((0,0))){a.space((0,1)).get.north}
 		}
 		it ("space above 1,1 is space 1,0"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.space(1,0)){a.space(1,1).get.north}
+			assertResult(a.space((1,0))){a.space((1,1)).get.north}
 		}
 		it ("space below 1,1 is space 1,2"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.space(1,2)){a.space(1,1).get.south}
+			assertResult(a.space((1,2))){a.space((1,1)).get.south}
 		}
 		it ("space west of 1,1 is space 0,1"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.space(0,1)){a.space(1,1).get.west}
+			assertResult(a.space((0,1))){a.space((1,1)).get.west}
 		}
 		it ("space east of 1,1 is space 2,1"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.space(2,1)){a.space(1,1).get.east}
+			assertResult(a.space((2,1))){a.space((1,1)).get.east}
 		}
 		it ("space east space west of 1,1 is space 1,1"){
 			val a = RectangularField(threeByThree)
-			assertResult(a.space(1,1)){a.space(1,1).get.west.get.east}
+			assertResult(a.space((1,1))){a.space((1,1)).get.west.get.east}
 		}
 		it ("space above of 0,0 is None"){
 			val a = RectangularField(threeByThree)
-			assertResult(None){a.space(0,0).get.north}
+			assertResult(None){a.space((0,0)).get.north}
 		}
 		describe ("Space") {
 			it ("is equal to itself") {
 				val a = RectangularField(threeByThree)
-				assert(a.space(0,0) == a.space(0,0))
+				assert(a.space((0,0)) == a.space((0,0)))
 			}
 			it ("is not equal to a string") {
 				val a = RectangularField(threeByThree)
-				assert(! (a.space(0,0) equals "Hello"))
+				assert(! (a.space((0,0)) equals "Hello"))
 			}
 		}
 	}

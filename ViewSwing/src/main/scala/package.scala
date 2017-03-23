@@ -18,14 +18,12 @@
 package com.rayrobdod.boardGame
 package view
 
-import scala.annotation.tailrec
 import scala.collection.immutable.Seq
-import scala.util.Random
-import java.awt.Dimension
+import java.awt.{Dimension => AwtDimension}
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.awt.image.BufferedImage.{TYPE_INT_RGB => nonAlphaImage, TYPE_INT_ARGB => alphaImage}
+import java.awt.image.BufferedImage.{TYPE_INT_ARGB => alphaImage}
 import java.net.URL
 import javax.swing.{Icon, ImageIcon}
 import javax.imageio.ImageIO
@@ -50,8 +48,25 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 		def getIconHeight:Int = 1
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
 	}
+	
 	def rgbToColor(rgb:Color):Color = rgb
+	
 	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	
+	override def rgbToHorizontalHexagonalIcon(rgb:Color, size:HorizontalHexagonalDimension):Icon = new Icon {
+		import java.awt.{Component, Graphics}
+		def getIconWidth:Int = size.width
+		def getIconHeight:Int = size.height
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {
+			g.setColor(rgbToColor(rgb))
+			g.fillPolygon(
+				  Array[Int](size.width / 2, size.width, size.width, size.width / 2, 0, 0)
+				, Array[Int](0, size.hinset, size.height - size.hinset, size.height, size.height - size.hinset, size.hinset)
+				, 6
+			)
+		}
+	}
+	
 	override def stringIcon(text:String, rgb:Color, size:RectangularDimension):Icon = new Icon {
 		import java.awt.{Component, Graphics}
 		def getIconWidth:Int = size.width
@@ -96,7 +111,7 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	/**
 	 * Take an input `image` and split said image into a series of `tileWidth`×`tileHeight` sized subimages
 	 */
-	override def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
+	override def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[Image] = {
 		assert(tileDimension.width > 0)
 		assert(tileDimension.height > 0)
 		
