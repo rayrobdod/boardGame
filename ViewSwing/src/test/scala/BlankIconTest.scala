@@ -26,14 +26,14 @@ import com.rayrobdod.boardGame.view.Swing._
 class BlankIconTest extends FunSpec {
 	describe ("BlankIcon") {
 		it ("getIconWidth == 16") {
-			assertResult(16){blankIcon(new java.awt.Dimension(16, 16)).getIconWidth}
+			assertResult(1){blankIcon().getIconWidth}
 		}
 		it ("getIconHeight == 16") {
-			assertResult(16){blankIcon(new java.awt.Dimension(16, 16)).getIconHeight}
+			assertResult(1){blankIcon().getIconHeight}
 		}
 		it ("paintIcon does nothing") {
 			// it is incredibly hard to prove a negative...
-			blankIcon(new java.awt.Dimension(16, 16)).paintIcon(null, null, -1, -1)
+			blankIcon().paintIcon(null, null, -1, -1)
 		}
 	}
 }

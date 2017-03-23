@@ -31,50 +31,58 @@ import java.net.URL
 abstract class PackageObjectTemplate[IconPart, Icon] {
 	
 	/** Returns a transparent icon of the specified size */
-	def blankIcon(size:Dimension):Icon
+	def blankIcon():Icon
 	/** Returns a solid-colored icon of the specified size */
-	def rgbToIcon(rgb:Color, size:Dimension):Icon
+	def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon
 	/** Returns an icon that displays the specified string */
-	def stringIcon(text:String, rgb:Color, size:Dimension):Icon
+	def stringIcon(text:String, rgb:Color, size:RectangularDimension):Icon
 	/**  */
 	def compostLayers(layersWithLCMFrames:Seq[Seq[IconPart]]):Icon
 	/** Reads an image from the specified URL and splits it into dimension-sized images */
 	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[IconPart]
 	
 	
-	final def NilTilesheet:NilTilesheet[RectangularIndex, Icon] = new NilTilesheet[RectangularIndex, Icon](() => blankIcon(new Dimension(16, 16)))
-	final def HashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[RectangularIndex, Icon] = {
-		new HashcodeColorTilesheet[RectangularIndex, Icon](
-			{() => blankIcon(dim)},
-			{x:Color => rgbToIcon(x, dim)}
+	final def RectangularNilTilesheet:NilTilesheet[RectangularIndex, RectangularDimension, Icon] = {
+		new NilTilesheet[RectangularIndex, RectangularDimension, Icon](
+			() => blankIcon,
+			new RectangularDimension(16, 16)
+		)
+	}
+	final def RectangularHashcodeColorTilesheet(dim:Dimension):HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon] = {
+		new HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon](
+			  {() => blankIcon}
+			, {x:Color => rgbToRectangularIcon(x, RectangularDimension(dim.width, dim.height))}
+			, new RectangularDimension(dim.width, dim.height)
 		)
 	}
 	
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
-	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, IconPart, Icon] = {
-		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, IconPart, Icon](
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, RectangularDimension, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, RectangularDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
 			, this.compostLayers _
 			, this.sheeturl2images _
 			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
 			, CoordinateFunctionSpecifierParser.rectangularVars
+			, new VisualizationRuleBasedTilesheetBuilder.RectangularDimensionBuilder
 		)
 	}
 	
 	final def VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
-	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, IconPart, Icon] = {
-		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, IconPart, Icon](
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionDelay, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionDelay, IconPart, Icon](
 			  baseUrl
 			, classMap
 			, this.compostLayers _
 			, this.sheeturl2images _
 			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
 			, CoordinateFunctionSpecifierParser.hexagonalVars
+			, new VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionBuilder
 		)
 	}
 }

@@ -30,11 +30,13 @@ import scala.util.Random
 final class CheckerboardTilesheet[Icon](
 	transparentIcon:Function0[Icon],
 	lightIcon:Function0[Icon],
-	darkIcon:Function0[Icon]
-) extends Tilesheet[Any, RectangularIndex, Icon] {
+	darkIcon:Function0[Icon],
+	override val iconDimensions:RectangularDimension
+) extends Tilesheet[Any, RectangularIndex, RectangularDimension, Icon] {
 	override def toString:String = "Checkerboard"
 	
 	override def getIconFor(f:Tiling[_ <: Any, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = {
 		(( if ((xy._1 + xy._2) % 2 == 0) {lightIcon()} else {darkIcon()}, transparentIcon() ))
 	}
+	
 }

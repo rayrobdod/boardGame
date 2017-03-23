@@ -29,7 +29,7 @@ import com.rayrobdod.boardGame.Tiling
  * @tparam SpaceClass the space types that this can provide a view for
  * @tparam Icon the icon produced by this tilesheet
  */
-trait Tilesheet[-SpaceClass, Index, Icon] {
+trait Tilesheet[-SpaceClass, Index, Dimension, Icon] {
 	/**
 	 * Finds the icon for a particular space on a RectangularTiling
 	 * @param field the field on the space to lookup
@@ -41,4 +41,6 @@ trait Tilesheet[-SpaceClass, Index, Icon] {
 		- the part of the image that goes above the movable controlled tokens
 	 */
 	def getIconFor(field:Tiling[_ <: SpaceClass, Index, _], idx:Index, rng:Random):(Icon, Icon)
+	
+	def iconDimensions:Dimension
 }

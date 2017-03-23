@@ -25,10 +25,13 @@ import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularIndex
 
 class IndexesTilesheetTest extends FunSpec {
+	object MyDim {}
+	
 	describe ("IndexesTilesheet") {
-		val dut = new IndexesTilesheet[RectangularIndex, String](
-			{xy:(Int, Int) => if ((xy._1 + xy._2) % 2 == 0) {"light"} else {"dark"}},
-			{s => s}
+		val dut = new IndexesTilesheet[RectangularIndex, MyDim.type, String](
+			  {xy:(Int, Int) => if ((xy._1 + xy._2) % 2 == 0) {"light"} else {"dark"}}
+			, {s => s}
+			, MyDim
 		)
 		it ("toString is \"IndexesTilesheet\"") {
 			assertResult("IndexesTilesheet"){dut.toString}
@@ -44,6 +47,9 @@ class IndexesTilesheetTest extends FunSpec {
 		}
 		it ("getIconFor(...)._2 for (2,3) is '(2,3)'") {
 			assertResult("(2,3)"){dut.getIconFor(null, (2, 3), null)._2}
+		}
+		it ("dimension is dimension") {
+			assertResult(MyDim){dut.iconDimensions}
 		}
 	}
 }

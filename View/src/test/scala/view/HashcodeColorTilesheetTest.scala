@@ -25,8 +25,10 @@ import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularIndex
 
 class HashcodeColorTilesheetTest extends FunSpec {
+	object MyDim {}
+	
 	describe ("HashcodeColorTilesheet()") {
-		val dut = new HashcodeColorTilesheet[RectangularIndex, Int]({() => -1}, {x:Color => x.getRGB & 0xFFFFFF})
+		val dut = new HashcodeColorTilesheet[RectangularIndex, MyDim.type, Int]({() => -1}, {x:Color => x.getRGB & 0xFFFFFF}, MyDim)
 		it ("toString is \"HashcodeColor\"") {
 			assertResult("HashcodeColor"){dut.toString}
 		}
@@ -49,6 +51,9 @@ class HashcodeColorTilesheetTest extends FunSpec {
 			val field = RectangularField(Seq(Seq(4)))
 			val res = dut.getIconFor(field, (0, 0), null)._1
 			assertResult(1 << 7){res}
+		}
+		it ("dimension is dimension") {
+			assertResult(MyDim){dut.iconDimensions}
 		}
 	}
 }

@@ -19,6 +19,7 @@ package com.rayrobdod.jsonTilesheetViewer
 
 import java.awt.{Color, Dimension}
 import com.rayrobdod.boardGame.view.CheckerboardTilesheet
+import com.rayrobdod.boardGame.view.RectangularDimension
 
 /**
  * A method that converts a uri string into a matching CheckerboardTilesheet
@@ -37,18 +38,19 @@ object CheckerboardURIMatcher {
 	}
 	
 	final case class CheckerboardTilesheetDelay(
-		tileDimension:java.awt.Dimension = new java.awt.Dimension(24, 24),
+		tileDimension:RectangularDimension = RectangularDimension(24, 24),
 		light:java.awt.Color = java.awt.Color.white,
 		dark:java.awt.Color = java.awt.Color.black
 	) {
 		def apply[Icon](
-			transparentIcon:Function1[java.awt.Dimension, Icon],
-			rgbToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon]
+			transparentIcon:Function0[Icon],
+			rgbToIcon:Function2[java.awt.Color, RectangularDimension, Icon]
 		):CheckerboardTilesheet[Icon] = {
 			new CheckerboardTilesheet(
-				{() => transparentIcon(tileDimension)},
+				{() => transparentIcon()},
 				{() => rgbToIcon(light, tileDimension)},
-				{() => rgbToIcon(dark, tileDimension)}
+				{() => rgbToIcon(dark, tileDimension)},
+				RectangularDimension(16, 16)
 			)
 		}
 	}
@@ -61,7 +63,7 @@ object CheckerboardURIMatcher {
 			splitParam(0) match {
 				case "size" => {
 					scala.util.Try( folding.copy(
-						tileDimension = new java.awt.Dimension(
+						tileDimension = new RectangularDimension(
 							splitParam(1).toInt,
 							splitParam(1).toInt
 						)

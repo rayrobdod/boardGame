@@ -26,11 +26,11 @@ import com.rayrobdod.boardGame.Tiling
  * A tilesheet for testing randoms. Isolating the problem.
  * 
  */
-final class RandomColorTilesheet[Index, Icon](
-		colorToIcon:Function2[java.awt.Color, java.awt.Dimension, Icon],
-		stringIcon:Function3[String, java.awt.Color, java.awt.Dimension, Icon],
-		iconDimension:java.awt.Dimension = new java.awt.Dimension(64, 24)
-) extends Tilesheet[Any, Index, Icon] {
+final class RandomColorTilesheet[Index, Dimension, Icon](
+		  colorToIcon:Function2[java.awt.Color, Dimension, Icon]
+		, stringIcon:Function3[String, java.awt.Color, Dimension, Icon]
+		, override val iconDimensions:Dimension
+) extends Tilesheet[Any, Index, Dimension, Icon] {
 	override def toString:String = "Random Color"
 	
 	override def getIconFor(f:Tiling[_ <: Any, Index, _], x:Index, rng:Random):(Icon, Icon) = {
@@ -38,7 +38,7 @@ final class RandomColorTilesheet[Index, Icon](
 		val foreground = this.foreground(background)
 		val text = ("000000" + background.getRGB.toHexString).takeRight(6)
 		
-		(( colorToIcon(background, iconDimension), stringIcon(text, foreground, iconDimension) ))
+		(( colorToIcon(background, iconDimensions), stringIcon(text, foreground, iconDimensions) ))
 	}
 	
 	/** Find a color that contrasts with the specified background color */

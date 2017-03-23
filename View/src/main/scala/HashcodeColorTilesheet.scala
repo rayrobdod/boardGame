@@ -29,10 +29,11 @@ import scala.util.Random
  * @param dim the size of each tile in the checkerboard
  * @note there is no good reason for this to have a type parameter.
  */
-final class HashcodeColorTilesheet[Index, Icon](
-	transparentIcon:Function0[Icon],
-	colorToIcon:Function1[java.awt.Color, Icon]
-) extends Tilesheet[Any, Index, Icon] {
+final class HashcodeColorTilesheet[Index, Dimension, Icon](
+	  transparentIcon:Function0[Icon]
+	, colorToIcon:Function1[java.awt.Color, Icon]
+	, override val iconDimensions:Dimension
+) extends Tilesheet[Any, Index, Dimension, Icon] {
 	override def toString:String = "HashcodeColor"
 	
 	def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:Random):(Icon, Icon) = {

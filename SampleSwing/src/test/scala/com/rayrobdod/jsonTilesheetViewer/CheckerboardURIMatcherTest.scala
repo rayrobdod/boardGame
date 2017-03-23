@@ -27,8 +27,8 @@ import CheckerboardURIMatcher.CheckerboardTilesheetDelay
 
 class CheckerboardURIMatcherTest extends FunSpec {
 	
-	private val transIcon = {(d:Dimension) => ((0, d.width, d.height))}
-	private val rgbToIcon = {(c:Color, d:Dimension) => ((c.getRGB, d.width, d.height))} 
+	private val transIcon = {() => ((0, -1, -1))}
+	private val rgbToIcon = {(c:Color, d:RectangularDimension) => ((c.getRGB, d.width, d.height))} 
 	
 	
 	describe ("CheckerboardTilesheetDelay") {
@@ -46,25 +46,25 @@ class CheckerboardURIMatcherTest extends FunSpec {
 		
 		doThing("Default is 24x24 black and white",
 			CheckerboardTilesheetDelay(),
-			((0, 24, 24)),
+			((0, -1, -1)),
 			((-1, 24, 24)),
 			((0xFF000000, 24, 24))
 		)
 		doThing("changing 'light' changes the light color",
 			CheckerboardTilesheetDelay(light = Color.RED),
-			((0, 24, 24)),
+			((0, -1, -1)),
 			((0xFFFF0000, 24, 24)),
 			((0xFF000000, 24, 24))
 		)
 		doThing("changing 'dark' changes the dark color",
 			CheckerboardTilesheetDelay(dark = Color.BLUE),
-			((0, 24, 24)),
+			((0, -1, -1)),
 			((0xFFFFFFFF, 24, 24)),
 			((0xFF0000FF, 24, 24))
 		)
 		doThing("changing 'tileDimension' changes the dimension",
-			CheckerboardTilesheetDelay(tileDimension = new Dimension(12, 59)),
-			((0, 12, 59)),
+			CheckerboardTilesheetDelay(tileDimension = RectangularDimension(12, 59)),
+			((0, -1, -1)),
 			((0xFFFFFFFF, 12, 59)),
 			((0xFF000000, 12, 59))
 		)
@@ -89,7 +89,7 @@ class CheckerboardURIMatcherTest extends FunSpec {
 			}
 		}
 		it ("'size' uri param changes size") {
-			assertResult(Some(CheckerboardTilesheetDelay(tileDimension = new Dimension(12345,12345)))){
+			assertResult(Some(CheckerboardTilesheetDelay(tileDimension = RectangularDimension(12345,12345)))){
 				CheckerboardURIMatcher.unapply(TAG_SHEET_CHECKER + "?size=12345")
 			}
 		}
@@ -99,7 +99,7 @@ class CheckerboardURIMatcherTest extends FunSpec {
 			}
 		}
 		it ("allows multiple parameters in an arbitrary order") {
-			assertResult(Some(CheckerboardTilesheetDelay(light = new Color(123), dark = new Color(45), tileDimension = new Dimension(1,1)))){
+			assertResult(Some(CheckerboardTilesheetDelay(light = new Color(123), dark = new Color(45), tileDimension = RectangularDimension(1,1)))){
 				CheckerboardURIMatcher.unapply(TAG_SHEET_CHECKER + "?light=123&dark=45&size=1")
 			}
 		}

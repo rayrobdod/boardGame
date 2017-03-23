@@ -42,15 +42,15 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	// `object swingView extends PackageObjectTemplate[Image, Icon]`
 	// how is that even possible?
 	
-	override def blankIcon(size:Dimension):Icon = new Icon{
+	override def blankIcon:Icon = new Icon{
 		import java.awt.{Component, Graphics}
-		def getIconWidth:Int = size.width
-		def getIconHeight:Int = size.height
+		def getIconWidth:Int = 1
+		def getIconHeight:Int = 1
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {}
 	}
 	def rgbToColor(rgb:Color):Color = rgb
-	override def rgbToIcon(rgb:Color, size:Dimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
-	override def stringIcon(text:String, rgb:Color, size:Dimension):Icon = new Icon {
+	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	override def stringIcon(text:String, rgb:Color, size:RectangularDimension):Icon = new Icon {
 		import java.awt.{Component, Graphics}
 		def getIconWidth:Int = size.width
 		def getIconHeight:Int = size.height
@@ -117,7 +117,7 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	def RectangularFieldComponent[A](
 			field:RectangularTiling[A],
-			tilesheet:Tilesheet[A, RectangularIndex, Icon],
+			tilesheet:Tilesheet[A, RectangularIndex, RectangularDimension, Icon],
 			rng:Random = Random
 	):(SwingRectangularTilemapComponent, SwingRectangularTilemapComponent) = {
 		

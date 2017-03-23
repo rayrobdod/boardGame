@@ -28,11 +28,12 @@ import scala.collection.immutable.{Seq, Map, Vector, Set, SortedMap}
  * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
  * @version 3.0.0
  */
-final class VisualizationRuleBasedTilesheet[SpaceClass, Index, IconPart, Icon](
-		name:String,
-		val visualizationRules:Seq[view.VisualizationRule[SpaceClass, Index, IconPart]],
-		compostLayers:Function1[Seq[Seq[IconPart]], Icon]
-) extends Tilesheet[SpaceClass, Index, Icon] {
+final class VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon](
+		  name:String
+		, val visualizationRules:Seq[view.VisualizationRule[SpaceClass, Index, IconPart]]
+		, compostLayers:Function1[Seq[Seq[IconPart]], Icon]
+		, override val iconDimensions:Dimension
+) extends Tilesheet[SpaceClass, Index, Dimension, Icon] {
 	
 	override def getIconFor(field:Tiling[_ <: SpaceClass, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
 		type ImageFrames = Seq[IconPart]

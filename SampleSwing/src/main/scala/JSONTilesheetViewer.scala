@@ -109,7 +109,7 @@ object JsonTilesheetViewer {
 	
 	
 	
-	def allClassesInTilesheet(f:Tilesheet[SpaceClass, RectangularIndex, _]):Seq[SpaceClass] = {
+	def allClassesInTilesheet(f:Tilesheet[SpaceClass, _, _, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.view.ParamaterizedVisualizationRule
 		import com.rayrobdod.boardGame.view.VisualizationRuleBasedTilesheet
@@ -117,7 +117,7 @@ object JsonTilesheetViewer {
 		import StringSpaceClassMatcherFactory.EqualsMatcher
 		
 		val a = f match {
-			case x:VisualizationRuleBasedTilesheet[SpaceClass, _, _, _] => {
+			case x:VisualizationRuleBasedTilesheet[SpaceClass, _, _, _, _] => {
 				val a:Seq[ParamaterizedVisualizationRule[SpaceClass, _, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[SpaceClass, _, _]]}
 				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
 				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
@@ -133,7 +133,7 @@ object JsonTilesheetViewer {
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
-			case x:HashcodeColorTilesheet[_, _] => Seq("a", "b", "c", "d")
+			case x:HashcodeColorTilesheet[_, _, _] => Seq("a", "b", "c", "d")
 			case _ => Seq("")
 		}
 		

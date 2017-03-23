@@ -17,13 +17,12 @@
 */
 package com.rayrobdod.boardGame.view
 
-import org.scalatest.{FunSuite, FunSpec}
-import org.scalatest.prop.PropertyChecks
-import java.awt.{Color}
+import org.scalatest.FunSpec
+import java.awt.Color
 
 class CheckerboardTilesheetTest extends FunSpec {
 	describe ("CheckerboardTilesheet()") {
-		val dut = new CheckerboardTilesheet(() => Color.yellow, () => Color.red, () => Color.blue)
+		val dut = new CheckerboardTilesheet(() => Color.yellow, () => Color.red, () => Color.blue, new RectangularDimension(12,34))
 		it ("toString is \"Checkerboard\"") {
 			assertResult("Checkerboard"){dut.toString}
 		}
@@ -35,6 +34,9 @@ class CheckerboardTilesheetTest extends FunSpec {
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is transparentIcon") {
 			assertResult(Color.yellow){dut.getIconFor(null, (0, 0), null)._2}
+		}
+		it ("dimension is dimension") {
+			assertResult(new RectangularDimension(12,34)){dut.iconDimensions}
 		}
 	}
 }

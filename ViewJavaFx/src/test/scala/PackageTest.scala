@@ -22,6 +22,7 @@ import org.scalatest.prop.PropertyChecks
 import java.awt.{Dimension, Color => AwtColor}
 import javafx.scene.shape.Rectangle
 import javafx.scene.paint.Color
+import com.rayrobdod.boardGame.view.RectangularDimension
 import com.rayrobdod.boardGame.view.Javafx._
 
 class PackageTest extends FunSpec {
@@ -29,14 +30,14 @@ class PackageTest extends FunSpec {
 	describe ("blankIcon") {
 		it ("returns a rectangle with the dimensions provided and a transparent fill") {
 			assertRectangleResult( new Rectangle(21, 75, Color.TRANSPARENT) ) {
-				blankIcon(new Dimension(21, 75)).asInstanceOf[Rectangle]
+				blankIcon().asInstanceOf[Rectangle]
 			}
 		}
 	}
-	describe ("rgbToIcon") {
+	describe ("rgbToRectangularIcon") {
 		it ("returns a rectangle with the specified properties") {
 			assertRectangleResult( new Rectangle(21, 75, Color.RED) ) {
-				rgbToIcon(AwtColor.red, new Dimension(21, 75)).asInstanceOf[Rectangle]
+				rgbToRectangularIcon(AwtColor.red, RectangularDimension(21, 75)).asInstanceOf[Rectangle]
 			}
 		}
 	}

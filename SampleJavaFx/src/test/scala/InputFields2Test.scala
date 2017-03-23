@@ -31,19 +31,19 @@ class InputFields2Test extends FunSpec {
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "", null).tilesheet.isInstanceOf[IndexesTilesheet[_,_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "", null).tilesheet.isInstanceOf[IndexesTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "", null).tilesheet.isInstanceOf[RandomColorTilesheet[_,_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "", null).tilesheet.isInstanceOf[RandomColorTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null).tilesheet.isInstanceOf[NilTilesheet[_,_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null).tilesheet.isInstanceOf[NilTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "", null).tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_]]}
+			assert{new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "", null).tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_,_]]}
 		}
 	}
 	describe ("InputFields2.rand") {

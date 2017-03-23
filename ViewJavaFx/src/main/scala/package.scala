@@ -40,17 +40,33 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	// `object swingView extends PackageObjectTemplate[Image, Icon]`
 	// how is that even possible?
 	
-	def blankIcon(size:Dimension):Node = new Rectangle(size.width, size.height, Color.TRANSPARENT)
+	override def blankIcon:Node = new Rectangle(1, 1, Color.TRANSPARENT)
+	
 	def rgbToColor(rgb:AwtColor):Color = Color.rgb(rgb.getRed, rgb.getGreen, rgb.getBlue)
-	def rgbToIcon(rgb:AwtColor, size:Dimension):Node = new Rectangle(size.width, size.height, rgbToColor(rgb))
-	def stringIcon(text:String, rgb:AwtColor, size:Dimension):Node = {
+	
+	override def rgbToRectangularIcon(rgb:AwtColor, size:RectangularDimension):Node = new Rectangle(size.width, size.height, rgbToColor(rgb))
+	
+	def rgbToIcon(rgb:AwtColor, dim:HorizontalHexagonalDimension):Node = {
+		val retVal = new javafx.scene.shape.Polygon(
+			dim.width / 2, 0,
+			dim.width, dim.hinset,
+			dim.width, dim.height - dim.hinset,
+			dim.width / 2, dim.height,
+			0, dim.height - dim.hinset,
+			0, dim.hinset
+		)
+		retVal.setFill( rgbToColor(rgb) )
+		retVal
+	}
+	
+	override def stringIcon(text:String, rgb:AwtColor, size:RectangularDimension):Node = {
 		val a = new javafx.scene.text.Text(text)
 		a.setFill(rgbToColor(rgb))
 		a
 	}
 	
 	
-	def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
+	override def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
 		
 		val a:Seq[Node] = if (! layersWithLCMFrames.isEmpty) {
 			// FIXTHIS: assumes all images are the same size
@@ -85,7 +101,7 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 		}
 	}
 	
-	def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
+	override def sheeturl2images(sheetUrl:URL, tileDimension:Dimension):Seq[Image] = {
 		val sheetImage:Image = new Image(sheetUrl.toString)
 		val tilesX = sheetImage.getWidth.intValue / tileDimension.width
 		val tilesY = sheetImage.getHeight.intValue / tileDimension.height
@@ -109,9 +125,9 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	
 	def RectangularFieldComponent[A](
 			field:RectangularField[A],
-			tilesheet:Tilesheet[A, RectangularIndex, javafx.scene.Node],
+			tilesheet:Tilesheet[A, RectangularIndex, RectangularDimension, javafx.scene.Node],
 			rng:Random = Random
-	):(GridPane, GridPane) = {
+	):(javafx.scene.layout.Pane, javafx.scene.layout.Pane) = {
 		
 		val a:Map[(Int, Int), (Node, Node)] = field.mapIndex{xy => ((xy, tilesheet.getIconFor(field, xy, rng) )) }.toMap
 		val top = a.mapValues{_._1}

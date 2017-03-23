@@ -22,6 +22,7 @@ import org.scalatest.prop.PropertyChecks
 import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.RectangularIndex
 import com.rayrobdod.boardGame.ConstTrueSpaceClassMatcher
+import com.rayrobdod.boardGame.view.RectangularDimension
 import com.rayrobdod.boardGame.view.IndexConverter
 import com.rayrobdod.boardGame.view.NilTilesheet
 import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
@@ -34,42 +35,62 @@ class JsonTilesheetViewerTest extends FunSpec {
 	describe ("allClassesInTilesheet") {
 		it ("NilTilesheet returns ['']"){
 			assertResult(List("")){
-				JsonTilesheetViewer.allClassesInTilesheet(new NilTilesheet(() => ""))
+				JsonTilesheetViewer.allClassesInTilesheet(new NilTilesheet(() => "", RectangularDimension(-1,-1)))
 			}
 		}
 		it ("HashcodeColorTilesheet returns ['a','b','c','d']") {
 			assertResult(Seq("a", "b", "c", "d")){
-				JsonTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet({() => 1},{(a) => 1}))
+				JsonTilesheetViewer.allClassesInTilesheet(new HashcodeColorTilesheet({() => 1},{(a) => 1}, RectangularDimension(-1,-1)))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet() returns []") {
 			assertResult(Seq()){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, Int, Seq[Seq[Int]]]("", Seq(
-					new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> ConstTrueSpaceClassMatcher))
-				), {a:Seq[Seq[Int]] => a}))
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+					  ""
+					, Seq(
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> ConstTrueSpaceClassMatcher))
+					)
+					, {a:Seq[Seq[Int]] => a}
+					, RectangularDimension(-1,-1)
+				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a') returns ['a']") {
 			assertResult(Seq("a")){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, Int, Seq[Seq[Int]]]("", Seq(
-					new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a")))
-				), {a:Seq[Seq[Int]] => a}))
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+					  ""
+					, Seq(
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a")))
+					)
+					, {a:Seq[Seq[Int]] => a}
+					, RectangularDimension(-1,-1)
+				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a','b') returns ['a','b']") {
 			assertResult(Seq("a","b")){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, Int, Seq[Seq[Int]]]("", Seq(
-					new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
-					new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("b")))
-				), {a:Seq[Seq[Int]] => a}))
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+					  ""
+					, Seq(
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("b")))
+					)
+					, {a:Seq[Seq[Int]] => a}
+					, RectangularDimension(-1,-1)
+				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a','!b') returns ['a']") {
 			assertResult(Seq("a")){
-				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, Int, Seq[Seq[Int]]]("", Seq(
-					new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
-					new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.UnequalsMatcher("b")))
-				), {a:Seq[Seq[Int]] => a}))
+				JsonTilesheetViewer.allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+					  ""
+					, Seq(
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.UnequalsMatcher("b")))
+					)
+					, {a:Seq[Seq[Int]] => a}
+					, RectangularDimension(-1,-1)
+				))
 			}
 		}
 	}

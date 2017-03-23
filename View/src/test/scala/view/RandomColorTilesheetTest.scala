@@ -28,17 +28,25 @@ import com.rayrobdod.boardGame.RectangularField
 import com.rayrobdod.boardGame.RectangularIndex
 
 class RandomColorTilesheetTest extends FunSpec {
+	
 	describe ("Default RandomColorTilesheet") {
 		it ("toString is 'Random Color: ...'") {
-			assertResult("Random Color"){new RandomColorTilesheet(Swing.rgbToIcon, Swing.stringIcon).toString}
+			assertResult("Random Color"){
+				new RandomColorTilesheet(
+					  Swing.rgbToRectangularIcon
+					, Swing.stringIcon
+					, RectangularDimension(16,16)
+				).toString
+			}
 		}
 		it ("rng is 0") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 			
 			val exp = (( (("", 0, 64, 24)), (("000000", 0xFFFFFF, 64, 24)) ))
-			val dut = new RandomColorTilesheet[RectangularIndex, (String, Int, Int, Int)](
-					{(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))},
-					{(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
+			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
+					  {(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
+					, RectangularDimension(64, 24)
 			)
 			val res = dut.getIconFor(null, (-1, -1), rng)
 			assertResult(exp){res}
@@ -47,9 +55,10 @@ class RandomColorTilesheetTest extends FunSpec {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0x123456})
 			
 			val exp = (( (("", 0x123456, 64, 24)), (("123456", 0xFFFFFF, 64, 24)) ))
-			val dut = new RandomColorTilesheet[RectangularIndex, (String, Int, Int, Int)](
-					{(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))},
-					{(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
+			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
+					  {(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
+					, RectangularDimension(64, 24)
 			)
 			val res = dut.getIconFor(null, (-1, -1), rng)
 			assertResult(exp){res}
@@ -58,16 +67,21 @@ class RandomColorTilesheetTest extends FunSpec {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0xFFFFFF})
 			
 			val exp = (( (("", 0xFFFFFF, 64, 24)), (("ffffff", 0, 64, 24)) ))
-			val dut = new RandomColorTilesheet[RectangularIndex, (String, Int, Int, Int)](
-					{(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))},
-					{(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
+			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
+					  {(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
+					, RectangularDimension(64, 24)
 			)
 			val res = dut.getIconFor(null, (-1, -1), rng)
 			assertResult(exp){res}
 		}
 	}
 	describe ("RandomColorTilesheet(13,21)") {
-		val dut = new RandomColorTilesheet[RectangularIndex, javax.swing.Icon](Swing.rgbToIcon, Swing.stringIcon, new java.awt.Dimension(13, 21))
+		val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, javax.swing.Icon](
+				  Swing.rgbToRectangularIcon
+				, Swing.stringIcon
+				, RectangularDimension(13, 21)
+		)
 		
 		it ("toString is 'Random Color: ...'") {
 			assertResult("Random Color"){dut.toString}

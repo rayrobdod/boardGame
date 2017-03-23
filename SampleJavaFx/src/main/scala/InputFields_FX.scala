@@ -54,24 +54,25 @@ final class InputFields2(
 	}
 	
 	
-	def tilesheet:Tilesheet[SpaceClass, RectangularIndex, javafx.scene.Node] = tilesheetUrlBox.getValue match {
-		case TAG_SHEET_NIL => Javafx.NilTilesheet
+	def tilesheet:Tilesheet[SpaceClass, RectangularIndex, RectangularDimension, javafx.scene.Node] = tilesheetUrlBox.getValue match {
+		case TAG_SHEET_NIL => Javafx.RectangularNilTilesheet
 		case TAG_SHEET_INDEX => new IndexesTilesheet(
-			{(xy:RectangularIndex) => Javafx.rgbToIcon(if ((xy._1 + xy._2) % 2 == 0) {Color.cyan} else {Color.magenta}, new Dimension(64, 24))},
-			{s:String => Javafx.stringIcon(s, Color.black, new Dimension(64, 24))}
+			{(xy:RectangularIndex) => Javafx.rgbToRectangularIcon(if ((xy._1 + xy._2) % 2 == 0) {Color.cyan} else {Color.magenta}, RectangularDimension(64, 24))},
+			{s:String => Javafx.stringIcon(s, Color.black, RectangularDimension(64, 24))},
+			RectangularDimension(64, 24)
 		)
 		case TAG_SHEET_RAND => new RandomColorTilesheet(
-			Javafx.rgbToIcon, Javafx.stringIcon, new Dimension(64, 24)
+			Javafx.rgbToRectangularIcon, Javafx.stringIcon, RectangularDimension(64, 24)
 		)
-		case TAG_SHEET_HASH => Javafx.HashcodeColorTilesheet(new Dimension(24, 24))
-		case CheckerboardURIMatcher(x) => x.apply(Javafx.blankIcon, Javafx.rgbToIcon)
+		case TAG_SHEET_HASH => Javafx.RectangularHashcodeColorTilesheet(new Dimension(24, 24))
+		case CheckerboardURIMatcher(x) => x.apply(Javafx.blankIcon, Javafx.rgbToRectangularIcon)
 		case x => {
 			val url = urlOrFileStringToUrl(x)
 			val b = Javafx.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
 			var r:java.io.Reader = new java.io.StringReader("{}");
 			try {
 				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser().parse(b, r).fold({x => x}, {x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException("", 0)}).apply()
+				return new JsonParser().parse(b, r).fold({x => x}, {x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException(s + " " + i, i)}).apply({x => x})
 			} finally {
 				r.close();
 			}

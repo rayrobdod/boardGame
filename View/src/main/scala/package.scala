@@ -36,6 +36,42 @@ package object view {
 		if (x > y) {gcd(x - y, y)} else
 		{gcd(x, y - x)}
 	}
+	
+	
+	
+	
+	
+	
+	
+	final case class RectangularDimension(width:Int, height:Int)
+	
+	final case class HorizontalHexagonalDimension(width:Int, height:Int, hinset:Int) {
+		val verticalOffset = height - hinset
+	}
+	
+	trait IconLocation[Index, Dimension] {
+		def centerOfSpace(idx:Index, dim:Dimension)
+	}
+	implicit def rectangularIconLocation:IconLocation[RectangularIndex, RectangularDimension] = RectangularIconLocation
+	object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
+		def centerOfSpace(idx:RectangularIndex, dim:RectangularDimension) = ((
+			idx._1 * dim.width + dim.width / 2,
+			idx._2 * dim.height + dim.height / 2
+		))
+	}
+	
+	implicit def horizontalHexagonalIconLocation:IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] = HorizontalHexagonalIconLocation
+	object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
+		def centerOfSpace(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
+			val (ew, nwse) = idx
+			((
+				dim.width * ew + (dim.width / 2) * nwse,
+				dim.verticalOffset * nwse
+			))
+		}
+	}
+	
+	
 }
 
 package view {
@@ -44,7 +80,10 @@ package view {
 	}
 	
 	/** A tilesheet which will always return the Icon specified in the constructor */
-	final class NilTilesheet[Index, Icon](val tile:Function0[Icon]) extends Tilesheet[Any, Index, Icon] {
+	final class NilTilesheet[Index, Dimension, Icon](
+			  private[this] val tile:Function0[Icon]
+			, override val iconDimensions:Dimension
+	) extends Tilesheet[Any, Index, Dimension, Icon] {
 		override def toString:String = "NilTilesheet"
 		override def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
 	}
