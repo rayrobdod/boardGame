@@ -21,7 +21,9 @@ import java.util.NoSuchElementException
 import scala.collection.immutable.Seq
 import org.scalatest.FunSpec
 
-class RectangularFieldTest extends FunSpec {
+final class RectangularFieldTest extends FunSpec 
+		with FieldTests
+{
 	
 	val twoByTwoMap:Map[RectangularIndex, Char] = Map(
 		(0,0) → 'a', (0,1) → 'b', (1,0) → 'c', (1,1) → 'd'
@@ -30,6 +32,13 @@ class RectangularFieldTest extends FunSpec {
 	val sixByOne:Seq[Seq[Char]] = Seq("abcdef")
 	val twoByTwoCsv:Seq[Seq[String]] = Seq(Seq("a", "b"), Seq("c", "d"))
 	
+	
+	singleElementField("A RectangularField containing a single space")(
+		  idx = (0,0)
+		, unequalIndex = (1,1)
+		, clazz = "asdf"
+		, generator = Field.rectangularSpaceGenerator[String]
+	)
 	
 	describe ("The RectangularField Map[Index, _] Factory") {
 		it ("resultant space class 0,0 matches input"){

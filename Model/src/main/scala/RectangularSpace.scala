@@ -30,6 +30,7 @@ import scala.collection.immutable.Seq
  * @version 4.0
  * @see [[com.rayrobdod.boardGame.RectangularField]]
  * @tparam SpaceClass the type of spaceclass used by this class
+ * @tparam Repr the type of space representing every other space reachable from this space
  */
 trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Space[SpaceClass, Repr] {
 	/** The space that is located to the west  of this space */

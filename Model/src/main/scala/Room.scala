@@ -4,6 +4,14 @@ import scala.collection.immutable.{Seq, Map}
 
 /**
  * A set of spaces in which 
+ * 
+ * @constructor
+ * @tparam SpaceClass the space model
+ * @tparam Index the key used to specify a space from this field
+ * @tparam SpaceType the spaces contained in this tiling
+ * @param classes the mapping from indexies to space classes
+ * @param warps the replacement targets after entering the space with the specified index
+ * @param generator a function which will generate the field's spaces
  */
 final class Room[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
 	classes:Map[Index, SpaceClass],

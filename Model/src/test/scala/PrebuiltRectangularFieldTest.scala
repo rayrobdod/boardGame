@@ -24,8 +24,11 @@ final class PrebuiltRectangularFieldTest extends FunSpec {
 			
 			def doThing( x:Int, y:Int, space:Option[StrictRectangularSpace[String]] ) {
 				val spaceStr = space.map{_.typeOfSpace}.getOrElse{"None"}
-				it (s"$x,$y is _.$spaceStr") {
+				it (s"space at $x,$y is _.$spaceStr") {
 					assertResult(space){field.space((x, y))}
+				}
+				it (s"spaceClass at $x,$y is _.$spaceStr") {
+					assertResult(space.map{_.typeOfSpace}){field.spaceClass((x, y))}
 				}
 				space.foreach{s =>
 					it (s"containsIndex ($x,$y)") {
@@ -50,6 +53,13 @@ final class PrebuiltRectangularFieldTest extends FunSpec {
 			
 			it ("has 9 indexies") {
 				assertResult(9){field.mapIndex{x => x}.size}
+			}
+			it ("All indexies fit in the expected range") {
+				field.foreachIndex{xy =>
+					val (x, y) = xy
+					assert(-1 <= x && x <= 1)
+					assert(-1 <= y && y <= 1)
+				}
 			}
 		}
 		describe ("zeroZero = _.ne") {
@@ -78,6 +88,13 @@ final class PrebuiltRectangularFieldTest extends FunSpec {
 			
 			it ("has 9 indexies") {
 				assertResult(9){field.mapIndex{x => x}.size}
+			}
+			it ("All indexies fit in the expected range") {
+				field.foreachIndex{xy =>
+					val (x, y) = xy
+					assert(0 <= x && x <= 2)
+					assert(0 <= y && y <= 2)
+				}
 			}
 		}
 	}

@@ -17,6 +17,7 @@ import scala.collection.mutable.{Map => MMap}
  * and might as well allow an wasy way to use it.
  * 
  * @param zeroZeroSpace the space at zero-zero.
+ * @tparam SpaceClass the space model
  * @since 4.0
  */
 final class PrebuiltRectangularField[SpaceClass](

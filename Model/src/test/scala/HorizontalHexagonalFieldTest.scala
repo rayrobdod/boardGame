@@ -1,79 +1,47 @@
 package com.rayrobdod.boardGame
 
 import org.scalatest.FunSpec
-import scala.collection.immutable.Seq
 
-final class HorizontalHexagonalFieldTest extends FunSpec {
+final class HorizontalHexagonalFieldTest extends FunSpec with FieldTests {
 	
-	describe ("a field containing a single space") {
-		val dut = HorizontalHexagonalField( Map((0,0) -> " ") )
-		
-		describe("the field") {
-			it ("spaceClass at (0,0) is ' '") {
-				assertResult(Some(" ")){dut.spaceClass( (0,0) )}
-			}
-			it ("spaceClass at (1,1) is None") {
-				assertResult(None){dut.spaceClass( (1,1) )}
-			}
-			it ("space at (1,1) is None") {
-				assertResult(None){dut.space( (1,1) )}
-			}
-			it ("mapIndex has one value") {
-				assertResult(Seq((0,0))){dut.mapIndex{x => x}}
-			}
-			it ("foreachIndex has one value") {
-				dut.foreachIndex{x =>
-					assertResult((0,0)){x}
-				}
-			}
-			it ("hashcode is consistent") {
-				assert(
-					HorizontalHexagonalField( Map((0,0) -> " ") ).hashCode ==
-					HorizontalHexagonalField( Map((0,0) -> " ") ).hashCode
-				)
-			}
-			it ("equals (same)") {
-				assert(
-					HorizontalHexagonalField( Map((0,0) -> " ") ) ==
-					HorizontalHexagonalField( Map((0,0) -> " ") )
-				)
-			}
-			it ("equals (not)") {
-				assert(
-					HorizontalHexagonalField( Map((0,1) -> " ") ) !=
-					HorizontalHexagonalField( Map((1,0) -> " ") )
-				)
-			}
-			it ("equals (not 2)") {
-				assert(HorizontalHexagonalField( Map((0,1) -> " ") ) != "apple")
-			}
+	singleElementField("An HorizontalHexgaonal Field containing a single space")(
+		  idx = (0,0)
+		, unequalIndex = (1,1)
+		, clazz = "asdf"
+		, generator = Field.horizontalHexagonalSpaceGenerator[String]
+	)
+	
+	describe("A space with full adjacency") {
+		val clazzes = for (
+			i ← -1 to 1;
+			j ← -1 to 1
+		) yield { 
+			(i, j) → (i, j)
 		}
+		val field = HorizontalHexagonalField(clazzes.toMap)
+		val center = field.space(0,0).get
 		
-		describe("the space") {
-			val space = dut.space((0,0)).get
-			
-			it ("has no adjacent spaces") {
-				assertResult(Seq.empty){space.adjacentSpaces}
-			}
-			it ("type of space sdffafs") {
-				assertResult(" "){space.typeOfSpace}
-			}
-			it ("equals itself") {
-				assert(space == space)
-			}
-			it ("not equals a string") {
-				assert(space != " ")
-			}
-			it ("hashes to 0") {
-				assertResult(0){space.hashCode}
-			}
-			it ("toString") {
-				assertResult(
-					s"HorizontalHexagonalField.Space(typ =  , ew = 0, nwse = 0, field = $dut)"
-				) {
-					space.toString
-				}
-			}
+		it ("is adjacent to six spaces") {
+			assertResult(6){center.adjacentSpaces.length}
+		}
+		it ("east is (1,0)") {
+			assertResult(field.space(1,0)){center.east}
+		}
+		it ("west is (-1,0)") {
+			assertResult(field.space(-1,0)){center.west}
+		}
+		it ("southeast is (0,1)") {
+			assertResult(field.space(0,1)){center.southeast}
+		}
+		it ("northwest is (0,-1)") {
+			assertResult(field.space(0,-1)){center.northwest}
+		}
+		it ("northeast is (1,-1)") {
+			assertResult(field.space(1,-1)){center.northeast}
+		}
+		it ("southwest is (-1,1)") {
+			assertResult(field.space(-1,1)){center.southwest}
 		}
 	}
+	
 }
