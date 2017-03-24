@@ -45,25 +45,56 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[IconPart]
 	
 	
-	final def RectangularNilTilesheet:NilTilesheet[RectangularIndex, RectangularDimension, Icon] = {
-		new NilTilesheet[RectangularIndex, RectangularDimension, Icon](
+	final def NilTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):NilTilesheet[ev.Index, Dimension, Icon] = {
+		new NilTilesheet[ev.Index, Dimension, Icon](
 			() => blankIcon,
-			new RectangularDimension(16, 16)
+			dim
 		)
 	}
-	final def RectangularHashcodeColorTilesheet(dim:java.awt.Dimension):HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon] = {
-		new HashcodeColorTilesheet[RectangularIndex, RectangularDimension, Icon](
+	final def HashcodeColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):HashcodeColorTilesheet[ev.Index, Dimension, Icon] = {
+		new HashcodeColorTilesheet[ev.Index, Dimension, Icon](
 			  {() => blankIcon}
-			, {x:Color => rgbToRectangularIcon(x, RectangularDimension(dim.width, dim.height))}
-			, new RectangularDimension(dim.width, dim.height)
-		)
-	}
-	final def HorizontalHexagonalHashcodeColorTilesheet(dim:HorizontalHexagonalDimension):HashcodeColorTilesheet[HorizontalHexagonalIndex, HorizontalHexagonalDimension, Icon] = {
-		new HashcodeColorTilesheet[HorizontalHexagonalIndex, HorizontalHexagonalDimension, Icon](
-			  {() => blankIcon}
-			, {x:Color => rgbToHorizontalHexagonalIcon(x, dim)}
+			, {x:Color => ev.rgbToIcon(x, dim)}
 			, dim
 		)
+	}
+	final def IndexesTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):IndexesTilesheet[ev.Index, Dimension, Icon] = {
+		new IndexesTilesheet(
+			{x:ev.Index => ev.rgbToIcon( ev.indexiesTilesheetColor(x), dim )},
+			{s:String => stringIcon(s, Color.black, RectangularDimension(64, 24))},
+			dim
+		)
+	}
+	final def RandomColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):RandomColorTilesheet[ev.Index, Dimension, Icon] = {
+		new RandomColorTilesheet(
+			ev.rgbToIcon _,
+			{(s:String, rgb:Color, blarg:Dimension) => stringIcon(s, rgb, RectangularDimension(64, 24))},
+			dim
+		)
+	}
+		
+	
+	trait ProbablePropertiesBasedOnDimension[Dimension] {
+		type Index
+		def rgbToIcon(c:Color, d:Dimension):Icon
+		def indexiesTilesheetColor(idx:Index):Color
+		def iconLocation:IconLocation[Index, Dimension]
+	}
+	implicit object RectangularProperties extends ProbablePropertiesBasedOnDimension[RectangularDimension] {
+		override type Index = RectangularIndex
+		override def rgbToIcon(c:Color, d:RectangularDimension):Icon = rgbToRectangularIcon(c,d)
+		override def indexiesTilesheetColor(idx:Index):Color = { if ((idx._1 + idx._2) % 2 == 0) {Color.cyan} else {Color.magenta} }
+		override def iconLocation:RectangularIconLocation.type = RectangularIconLocation
+	}
+	implicit object HorizontalHexagonalProperties extends ProbablePropertiesBasedOnDimension[HorizontalHexagonalDimension] {
+		override type Index = HorizontalHexagonalIndex
+		override def rgbToIcon(c:Color, d:HorizontalHexagonalDimension):Icon = rgbToHorizontalHexagonalIcon(c,d)
+		override def indexiesTilesheetColor(idx:Index):Color = { math.abs((idx._1 + idx._1 + idx._2) % 3) match {
+			case 0 => Color.cyan
+			case 1 => Color.magenta
+			case 2 => new Color(0.5f, 1.0f, 0.5f)
+		}}
+		override def iconLocation:HorizontalHexagonalIconLocation.type = HorizontalHexagonalIconLocation
 	}
 	
 	

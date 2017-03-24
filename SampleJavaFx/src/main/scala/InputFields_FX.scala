@@ -17,19 +17,15 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import java.awt.{Dimension, Color}
-import java.net.URL
-import java.nio.charset.StandardCharsets.UTF_8
 import javafx.stage.Stage
 import javafx.stage.FileChooser.ExtensionFilter
+import javafx.scene.Node
+import javafx.scene.image.Image
 import javafx.scene.layout.GridPane
 import javafx.scene.text.Text
 import javafx.scene.control.{TextField, Button}
 import javafx.event.{EventHandler, ActionEvent}
 import scala.util.Random
-import scala.collection.immutable.Seq
-import com.rayrobdod.json.parser.JsonParser
-import com.rayrobdod.json.union.StringOrInt
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 
@@ -43,76 +39,34 @@ final class InputFields2(
 		initialRand:String,
 		stage:Stage
 ) {
-	private def urlOrFileStringToUrl(s:String) = {
-		try {
-			new URL(s)
-		} catch {
-			case e:java.net.MalformedURLException =>
-						new java.io.File(s).toURI.toURL
-		}
-	}
 	
-	
-	def tilesheet:Tilesheet[SpaceClass, RectangularIndex, RectangularDimension, javafx.scene.Node] = tilesheetUrlBox.getValue match {
-		case TAG_SHEET_NIL => Javafx.RectangularNilTilesheet
-		case TAG_SHEET_INDEX => new IndexesTilesheet(
-			{(xy:RectangularIndex) => Javafx.rgbToRectangularIcon(if ((xy._1 + xy._2) % 2 == 0) {Color.cyan} else {Color.magenta}, RectangularDimension(64, 24))},
-			{s:String => Javafx.stringIcon(s, Color.black, RectangularDimension(64, 24))},
-			RectangularDimension(64, 24)
-		)
-		case TAG_SHEET_RAND => new RandomColorTilesheet(
-			Javafx.rgbToRectangularIcon, Javafx.stringIcon, RectangularDimension(64, 24)
-		)
-		case TAG_SHEET_HASH => Javafx.RectangularHashcodeColorTilesheet(new Dimension(24, 24))
-		case CheckerboardURIMatcher(x) => x.apply(Javafx.blankIcon, Javafx.rgbToRectangularIcon)
-		case x => {
-			val url = urlOrFileStringToUrl(x)
-			val b = Javafx.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
-			var r:java.io.Reader = new java.io.StringReader("{}");
-			try {
-				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser().parse(b, r).fold({x => x}, {x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException(s + " " + i, i)}).apply({x => x})
-			} finally {
-				r.close();
-			}
-		}
+	def tilesheet(
+		  props:NameToTilesheetDemensionType[Image, Node]
+	):Tilesheet[SpaceClass, props.templateProps.Index, props.Dimension, Node] = {
+		nameToTilesheet(tilesheetUrlBox.getValue, props)
 	}
 	def fieldIsRotationField:Boolean = {
 		fieldUrlBox.getValue startsWith TAG_MAP_ROTATE
 	}
-	def field:Tiling[SpaceClass, RectangularIndex, _] = {
-		import java.io.InputStreamReader
-		import com.opencsv.CSVReader
-		
-		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getValue).openStream(), UTF_8)
-		val layoutTable:Seq[Seq[String]] = {
-			import scala.collection.JavaConversions.collectionAsScalaIterable;
-			
-			val reader = new CSVReader(layoutReader);
-			val letterTable3 = reader.readAll();
-			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
-			
-			letterTable
-		}
-		
-		RectangularField( layoutTable )
+	def field(
+		  props:NameToTilesheetDemensionType[_, _]
+	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType[SpaceClass]] = {
+		nameToField(fieldUrlBox.getValue, props)
 	}
-	def rng:Random = randBox.getText match {
-		case "" => Random
-		case "a" => new Random(new java.util.Random(){override def next(bits:Int):Int = 1})
-		case "b" => new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
-		case s => try {
-			new Random(s.toLong)
-		} catch {
-			case e:NumberFormatException => {
-				throw new IllegalStateException(
-						"Seed must be '', 'a', 'b' or an integer",
-						e
-				)
-			}
+	def rng:Random = {
+		nameToRandom(randBox.getText)
+	}
+	def dimension:NameToTilesheetDemensionType[Image, Node] = {
+		if (horizHexButton.isSelected) {
+			new HorizHexNameToTilesheetDemensionType(Javafx)
+		} else { // assume rectangularButton is selected
+			new RectangularNameToTilesheetDemensionType(Javafx)
 		}
 	}
-	def addOkButtonActionListener(x:EventHandler[ActionEvent]) {goButton.setOnAction(x)}
+	
+	def addOkButtonActionListener(x:EventHandler[ActionEvent]) {
+		goButton.setOnAction(x)
+	}
 	
 	
 	
@@ -171,6 +125,15 @@ final class InputFields2(
 		})
 		a
 	}
+	
+	private val orientationButtonGroup = new javafx.scene.control.ToggleGroup();
+	private val rectangularButton = new javafx.scene.control.RadioButton("Rectangular");
+	private val horizHexButton = new javafx.scene.control.RadioButton("HorizHex");
+	rectangularButton.setToggleGroup(orientationButtonGroup);
+	rectangularButton.setSelected(true);
+	horizHexButton.setToggleGroup(orientationButtonGroup);
+	
+	
 	private val randBox = new TextField(initialRand)
 	private val goButton = new Button("->")
 	
@@ -196,7 +159,8 @@ final class InputFields2(
 	panel.add(fieldFileButton, 2, 1, 1, 1 )
 	panel.add(new Text("seed: "), 0, 2, 1, 1)
 	panel.add(randBox, 1, 2, 2, 1 )
-	panel.add(goButton, 0, 3, 3, 1 )
+	panel.add(new javafx.scene.layout.FlowPane(rectangularButton, horizHexButton), 0, 3, 3, 1 )
+	panel.add(goButton, 0, 4, 3, 1 )
 }
 
 

@@ -112,7 +112,7 @@ object VisualizationRuleBasedTilesheetBuilder {
 				new JsonParser().parse(new SeqBuilder(b), r).fold(
 					{x => x},
 					{x => throw new java.text.ParseException("Parsed to primitive value", 0)},
-					{(s,i) => throw new java.text.ParseException(s,i)}
+					{(s,i) => throw new java.text.ParseException(s"$s ($rules:$i)", i)}
 				)
 			} finally {
 				r.close()

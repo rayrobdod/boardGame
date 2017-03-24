@@ -49,7 +49,7 @@ object CheckerboardURIMatcher {
 				{() => transparentIcon()},
 				{() => rgbToIcon(light, tileDimension)},
 				{() => rgbToIcon(dark, tileDimension)},
-				RectangularDimension(16, 16)
+				tileDimension
 			)
 		}
 	}

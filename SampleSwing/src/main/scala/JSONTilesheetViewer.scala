@@ -68,17 +68,22 @@ object JsonTilesheetViewer {
 		
 		if (inputFields.fieldIsRotationField) {
 			
+			val dimProps = inputFields.dimension
+			val tilesheet = inputFields.tilesheet(dimProps)
+			
 			val currentRotationRotation:Seq[SpaceClass] = {
-				allClassesInTilesheet(inputFields.tilesheet) :+ ""
+				allClassesInTilesheet(tilesheet) :+ ""
 			}
-			val currentRotationState:RectangularField[SpaceClass] = {
-				RectangularField(Seq.fill(14, 12){currentRotationRotation.head})
+			val currentRotationState:Tiling[SpaceClass, dimProps.templateProps.Index, _] = {
+				dimProps.initialRotationField(currentRotationRotation.head)
 			}
 			
 			val a = renderable(
 				currentRotationState,
-				inputFields.tilesheet,
+				tilesheet,
 				inputFields.rng
+			)(
+				dimProps.templateProps.iconLocation
 			)
 			
 			fieldComp.removeAll()
@@ -87,16 +92,20 @@ object JsonTilesheetViewer {
 			
 			
 			currentRotationState.foreachIndex{index =>
-				a._1.addOnClickHandler(index, new FieldRotationMouseListener(
-						index, currentRotationRotation, currentRotationState, fieldComp, inputFields
+				a._1.addOnClickHandler(index, FieldRotationMouseListener(
+						dimProps)(index, currentRotationRotation, currentRotationState, fieldComp, inputFields
 				))
 			}
 			
 		} else {
-			val a = renderable(
-				inputFields.field,
-				inputFields.tilesheet,
+			val dimensionProperties = inputFields.dimension
+			
+			val a = renderable[String, dimensionProperties.templateProps.Index, dimensionProperties.Dimension](
+				inputFields.field(dimensionProperties),
+				inputFields.tilesheet(dimensionProperties),
 				inputFields.rng
+			)(
+				dimensionProperties.templateProps.iconLocation
 			)
 			
 			fieldComp.removeAll()
@@ -108,31 +117,34 @@ object JsonTilesheetViewer {
 	}
 	
 	
-	
-	final class FieldRotationMouseListener(
-			index:(Int,Int),
+	def FieldRotationMouseListener(
+			dimProps:NameToTilesheetDemensionType[_, javax.swing.Icon]
+	)(
+			index:dimProps.templateProps.Index,
 			currentRotationRotation:Seq[SpaceClass],
-			currentRotationState:RectangularField[SpaceClass],
+			currentRotationState:Tiling[SpaceClass, dimProps.templateProps.Index, _],
 			fieldComp:JPanel,
 			inputFields:InputFields
-	) extends Function0[Unit] {
+	):Function0[Unit] = new Function0[Unit]{
 		override def apply():Unit = {
 			
-			val currentSpace:SpaceClass = currentRotationState.space(index).get.typeOfSpace
+			val currentSpace:SpaceClass = currentRotationState.spaceClass(index).get
 			val currentSpaceIndex:Int = currentRotationRotation.indexOf(currentSpace)
 			val nextSpaceIndex:Int = (currentSpaceIndex + 1) % currentRotationRotation.size
 			val nextSpace:SpaceClass = currentRotationRotation(nextSpaceIndex)
 			
-			val nextSpaceClasses:Map[(Int, Int), SpaceClass] =
-					currentRotationState.mapIndex{x => ((x, currentRotationState.space(x).get.typeOfSpace))}.toMap +
+			val nextSpaceClasses:Map[dimProps.templateProps.Index, SpaceClass] =
+					currentRotationState.mapIndex{x => ((x, currentRotationState.spaceClass(x).get))}.toMap +
 							((index, nextSpace))
 			
-			val nextRotationState:RectangularField[SpaceClass] = RectangularField(nextSpaceClasses)
+			val nextRotationState:Tiling[SpaceClass, dimProps.templateProps.Index, _] = dimProps.arbitraryField(nextSpaceClasses)
 			
 			val a = renderable(
 				nextRotationState,
-				inputFields.tilesheet,
+				inputFields.tilesheet(dimProps),
 				inputFields.rng
+			)(
+				dimProps.templateProps.iconLocation
 			)
 			
 			fieldComp.removeAll()
@@ -142,8 +154,8 @@ object JsonTilesheetViewer {
 			
 			
 			nextRotationState.foreachIndex{index =>
-				a._1.addOnClickHandler(index, new FieldRotationMouseListener(
-						index, currentRotationRotation, nextRotationState, fieldComp, inputFields
+				a._1.addOnClickHandler(index, FieldRotationMouseListener(
+						dimProps)(index, currentRotationRotation, nextRotationState, fieldComp, inputFields
 				))
 			}
 		}

@@ -60,8 +60,8 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {
 			g.setColor(rgbToColor(rgb))
 			g.fillPolygon(
-				  Array[Int](size.width / 2, size.width, size.width, size.width / 2, 0, 0)
-				, Array[Int](0, size.hinset, size.height - size.hinset, size.height, size.height - size.hinset, size.hinset)
+				  Array[Int](x + size.width / 2, x + size.width, x + size.width, x + size.width / 2, x, x)
+				, Array[Int](y, y + size.hinset, y + size.height - size.hinset, y + size.height, y + size.height - size.hinset, y + size.hinset)
 				, 6
 			)
 		}

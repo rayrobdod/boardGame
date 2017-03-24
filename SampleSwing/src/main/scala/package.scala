@@ -17,7 +17,15 @@
 */
 package com.rayrobdod
 
+import scala.language.higherKinds
+
+import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.immutable.Seq
+import scala.util.Random
+import com.rayrobdod.json.parser.JsonParser
+import com.rayrobdod.json.union.StringOrInt
+import com.rayrobdod.boardGame._
+import com.rayrobdod.boardGame.view._
 
 /**
  * 
@@ -40,6 +48,15 @@ package object jsonTilesheetViewer {
 	val TAG_SHEET_CHECKER:String = "tag:rayrobdod.name,2013-08:tilesheet-checker"
 	
 	
+	
+	private def urlOrFileStringToUrl(s:String):java.net.URL = {
+		try {
+			new java.net.URL(s)
+		} catch {
+			case e:java.net.MalformedURLException =>
+						new java.io.File(s).toURI.toURL
+		}
+	}
 	
 	def allClassesInTilesheet(f:com.rayrobdod.boardGame.view.Tilesheet[SpaceClass, _, _, _]):Seq[SpaceClass] = {
 		import com.rayrobdod.boardGame.SpaceClassMatcher
@@ -70,5 +87,167 @@ package object jsonTilesheetViewer {
 		}
 		
 		a
+	}
+	
+	
+	def nameToTilesheet[IconPart, Icon](
+		  url:String
+		, dimProps:NameToTilesheetDemensionType[IconPart, Icon]
+	):Tilesheet[SpaceClass, dimProps.templateProps.Index, dimProps.Dimension, Icon] = {
+		url match {
+			case TAG_SHEET_NIL => dimProps.template.NilTilesheet(dimProps.nilTilesheetDimension)(dimProps.templateProps)
+			case TAG_SHEET_INDEX => dimProps.template.IndexesTilesheet(dimProps.textIncludingDimension)(dimProps.templateProps)
+			case TAG_SHEET_RAND => dimProps.template.RandomColorTilesheet(dimProps.textIncludingDimension)(dimProps.templateProps)
+			case TAG_SHEET_HASH => dimProps.template.HashcodeColorTilesheet(dimProps.hashTilesheetDimension)(dimProps.templateProps)
+			case CheckerboardURIMatcher(x) => dimProps.checkerboardTilesheet(x)
+			case x:String => {
+				val url = urlOrFileStringToUrl(x)
+				var r:java.io.Reader = new java.io.StringReader("{}");
+				try {
+					r = new java.io.InputStreamReader(url.openStream(), UTF_8);
+					val parser = new JsonParser()
+					dimProps.parseVisualizationRuleTilesheet(parser, r, url)
+				} finally {
+					r.close();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Things that this demo needs to be parameterized by Dimension type,
+	 * but which make no sense being a part of the library
+	 */
+	trait NameToTilesheetDemensionType[IconPart, Icon] {
+		val template:PackageObjectTemplate[IconPart, Icon]
+		type Dimension
+		type SpaceType[SpaceClass] <: Space[SpaceClass, SpaceType[SpaceClass]]
+		val templateProps:template.ProbablePropertiesBasedOnDimension[Dimension]
+		def textIncludingDimension:Dimension
+		def hashTilesheetDimension:Dimension
+		def nilTilesheetDimension:Dimension
+		
+		def checkerboardTilesheet(x:CheckerboardURIMatcher.CheckerboardTilesheetDelay):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon]
+		def parseVisualizationRuleTilesheet(parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon]
+		
+		def initialRotationField[SpaceClass](initialClass:SpaceClass):Tiling[SpaceClass, templateProps.Index, SpaceType[SpaceClass]]
+		def arbitraryField[SpaceClass](clazzes:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, templateProps.Index, SpaceType[SpaceClass]]
+		def arbitraryField[SpaceClass](clazzes:Map[templateProps.Index, SpaceClass]):Tiling[SpaceClass, templateProps.Index, SpaceType[SpaceClass]]
+	}
+	final class RectangularNameToTilesheetDemensionType[IconPart, Icon](override val template:PackageObjectTemplate[IconPart, Icon]) extends NameToTilesheetDemensionType[IconPart, Icon] {
+		override type Dimension = RectangularDimension
+		override type SpaceType[SpaceClass] = StrictRectangularSpace[SpaceClass]
+		override val templateProps:template.RectangularProperties.type = template.RectangularProperties
+		override def textIncludingDimension:RectangularDimension = RectangularDimension(64, 24)
+		override def hashTilesheetDimension:RectangularDimension = RectangularDimension(24, 24)
+		override def nilTilesheetDimension:RectangularDimension = RectangularDimension(16, 16)
+		
+		override def checkerboardTilesheet(x:CheckerboardURIMatcher.CheckerboardTilesheetDelay):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
+			x.apply(template.blankIcon, template.rgbToRectangularIcon)
+		}
+		override def parseVisualizationRuleTilesheet(parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
+			val b = template.VisualizationRuleBasedRectangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
+			parser.parse(b, reader).fold(
+				  {x => x}
+				, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
+				, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
+			).apply(
+				{x => x}
+			)
+		}
+		
+		override def initialRotationField[SpaceClass](initialClass:SpaceClass):Tiling[SpaceClass, template.RectangularProperties.Index, SpaceType[SpaceClass]] = {
+			RectangularField(Seq.fill(14, 12){initialClass})
+		}
+		override def arbitraryField[SpaceClass](clazzes:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, templateProps.Index, SpaceType[SpaceClass]] = {
+			RectangularField(clazzes)
+		}
+		override def arbitraryField[SpaceClass](clazzTable:Map[templateProps.Index, SpaceClass]):Tiling[SpaceClass, templateProps.Index, SpaceType[SpaceClass]] = {
+			RectangularField(clazzTable)
+		}
+	}
+	final class HorizHexNameToTilesheetDemensionType[IconPart, Icon](override val template:PackageObjectTemplate[IconPart, Icon]) extends NameToTilesheetDemensionType[IconPart, Icon] {
+		override type Dimension = HorizontalHexagonalDimension
+		override type SpaceType[SpaceClass] = StrictHorizontalHexagonalSpace[SpaceClass]
+		override val templateProps:template.HorizontalHexagonalProperties.type = template.HorizontalHexagonalProperties
+		override def textIncludingDimension:HorizontalHexagonalDimension = HorizontalHexagonalDimension(64, 24, 5)
+		override def hashTilesheetDimension:HorizontalHexagonalDimension = HorizontalHexagonalDimension(24, 24, 8)
+		override def nilTilesheetDimension:HorizontalHexagonalDimension = HorizontalHexagonalDimension(16, 16, 5)
+		
+		override def checkerboardTilesheet(x:CheckerboardURIMatcher.CheckerboardTilesheetDelay):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
+			throw new IllegalStateException("Checkerboard doesn't support Hex tilings")
+		}
+		override def parseVisualizationRuleTilesheet(parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
+			val b = template.VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
+			parser.parse(b, reader).fold(
+				  {x => x}
+				, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
+				, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
+			).apply(
+				{x => x.build}
+			)
+		}
+		
+		override def initialRotationField[SpaceClass](initialClass:SpaceClass):Tiling[SpaceClass, template.HorizontalHexagonalProperties.Index, SpaceType[SpaceClass]] = {
+			HorizontalHexagonalField( (
+				for(
+					j <- 0 to 6;
+					i <- (0 - (j / 2)) to (6 - (j / 2))
+				) yield {
+					(i, j) -> initialClass
+				}
+			).toMap )
+		}
+		override def arbitraryField[SpaceClass](clazzTable:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, template.HorizontalHexagonalProperties.Index, SpaceType[SpaceClass]] = {
+			HorizontalHexagonalField( (
+				for(
+					(clazzRow, j) <- clazzTable.zipWithIndex;
+					(clazz, i) <- clazzRow.zipWithIndex
+				) yield {
+					(i, j) -> clazz
+				}
+			).toMap )
+		}
+		override def arbitraryField[SpaceClass](clazzTable:Map[template.HorizontalHexagonalProperties.Index, SpaceClass]):Tiling[SpaceClass, template.HorizontalHexagonalProperties.Index, SpaceType[SpaceClass]] = {
+			HorizontalHexagonalField(clazzTable)
+		}
+	}
+	
+	
+	def nameToRandom(s:String):Random = s match{
+		case "" => Random
+		case "a" => new Random(new java.util.Random(){override def next(bits:Int):Int = 1})
+		case "b" => new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
+		case s => try {
+			new Random(s.toLong)
+		} catch {
+			case e:NumberFormatException => {
+				throw new IllegalStateException(
+						"Seed must be '', 'a', 'b' or an integer",
+						e
+				)
+			}
+		}
+	}
+	
+	def nameToField(
+		  url:String
+		, props:NameToTilesheetDemensionType[_, _]
+	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType[SpaceClass]] = {
+		import java.io.InputStreamReader
+		import com.opencsv.CSVReader
+		
+		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(url).openStream(), UTF_8)
+		val layoutTable:Seq[Seq[String]] = {
+			import scala.collection.JavaConversions.collectionAsScalaIterable;
+			
+			val reader = new CSVReader(layoutReader);
+			val letterTable3 = reader.readAll();
+			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
+			
+			letterTable
+		}
+		
+		props.arbitraryField( layoutTable )
 	}
 }

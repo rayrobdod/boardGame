@@ -38,8 +38,39 @@ package object view {
 	}
 	
 	
-	implicit def rectangularIconLocation:IconLocation[RectangularIndex, RectangularDimension] = RectangularIconLocation
-	implicit def horizontalHexagonalIconLocation:IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] = HorizontalHexagonalIconLocation
+	implicit object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
+		
+		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
+			new java.awt.Rectangle(
+				idx._1 * dim.width,
+				idx._2 * dim.height,
+				dim.width,
+				dim.height
+			)
+		}
+		
+		override def hit(point:(Int, Int), dim:RectangularDimension):RectangularIndex = ((
+			point._1 / dim.width,
+			point._2 / dim.height
+		))
+	}
+	
+	implicit object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
+		
+		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
+			val (ew, nwse) = idx
+			new java.awt.Rectangle(
+				dim.width * ew + (dim.width / 2) * nwse,
+				dim.verticalOffset * nwse,
+				dim.width,
+				dim.height
+			)
+		}
+		
+		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = ((
+			0,0 //TODO
+		))
+	}
 	
 }
 
@@ -68,40 +99,6 @@ package view {
 	trait IconLocation[Index, Dimension] {
 		def bounds(idx:Index, dim:Dimension):java.awt.Rectangle
 		def hit(point:(Int, Int), dim:Dimension):Index
-	}
-	
-	object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
-		
-		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
-			new java.awt.Rectangle(
-				idx._1 * dim.width,
-				idx._2 * dim.height,
-				dim.width,
-				dim.height
-			)
-		}
-		
-		override def hit(point:(Int, Int), dim:RectangularDimension):RectangularIndex = ((
-			point._1 / dim.width,
-			point._2 / dim.height
-		))
-	}
-	
-	object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
-		
-		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
-			val (ew, nwse) = idx
-			new java.awt.Rectangle(
-				dim.width * ew + (dim.width / 2) * nwse,
-				dim.verticalOffset * nwse,
-				dim.width,
-				dim.height
-			)
-		}
-		
-		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = ((
-			0,0 //TODO
-		))
 	}
 	
 }

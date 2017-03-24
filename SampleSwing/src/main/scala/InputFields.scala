@@ -17,18 +17,11 @@
 */
 package com.rayrobdod.jsonTilesheetViewer
 
-import java.awt.{Dimension, Color}
-import java.net.URL
 import java.awt.{GridBagLayout, GridBagConstraints}
 import java.awt.event.ActionListener
-import java.nio.charset.StandardCharsets.UTF_8
-import javax.swing.{Icon, JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser}
+import javax.swing.{Icon, JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser, JRadioButton}
 import scala.util.Random
-import scala.collection.immutable.Seq
 import com.rayrobdod.swing.GridBagConstraintsFactory
-import com.rayrobdod.json.parser.JsonParser
-import com.rayrobdod.json.union.StringOrInt
-import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 
@@ -47,78 +40,34 @@ final class InputFields(
 		initialFieldUrl:String,
 		initialRand:String
 ) {
-	private def urlOrFileStringToUrl(s:String) = {
-		try {
-			new URL(s)
-		} catch {
-			case e:java.net.MalformedURLException =>
-						new java.io.File(s).toURI.toURL
-		}
-	}
 	
-	
-	def tilesheet:Tilesheet[SpaceClass, RectangularIndex, RectangularDimension, Icon] = tilesheetUrlBox.getSelectedItem match {
-		case TAG_SHEET_NIL => Swing.RectangularNilTilesheet
-		case TAG_SHEET_INDEX => new view.IndexesTilesheet(
-			{(xy:RectangularIndex) => Swing.rgbToRectangularIcon(if ((xy._1 + xy._2) % 2 == 0) {Color.cyan} else {Color.magenta}, RectangularDimension(64, 24))},
-			{s:String => Swing.stringIcon(s, Color.black, RectangularDimension(64, 24))},
-			RectangularDimension(64, 24)
-		)
-		case TAG_SHEET_RAND => new view.RandomColorTilesheet(
-				Swing.rgbToRectangularIcon,
-				Swing.stringIcon,
-				new RectangularDimension(64, 24)
-		)
-		case TAG_SHEET_HASH => Swing.RectangularHashcodeColorTilesheet(new Dimension(24, 24))
-		case CheckerboardURIMatcher(x) => x.apply(Swing.blankIcon, Swing.rgbToRectangularIcon)
-		case x:String => {
-			val url = urlOrFileStringToUrl(x)
-			val b = Swing.VisualizationRuleBasedRectangularTilesheetBuilder(url, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
-			var r:java.io.Reader = new java.io.StringReader("{}");
-			try {
-				r = new java.io.InputStreamReader(url.openStream(), UTF_8);
-				return new JsonParser().parse(b, r).fold({x => x},{x => throw new java.text.ParseException("Parsed to primitive", 0)}, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}).apply({x => x})
-			} finally {
-				r.close();
-			}
-		}
+	def tilesheet[IconPart, Icon](
+		  props:NameToTilesheetDemensionType[IconPart, Icon]
+	):Tilesheet[SpaceClass, props.templateProps.Index, props.Dimension, Icon] = {
+		nameToTilesheet(tilesheetUrlBox.getSelectedItem.toString, props)
 	}
 	def fieldIsRotationField:Boolean = {
 		fieldUrlBox.getSelectedItem.toString startsWith TAG_MAP_ROTATE
 	}
-	def field:Tiling[SpaceClass, RectangularIndex, _] = {
-		import java.io.InputStreamReader
-		import com.opencsv.CSVReader
-		
-		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(fieldUrlBox.getSelectedItem.toString).openStream(), UTF_8)
-		val layoutTable:Seq[Seq[String]] = {
-			import scala.collection.JavaConversions.collectionAsScalaIterable;
-			
-			val reader = new CSVReader(layoutReader);
-			val letterTable3 = reader.readAll();
-			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
-			
-			letterTable
-		}
-		
-		RectangularField( layoutTable )
+	def field(
+		  props:NameToTilesheetDemensionType[_, _]
+	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType[SpaceClass]] = {
+		nameToField(fieldUrlBox.getSelectedItem.toString, props)
 	}
-	def rng:Random = randBox.getText match {
-		case "" => Random
-		case "a" => new Random(new java.util.Random(){override def next(bits:Int):Int = 1})
-		case "b" => new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
-		case s => try {
-			new Random(s.toLong)
-		} catch {
-			case e:NumberFormatException => {
-				throw new IllegalStateException(
-						"Seed must be '', 'a', 'b' or an integer",
-						e
-				)
-			}
+	def rng:Random = {
+		nameToRandom( randBox.getText )
+	}
+	def dimension:NameToTilesheetDemensionType[java.awt.Image, javax.swing.Icon] = {
+		if (horizHexButton.isSelected) {
+			new HorizHexNameToTilesheetDemensionType(Swing)
+		} else { // assume rectangularButton is selected
+			new RectangularNameToTilesheetDemensionType(Swing)
 		}
 	}
-	def addOkButtonActionListener(x:ActionListener) {goButton.addActionListener(x)}
+	
+	def addOkButtonActionListener(x:ActionListener) {
+		goButton.addActionListener(x)
+	}
 	
 	
 	
@@ -184,6 +133,14 @@ final class InputFields(
 		a
 	}
 	
+	private val orientationButtonGroup = new javax.swing.ButtonGroup
+	private val rectangularButton = new JRadioButton("Rectangular")
+	private val horizHexButton = new JRadioButton("HorizHex")
+	orientationButtonGroup.add(rectangularButton)
+	orientationButtonGroup.add(horizHexButton)
+	orientationButtonGroup.setSelected(rectangularButton.getModel, true)
+	
+	
 	private val randBox = new JTextField(initialRand, 5)
 	private val goButton = new JButton("->")
 	
@@ -199,5 +156,10 @@ final class InputFields(
 	panel.add(fieldFileButton, endOfLine)
 	panel.add(new JLabel("seed: "), label)
 	panel.add(randBox, endOfLine)
+	panel.add({val a = new JPanel
+		a.add(rectangularButton)
+		a.add(horizHexButton)
+		a
+	}, endOfLine)
 	panel.add(goButton, endOfLine)
 }

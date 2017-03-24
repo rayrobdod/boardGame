@@ -24,8 +24,8 @@ private[view] final class SwingRenderable[Index, Dimension](
 		override def paintComponent(g:Graphics):Unit = {
 			// tiles should not overlap
 			tiles.foreach({(index:Index, icon:Icon) =>
-				val bounds = iconLocation.bounds(index, dimension)
-				icon.paintIcon(this, g, bounds.x, bounds.y)
+				val tileBounds = iconLocation.bounds(index, dimension)
+				icon.paintIcon(this, g, tileBounds.x, tileBounds.y)
 			}.tupled)
 		}
 		
