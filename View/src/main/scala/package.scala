@@ -38,6 +38,7 @@ package object view {
 	}
 	
 	
+	/** Functions that specify the screen positions of tiles in a Rectangular Tiling  */
 	implicit object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
 		
 		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
@@ -55,6 +56,7 @@ package object view {
 		))
 	}
 	
+	/** Functions that specify the screen positions of tiles in a Horizontal Hexagonal Tiling  */
 	implicit object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
 		
 		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
@@ -67,9 +69,48 @@ package object view {
 			)
 		}
 		
-		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = ((
-			0,0 //TODO
-		))
+		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = {
+			// Using the 'geometric rectangle-and-two-triangles' approach
+			// high-level is described at: http://gdreflections.com/2011/02/hexagonal-grid-math.html
+			
+			
+			// find the box which contains the top 2/3 of the hexagon
+			val col = coords._2 / dim.verticalOffset
+			val row = (coords._1 - (if (col % 2 == 0) {0} else {dim.width / 2})) / dim.width - col / 2
+			
+			// translate the coordinate to be relative to (row,col)'s bounding box
+			val bounds = this.bounds( ((row, col)), dim)
+			val localCoords = ((coords._1 - bounds.x, coords._2 - bounds.y))
+			
+			if (localCoords._1 < dim.width / 2) {
+				// west half of bounding box
+				
+				val (x1, y1, x2, y2) = (0, dim.hinset, dim.width / 2.0, 0)
+				def line(x:Double):Double = ((y2 - y1) / (x2 - x1)) * x + y1 - ((y2 - y1) / (x2 - x1)) * x1
+				
+				// if coord is north of that line, then the point is in the hex northwest of the bounding box's hex, else it is in the bounding box's hex 
+				if (line(localCoords._1) >= localCoords._2) {
+					// hex northwest of bounding box
+					(row, col - 1)
+				} else {
+					(row, col)
+				}
+				
+			} else {
+				// east half of bounding box
+				
+				val (x1, y1, x2, y2) = (dim.width, dim.hinset, dim.width / 2.0, 0)
+				def line(x:Double):Double = ((y2 - y1) / (x2 - x1)) * x + y1 - ((y2 - y1) / (x2 - x1)) * x1
+				
+				// if coord is north of that line, then the point is in the hex northeast of the bounding box's hex, else it is in the bounding box's hex
+				if (line(localCoords._1) >= localCoords._2) {
+					// hex northeast of bounding box
+					(row + 1, col - 1)
+				} else {
+					(row, col)
+				}
+			}
+		}
 	}
 	
 }
@@ -96,8 +137,15 @@ package view {
 		val verticalOffset = height - hinset
 	}
 	
+	final case class StrictElongatedTriangularDimension(width:Int, squareHeight:Int, triangleHeight:Int)
+	
+	/**
+	 * Functions that specify the screen positions of tiles in a tiling
+	 */
 	trait IconLocation[Index, Dimension] {
+		/** A bounding box for the tile at `idx`  */
 		def bounds(idx:Index, dim:Dimension):java.awt.Rectangle
+		/** The space which contains the `point` */
 		def hit(point:(Int, Int), dim:Dimension):Index
 	}
 	

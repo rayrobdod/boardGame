@@ -42,7 +42,7 @@ object AdjacentSpacesSpecifierParser {
 	/** Represents a set of strings */
 	private[this] trait MySet[A] {
 		def contains(x:A):Boolean
-		/**@return Left values that were tried but returned None; Right the mapped set */
+		/** @return Left values that were tried but returned None; Right the mapped set */
 		def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]]
 		
 		/** A union of this and rhs */
@@ -71,13 +71,17 @@ object AdjacentSpacesSpecifierParser {
 	/** Represents the set that contains only `value` */
 	private[this] final class MySetContains[A](value:A) extends MySet[A] {
 		def contains(x:A):Boolean = {x == value}
-		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetContains(x))}
+		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = {
+			fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetContains(x))}
+		}
 		override def toString = s"MySetContains($value)"
 	}
 	/** Represents the set that contains all strings except `value` */
 	private[this] final class MySetAllBut[A](value:A) extends MySet[A] {
 		def contains(x:A):Boolean = {x != value}
-		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetAllBut(x))}
+		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = {
+			fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetAllBut(x))}
+		}
 		override def toString = s"MySetAllBut($value)"
 	}
 	
