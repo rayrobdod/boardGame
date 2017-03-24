@@ -26,23 +26,32 @@ import com.rayrobdod.boardGame.javafxView.InitializeFx
 
 @FxTests
 class InputFields2Test extends FunSpec {
+	import scala.language.existentials
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "", null).tilesheet.isInstanceOf[IndexesTilesheet[_,_,_]]}
+			val inputfields = new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "", null)
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[IndexesTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "", null).tilesheet.isInstanceOf[RandomColorTilesheet[_,_,_]]}
+			val inputfields = new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "", null)
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[RandomColorTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null).tilesheet.isInstanceOf[NilTilesheet[_,_,_]]}
+			val inputfields = new InputFields2("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "", null)
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[NilTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
 			if (! InitializeFx.isSetup) { InitializeFx.setup() }
-			assert{new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "", null).tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_,_]]}
+			val inputfields = new InputFields2("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "", null)
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_,_]]}
 		}
 	}
 	describe ("InputFields2.rand") {
@@ -86,7 +95,8 @@ class InputFields2Test extends FunSpec {
 			import com.rayrobdod.boardGame.RectangularField
 			val exp = RectangularField(Seq(Seq("a","b","c"), Seq("d","e","f")))
 			val url = this.getClass.getResource("abc.csv")
-			assertResult(exp){new InputFields2("", url.toString, "", null).field}
+			val inputFields = new InputFields2("", url.toString, "", null)
+			assertResult(exp){inputFields.field(inputFields.dimension)}
 		}
 	}
 }

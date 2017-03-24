@@ -23,19 +23,28 @@ import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.view._
 
 class InputFieldsTest extends FunSpec {
+	import scala.language.existentials
 	
 	describe ("InputFields.tilesheet") {
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-indexies' gets an IndexesTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "").tilesheet.isInstanceOf[IndexesTilesheet[_,_,_]]}
+			val inputfields = new InputFields("tag:rayrobdod.name,2013-08:tilesheet-indexies", "", "")
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[IndexesTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-randcolor' gets an RandomColorTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "").tilesheet.isInstanceOf[RandomColorTilesheet[_,_,_]]}
+			val inputfields = new InputFields("tag:rayrobdod.name,2013-08:tilesheet-randcolor", "", "")
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[RandomColorTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2013-08:tilesheet-nil' gets an NilTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "").tilesheet.isInstanceOf[NilTilesheet[_,_,_]]}
+			val inputfields = new InputFields("tag:rayrobdod.name,2013-08:tilesheet-nil", "", "")
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[NilTilesheet[_,_,_]]}
 		}
 		it ("string 'tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor' gets an HashcodeColorTilesheet") {
-			assert{new InputFields("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "").tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_,_]]}
+			val inputfields = new InputFields("tag:rayrobdod.name,2015-06-12:tilesheet-hashcolor", "", "")
+			val tilesheet = inputfields.tilesheet(inputfields.dimension)
+			assert{tilesheet.isInstanceOf[HashcodeColorTilesheet[_,_,_]]}
 		}
 	}
 	describe ("InputFields.rand") {
@@ -70,7 +79,8 @@ class InputFieldsTest extends FunSpec {
 			import com.rayrobdod.boardGame.RectangularField
 			val exp = RectangularField(Seq(Seq("a","b","c"), Seq("d","e","f")))
 			val url = this.getClass.getResource("abc.csv")
-			assertResult(exp){new InputFields("", url.toString, "").field}
+			val inputFields = new InputFields("", url.toString, "")
+			assertResult(exp){inputFields.field(inputFields.dimension)}
 		}
 	}
 }
