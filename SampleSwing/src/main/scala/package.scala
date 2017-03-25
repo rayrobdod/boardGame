@@ -143,7 +143,7 @@ package object jsonTilesheetViewer {
 		override def nilTilesheetDimension:RectangularDimension = RectangularDimension(16, 16)
 		
 		override def checkerboardTilesheet(x:CheckerboardURIMatcher.CheckerboardTilesheetDelay):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-			x.apply(template.blankIcon, template.rgbToRectangularIcon)
+			x.apply({() => template.blankIcon}, template.rgbToRectangularIcon)
 		}
 		override def parseVisualizationRuleTilesheet(parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
 			val b = template.VisualizationRuleBasedRectangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)

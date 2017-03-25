@@ -21,10 +21,15 @@ package view
 import scala.util.Random
 
 /**
+ * A Tilesheet for Rectangular boards which displays icon in a checker pattern
+ * 
+ * @group TrivialTilesheet
+ * 
  * @constructor
  * @param transparentIcon the icon that is always returned for `getIconFor(...)._2`
  * @param lightIcon the icon that is returned for even `getIconFor(...)._1`
  * @param darkIcon the icon that is returned for odd `getIconFor(...)._1`
+ * @param iconDimensions the size of each tile
  */
 final class CheckerboardTilesheet[Icon](
 	transparentIcon:Function0[Icon],
@@ -32,10 +37,10 @@ final class CheckerboardTilesheet[Icon](
 	darkIcon:Function0[Icon],
 	override val iconDimensions:RectangularDimension
 ) extends Tilesheet[Any, RectangularIndex, RectangularDimension, Icon] {
-	override def toString:String = "Checkerboard"
 	
-	override def getIconFor(f:Tiling[_ <: Any, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = {
-		(( if ((xy._1 + xy._2) % 2 == 0) {lightIcon()} else {darkIcon()}, transparentIcon() ))
-	}
+	override def getIconFor(f:Tiling[_ <: Any, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = ((
+		  if ((xy._1 + xy._2) % 2 == 0) {lightIcon()} else {darkIcon()}
+		, transparentIcon()
+	))
 	
 }

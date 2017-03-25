@@ -25,16 +25,22 @@ import scala.util.Random
  * A tilesheet that makes solid color tile images, where the color of each
  * tile is dependent upon that tile's space's spaceClass's hashcode. 
  * 
- * @constructor Creates a CheckerboardTilesheet
- * @param dim the size of each tile in the checkerboard
- * @note there is no good reason for this to have a type parameter.
+ * @group TrivialTilesheet
+ * 
+ * @constructor
+ * Creates a HashcodeColorTilesheet
+ * @param transparentIcon a transparent icon
+ * @param colorToIcon an icon that deisplays the specified color
+ * @param iconDimensions the size of each tile
+ * @tparam Index the index used to specify a space in a tiling
+ * @tparam Dimension the dimensions of the thlesheet's tiles
+ * @tparam Icon the icon produced by this tilesheet
  */
 final class HashcodeColorTilesheet[Index, Dimension, Icon](
 	  transparentIcon:Function0[Icon]
 	, colorToIcon:Function1[java.awt.Color, Icon]
 	, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
-	override def toString:String = "HashcodeColor"
 	
 	def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
 		(( colorToIcon(getColorFor(f,xy)), transparentIcon() ))

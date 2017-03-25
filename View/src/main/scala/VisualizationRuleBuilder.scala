@@ -29,6 +29,7 @@ import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 /**
  * A Builder of VisualizationRule
  * @version next
+ * @group VisualizationRuleTilesheet
  */
 final class VisualizationRuleBuilder[SpaceClass, Index, IconPart](
 		  tileSeq:Seq[IconPart]
@@ -79,6 +80,7 @@ final class VisualizationRuleBuilder[SpaceClass, Index, IconPart](
 /**
  * A VisualizationRule where each of the overridable methods in represented by one of the constructor parameters
  * @version next
+ * @group VisualizationRuleTilesheet
  */
 final case class ParamaterizedVisualizationRule[SpaceClass, Index, IconPart] (
 	override val iconParts:Map[Int, Seq[IconPart]] = Map.empty[Int, Seq[IconPart]],
@@ -111,6 +113,9 @@ final case class ParamaterizedVisualizationRule[SpaceClass, Index, IconPart] (
 }
 
 
+/**
+ * @group VisualizationRuleTilesheet
+ */
 private object VisualizationRuleBuilder {
 	private final val ARBITRARY_NEGATIVE_VALUE = -127
 	
@@ -213,6 +218,7 @@ private object VisualizationRuleBuilder {
 
 /**
  * @version next
+ * @group VisualizationRuleTilesheet
  */
 private[view] object ParamaterizedVisualizationRule {
 	

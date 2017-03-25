@@ -22,15 +22,23 @@ import scala.util.Random
 import com.rayrobdod.boardGame.Tiling
 
 /**
- * A tilesheet for testing randoms. Isolating the problem.
+ * A tilesheet that gives every tile a randomly-determined color
  * 
+ * @group TrivialTilesheet
+ * 
+ * @constructor
+ * @param stringIcon an icon that displays the specified string
+ * @param colorToIcon an icon that deisplays the specified color
+ * @param iconDimensions the size of each tile
+ * @tparam Index the index used to specify a space in a tiling
+ * @tparam Dimension the dimensions of the thlesheet's tiles
+ * @tparam Icon the icon produced by this tilesheet
  */
 final class RandomColorTilesheet[Index, Dimension, Icon](
 		  colorToIcon:Function2[java.awt.Color, Dimension, Icon]
 		, stringIcon:Function3[String, java.awt.Color, Dimension, Icon]
 		, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
-	override def toString:String = "Random Color"
 	
 	override def getIconFor(f:Tiling[_ <: Any, Index, _], x:Index, rng:Random):(Icon, Icon) = {
 		val background = new java.awt.Color(rng.nextInt)

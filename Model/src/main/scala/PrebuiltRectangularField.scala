@@ -16,6 +16,7 @@ import scala.collection.mutable.{Map => MMap}
  * difficult, but I haven't deprecated [[RectangularSpaceViaFutures]] yet,
  * and might as well allow an wasy way to use it.
  * 
+ * @group Rectangular
  * @param zeroZeroSpace the space at zero-zero.
  * @tparam SpaceClass the space model
  * @since 4.0

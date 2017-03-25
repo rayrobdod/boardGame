@@ -17,30 +17,78 @@
 */
 package com.rayrobdod
 
+import scala.collection.immutable.Seq
+
 /**
  * The classes which consist the "model", as opposed to the "view"
+ * 
+ * @groupprio Generic 100
+ * @groupdesc Generic classes that work on shapes of any shape
+ * @groupprio SpaceLike 200
+ * @groupdesc SpaceLike spaces which have a shape but don't commit on a `Repr`
+ * @groupprio Rectangular 900
+ * @groupdesc Rectangular Rectangular Tiling-related classes
+ * @groupprio HorizontalHexagonal 901
+ * @groupdesc HorizontalHexagonal HorizontalHexagonal Tiling-related classes
+ * @groupprio ElongatedTriangular 902
+ * @groupdesc ElongatedTriangular ElongatedTriangular Tiling-related classes
+ * @groupprio Unidirectional 903
+ * @groupdesc Unidirectional Unidirectional Space classes
  */
 package object boardGame {
+	/**
+	 * The type of index used for Rectangular fields
+	 * @group Rectangular
+	 */
 	type RectangularIndex = Tuple2[Int, Int]
+	/**
+	 * The type of index used for HorizontalHexagonal fields
+	 * @group HorizontalHexagonal
+	 */
 	type HorizontalHexagonalIndex = Tuple2[Int, Int]
 	
-	/** A Tiling of RectangularSpaces */
+	/**
+	 * A Tiling of RectangularSpaces
+	 * @documentable
+	 * @group Rectangular
+	 */
 	type RectangularTiling[SpaceClass] = Tiling[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
-	/** A Tiling of HorizontalHexagonalSpaces */
+	/**
+	 * A Tiling of HorizontalHexagonalSpaces
+	 * @documentable
+	 * @group HorizontalHexagonal
+	 */
 	type HorizontalHexagonalTiling[SpaceClass] = Tiling[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
-	/** A Tiling of ElongatedTriangularSpaces */
+	/**
+	 * A Tiling of ElongatedTriangularSpaces
+	 * @documentable
+	 * @group ElongatedTriangular
+	 */
 	type ElongatedTriangularTiling[SpaceClass] = Tiling[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
 	
-	/** A Field of RectangularSpaces */
+	/**
+	 * A Field of RectangularSpaces
+	 * @documentable
+	 * @group Rectangular
+	 */
 	type RectangularField[SpaceClass] = Field[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
-	/** A Field of HorizontalHexagonalSpaces */
+	/**
+	 * A Field of HorizontalHexagonalSpaces
+	 * @documentable
+	 * @group HorizontalHexagonal
+	 */
 	type HorizontalHexagonalField[SpaceClass] = Field[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
-	/** A Field of ElongatedTriangularSpaces */
+	/**
+	 * A Field of ElongatedTriangularSpaces
+	 * @documentable
+	 * @group ElongatedTriangular
+	 */
 	type ElongatedTriangularField[SpaceClass] = Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
 	
 	/**
 	 * Create a Field of RectangularSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group Rectangular
 	 */
 	def RectangularField[SpaceClass](
 		classes:Map[RectangularIndex, SpaceClass]
@@ -51,6 +99,7 @@ package object boardGame {
 	/**
 	 * Create a Field of RectangularSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group Rectangular
 	 */
 	def RectangularField[SpaceClass](
 		classes:Seq[Seq[SpaceClass]]
@@ -67,6 +116,7 @@ package object boardGame {
 	/**
 	 * Create a Field of HorizontalHexagonalSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group HorizontalHexagonal
 	 */
 	def HorizontalHexagonalField[SpaceClass](
 		classes:Map[HorizontalHexagonalIndex, SpaceClass]
@@ -77,6 +127,7 @@ package object boardGame {
 	/**
 	 * Create a Field of ElongatedTriangularSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group ElongatedTriangular
 	 */
 	def ElongatedTriangularField[SpaceClass](
 		classes:Map[ElongatedTriangularIndex, SpaceClass]
@@ -87,6 +138,7 @@ package object boardGame {
 	/**
 	 * Create a Room of RectangularSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group Rectangular
 	 */
 	def RectangularRoom[SpaceClass](
 		classes:Map[RectangularIndex, SpaceClass],
@@ -98,6 +150,7 @@ package object boardGame {
 	/**
 	 * Create a Room of RectangularSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group Rectangular
 	 */
 	def RectangularRoom[SpaceClass](
 		classes:Seq[Seq[SpaceClass]],
@@ -115,6 +168,7 @@ package object boardGame {
 	/**
 	 * Create a Room of HorizontalHexagonalSpaces using the specified classes
 	 * @tparam SpaceClass the space model
+	 * @group HorizontalHexagonal
 	 */
 	def HorizontalHexagonalRoom[SpaceClass](
 		classes:Map[HorizontalHexagonalIndex, SpaceClass],
@@ -125,17 +179,22 @@ package object boardGame {
 	
 	/**
 	 * A SpaceClassMatcher that always returns true
+	 * @group Generic
 	 * @version next
 	 */
 	val ConstTrueSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(true)
 	
 	/**
 	 * A SpaceClassMatcher that always returns false
+	 * @group Generic
 	 * @version next
 	 */
 	val ConstFalseSpaceClassMatcher:SpaceClassMatcher[Any] = new ConstSpaceClassMatcher(false)
 	
-	/** A CostFunction with a constant (1) cost for every move. */
+	/**
+	 * A CostFunction with a constant (1) cost for every move.
+	 * @group Generic
+	 */
 	val constantCostFunction:CostFunction[Any] = new CostFunction[Any]{def apply(from:Any, to:Any):Int = 1}
 }
 
@@ -143,12 +202,16 @@ package boardGame {
 	
 	/**
 	 * A function that defines the 'cost' of moving from one space to the second space, under the assumption that two spaces are adjacent
+	 * @group Generic
 	 */
 	trait CostFunction[-A] {
 		def apply(from:A, to:A):Int
 	}
 	
-	/** A boolean match against a class */
+	/**
+	 * A boolean match against a class
+	 * @group Generic
+	 */
 	trait SpaceClassMatcher[-SpaceClass] {
 		/** Returns true if the provided space class fits the requirements of this matcher */
 		def unapply(sc:SpaceClass):Boolean
@@ -156,24 +219,36 @@ package boardGame {
 	
 	/**
 	 * A SpaceClassMatcher that always returns the specified value
+	 * @group Generic
 	 * @since next
 	 */
 	private[this] final class ConstSpaceClassMatcher(value:Boolean) extends SpaceClassMatcher[Any] {
 		def unapply(sc:Any):Boolean = value
 	}
 	
-	
+	/**
+	 * The type of index used for ElongatedTriangular fields
+	 * @group ElongatedTriangular
+	 */
 	final case class ElongatedTriangularIndex(
 		x:Int,
 		y:Int,
 		typ:ElongatedTriangularType
 	)
 	
+	/**
+	 * The third axis in an ElongatedTriangularIndex
+	 * @group ElongatedTriangular
+	 */
 	sealed trait ElongatedTriangularType
+	/**
+	 * The three instances of the [[ElongatedTriangularType]] enum
+	 * @group ElongatedTriangular
+	 */
 	object ElongatedTriangularType {
-		final object Square extends ElongatedTriangularType
-		final object NorthTri extends ElongatedTriangularType
-		final object SouthTri extends ElongatedTriangularType
+		object Square extends ElongatedTriangularType
+		object NorthTri extends ElongatedTriangularType
+		object SouthTri extends ElongatedTriangularType
 		
 		val values:Seq[ElongatedTriangularType] = Seq(
 			Square, NorthTri, SouthTri

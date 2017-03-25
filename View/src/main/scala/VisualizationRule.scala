@@ -22,16 +22,23 @@ import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.boardGame.Tiling
 
 /**
- * A single rule for associating images with spots on a RectangularTiling
+ * A single rule for associating images with spots on a Tiling
+ * 
+ * @group VisualizationRuleTilesheet
  * 
  * @since next
  * @tparam SpaceClass the types of spaces to deal with
- * @tparam ImagePart icon parts
+ * @tparam Index the index used to specify a space in a tiling
+ * @tparam IconPart icon parts
  */
 abstract class VisualizationRule[SpaceClass, Index, IconPart] {
 	
 	/**
-	 * Returns the images to be used if this visualization rule applies 
+	 * Returns the images to be used if this visualization rule applies
+	 *
+	 * The map key is the 'layer', where layers with greater numbers cover
+	 * layers with lower numbers (and the "token layer" is zero). The map
+	 * value is a sequence of IconParts to be played in an animation.
 	 */
 	def iconParts:Map[Int, Seq[IconPart]]
 	

@@ -5,11 +5,33 @@ import scala.collection.immutable.Seq
 /**
  * A tile in an elongated triangular tiling
  * @tparam SpaceClass the type of domain object representing the properties of this space 
+ * @group ElongatedTriangular
  */
-sealed trait StrictElongatedTriangularSpace[SpaceClass] extends Space[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]]
+sealed trait StrictElongatedTriangularSpace[SpaceClass] extends Space[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
+	import StrictElongatedTriangularSpace._
+	
+	/**
+	 * Applies the function that matches this's type to this
+	 * 
+	 * @param sf the function to apply if this is a Square
+	 * @param nf the function to apply if this is a Triangle1
+	 * @param df the function to apply if this is a Triangle2
+	 * @return the results of applying the corresponding function
+	 */
+	final def fold[A](
+		  sf:Function1[Square[SpaceClass], A]
+		, nf:Function1[Triangle1[SpaceClass], A]
+		, df:Function1[Triangle2[SpaceClass], A]
+	) = this match {
+		case x:Square[SpaceClass] => sf(x)
+		case x:Triangle1[SpaceClass] => nf(x)
+		case x:Triangle2[SpaceClass] => df(x)
+	}
+}
 
 /**
  * The three types of [[StrictElongatedTriangularSpace]]s
+ * @group ElongatedTriangular
  */
 object StrictElongatedTriangularSpace {
 	/**

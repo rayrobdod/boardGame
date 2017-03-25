@@ -29,7 +29,7 @@ class PackageTest extends FunSpec {
 	describe ("blankIcon") {
 		it ("returns a rectangle with the dimensions provided and a transparent fill") {
 			assertRectangleResult( new Rectangle(21, 75, Color.TRANSPARENT) ) {
-				blankIcon().asInstanceOf[Rectangle]
+				blankIcon.asInstanceOf[Rectangle]
 			}
 		}
 	}

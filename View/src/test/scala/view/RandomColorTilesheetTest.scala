@@ -27,15 +27,6 @@ import com.rayrobdod.boardGame.RectangularIndex
 class RandomColorTilesheetTest extends FunSpec {
 	
 	describe ("Default RandomColorTilesheet") {
-		it ("toString is 'Random Color: ...'") {
-			assertResult("Random Color"){
-				new RandomColorTilesheet(
-					  Swing.rgbToRectangularIcon
-					, Swing.stringIcon
-					, RectangularDimension(16,16)
-				).toString
-			}
-		}
 		it ("rng is 0") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 			
@@ -80,9 +71,6 @@ class RandomColorTilesheetTest extends FunSpec {
 				, RectangularDimension(13, 21)
 		)
 		
-		it ("toString is 'Random Color: ...'") {
-			assertResult("Random Color"){dut.toString}
-		}
 		it ("getIconFor(null, 0, 0, null)._1 is a SolidColorIcon") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 			

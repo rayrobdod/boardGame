@@ -28,9 +28,6 @@ class HashcodeColorTilesheetTest extends FunSpec {
 	
 	describe ("HashcodeColorTilesheet()") {
 		val dut = new HashcodeColorTilesheet[RectangularIndex, MyDim.type, Int]({() => -1}, {x:Color => x.getRGB & 0xFFFFFF}, MyDim)
-		it ("toString is \"HashcodeColor\"") {
-			assertResult("HashcodeColor"){dut.toString}
-		}
 		it ("getIconFor(...)._2 is transparentIcon") {
 			val field = RectangularField(Seq(Seq(1)))
 			val res = dut.getIconFor(field, (0, 0), null)._2

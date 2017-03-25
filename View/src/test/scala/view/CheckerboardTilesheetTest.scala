@@ -23,9 +23,6 @@ import java.awt.Color
 class CheckerboardTilesheetTest extends FunSpec {
 	describe ("CheckerboardTilesheet()") {
 		val dut = new CheckerboardTilesheet(() => Color.yellow, () => Color.red, () => Color.blue, new RectangularDimension(12,34))
-		it ("toString is \"Checkerboard\"") {
-			assertResult("Checkerboard"){dut.toString}
-		}
 		it ("getIconFor(null, 0, 0, null)._1 is lightIcon") {
 			assertResult(Color.red){dut.getIconFor(null, (0, 0), null)._1}
 		}

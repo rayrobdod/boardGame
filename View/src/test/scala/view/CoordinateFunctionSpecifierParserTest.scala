@@ -275,6 +275,9 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 		it ("\"true\" has a priority of 0") {
 			assertResult(0){parse("true").right.get.priority}
 		}
+		ignore ("\"false\" has a priority of ???") {
+			assertResult(???){parse("false").right.get.priority}
+		}
 		it ("\"x % 2 == 0\" has a lower priority than \"x % 4 == 0\"") {
 			val mod2 = parse("x % 2 == 0").right.get
 			val mod4 = parse("x % 4 == 0").right.get

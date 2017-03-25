@@ -26,6 +26,7 @@ import scala.collection.immutable.Seq
  * Euclidean geometry says that `this.west.east == this` and `this.north.south == this`, similarly for each other
  * direction, but this makes no specific checks to that effect.
  * 
+ * @group SpaceLike
  * @author Raymond Dodge
  * @version 4.0
  * @see [[com.rayrobdod.boardGame.RectangularField]]
@@ -54,6 +55,7 @@ trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Spac
 /**
  * A RectangularSpace with the additional requirement that every
  * adjacent space also be a StrictRectangularSpace
+ * @group Rectangular
  * @version 4.0
  */
 trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, StrictRectangularSpace[SpaceClass]] {
@@ -63,9 +65,11 @@ trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, St
  * A RectangularSpace where the values of `west`, `east`, `north` and `south` are
  * lazily evaluated from `scala.Function0`s
  * 
+ * @group SpaceLike
  * @version 4.0
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space 
+ * @tparam Repr the type of space representing every other space reachable from this space
  * @param westFuture  A function that is called to determine the result of the `west`  method
  * @param northFuture A function that is called to determine the result of the `north` method
  * @param eastFuture  A function that is called to determine the result of the `east`  method
@@ -87,6 +91,8 @@ class RectangularSpaceViaFutures[SpaceClass, Repr <: Space[SpaceClass, Repr]](
 /**
  * A StrictRectangularSpace where the values of `west`, `east`, `north` and `south` are
  * lazily evaluated from scala.Function0s
+ * 
+ * @group Rectangular
  * 
  * @version 4.0
  * @constructor

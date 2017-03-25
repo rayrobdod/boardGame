@@ -25,6 +25,8 @@ import scala.collection.immutable.LinearSeq
  * 
  * I haven't grown out of my habit of making useless collections yet…
  * 
+ * @group Unidirectional
+ * 
  * @author Raymond Dodge
  * @version 3.0.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
  */

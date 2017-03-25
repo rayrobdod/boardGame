@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 /**
  * A set of spaces which can be accessed via the specified coordinate system
  * 
+ * @group Generic
  * @tparam SpaceClass the space model
  * @tparam Index the key used to specify a space from this field
  * @tparam SpaceType the spaces contained in this tiling

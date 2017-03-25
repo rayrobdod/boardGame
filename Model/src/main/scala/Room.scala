@@ -5,6 +5,7 @@ import scala.collection.immutable.{Seq, Map}
 /**
  * A set of spaces in which 
  * 
+ * @group Generic
  * @constructor
  * @tparam SpaceClass the space model
  * @tparam Index the key used to specify a space from this field
@@ -27,6 +28,9 @@ final class Room[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
 	override def space(idx:Index):Option[SpaceType] = this.spaceClass(idx).map{sc => generator.apply(sc, idx, this)}
 }
 
+/**
+ * @group Generic
+ */
 object Room {
 	
 	trait SpaceGenerator[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]] {

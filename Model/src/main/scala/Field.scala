@@ -6,6 +6,7 @@ import scala.collection.immutable.{Seq, Map}
  * A set of spaces in which their connections are determined by the indexies
  * of spaceclasses in this field
  * 
+ * @group Generic
  * @constructor
  * @tparam SpaceClass the space model
  * @tparam Index the key used to specify a space from this field
@@ -37,6 +38,7 @@ final class Field[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
 
 /**
  * A set of built-in [[SpaceGenerator]]s which may be pulled in by Field implicitly
+ * @group Generic
  */
 object Field {
 	

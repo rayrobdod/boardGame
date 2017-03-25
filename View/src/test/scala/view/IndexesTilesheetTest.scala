@@ -29,9 +29,6 @@ class IndexesTilesheetTest extends FunSpec {
 			, {s => s}
 			, MyDim
 		)
-		it ("toString is \"IndexesTilesheet\"") {
-			assertResult("IndexesTilesheet"){dut.toString}
-		}
 		it ("getIconFor(...)._1 is light for even index") {
 			assertResult("light"){dut.getIconFor(null, (0, 0), null)._1}
 		}

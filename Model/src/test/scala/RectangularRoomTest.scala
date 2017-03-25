@@ -17,6 +17,7 @@
 */
 package com.rayrobdod.boardGame
 
+import scala.collection.immutable.Seq
 import org.scalatest.FunSpec
 
 final class RectangularRoomTest extends FunSpec

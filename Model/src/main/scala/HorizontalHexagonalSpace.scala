@@ -7,6 +7,8 @@ import scala.collection.immutable.Seq
  * 
  * $horizhexsvg
  * 
+ * @group SpaceLike
+ * 
  * @define horizhexsvg
  * 	Conceptually, the space is one like in the image:
  * 	<samp><svg width="80" height="80" viewbox="0 0 80 80" overflow="hidden" stroke="black" stroke-width="2">
@@ -54,6 +56,7 @@ trait HorizontalHexagonalSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] exte
  * 
  * $horizhexsvg
  * 
+ * @group HorizontalHexagonal
  * @since 4.0
  * @tparam SpaceClass the type of spaceclass used by this class
  */

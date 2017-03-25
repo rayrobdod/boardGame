@@ -28,6 +28,9 @@ import com.rayrobdod.json.builder.{Builder, SeqBuilder}
 import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 import VisualizationRuleBasedTilesheetBuilder.Delayed
 
+/**
+ * @group VisualizationRuleTilesheet
+ */
 final class VisualizationRuleBasedTilesheetBuilder[SpaceClass, Index, Dimension, DimensionDelay, IconPart, Icon](
 		  baseUrl:URL
 		, classMap:SpaceClassMatcherFactory[SpaceClass]
@@ -78,6 +81,9 @@ final class VisualizationRuleBasedTilesheetBuilder[SpaceClass, Index, Dimension,
 	}
 }
 
+/**
+ * @group VisualizationRuleTilesheet
+ */
 object VisualizationRuleBasedTilesheetBuilder {
 	
 	final case class Delayed[SpaceClass, Index, Dimension, DimensionDelay, IconPart, Icon] (

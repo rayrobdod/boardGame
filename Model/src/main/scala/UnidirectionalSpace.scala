@@ -26,6 +26,8 @@ import scala.collection.immutable.Seq
  * @author Raymond Dodge
  * @version 4.0
  * 
+ * @group Unidirectional
+ * 
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space
  * @param typeOfSpace the class that defines how this space interacts with Tokens.

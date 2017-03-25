@@ -21,25 +21,34 @@ import scala.util.Random
 import com.rayrobdod.boardGame.Tiling
 
 /**
- * A class that contains a method to create an image appropriate for representing
- * a particular space in a rectangular field 
+ * A function describing how to generate icons  
  * 
- * @since next
+ * @group Tilesheet
+ * 
  * @tparam SpaceClass the space types that this can provide a view for
+ * @tparam Index the index used to specify a space in a tiling
+ * @tparam Dimension the dimensions of the thlesheet's tiles
  * @tparam Icon the icon produced by this tilesheet
  */
 trait Tilesheet[-SpaceClass, Index, Dimension, Icon] {
 	/**
-	 * Finds the icon for a particular space on a RectangularTiling
-	 * @param field the field on the space to lookup
-	 * @param x the x coordinate of the space to lookup
-	 * @param y the y coordinate of the space to lookup
+	 * Finds the icon for a particular space in a Tiling
+	 * 
+	 * @param field the tiling in which to generate an icon for
+	 * @param idx the index of the space to generate an icon for
 	 * @param rng the rng
 	 * @return 
 		- the part of the image that goes below the movable controlled tokens
 		- the part of the image that goes above the movable controlled tokens
 	 */
-	def getIconFor(field:Tiling[_ <: SpaceClass, Index, _], idx:Index, rng:Random):(Icon, Icon)
+	def getIconFor(
+		  field:Tiling[_ <: SpaceClass, Index, _]
+		, idx:Index
+		, rng:Random
+	):(Icon, Icon)
 	
+	/**
+	 * the size of each tile
+	 */
 	def iconDimensions:Dimension
 }

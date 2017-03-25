@@ -25,6 +25,7 @@ import scala.collection.immutable.{Seq, Map, Vector}
 /**
  * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
  * @version 3.0.0
+ * @group VisualizationRuleTilesheet
  */
 final class VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon](
 		  name:String

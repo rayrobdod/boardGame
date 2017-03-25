@@ -26,10 +26,48 @@ import scala.language.implicitConversions
  * Basically, think the smallest subset of C-styled languages to create a boolean-returning
  * expression consisting of integer and boolean algebra.
  * 
- * Theoretically, this could use the built-in Javascript interpreter, but I don't know the security
- * implications of an action like that.
+ * In order of precedence, the supported operators are:
+ * 
+  1. Boolean And
+    - Bool && Bool ⇒ Bool
+  1. Boolean Or
+    - Bool || Bool ⇒ Bool
+  1. Integer comparison
+    - Int == Int ⇒ Bool
+    - Int != Int ⇒ Bool
+    - Int >= Int ⇒ Bool
+    - Int <= Int ⇒ Bool
+    - Int > Int ⇒ Bool
+    - Int < Int ⇒ Bool
+  1. Addition and Subtraction
+    - Int + Int ⇒ Int
+    - Int - Int ⇒ Int
+  1. Division and Multiplication
+    - Int * Int ⇒ Int
+    - Int / Int ⇒ Int
+    - Int % Int ⇒ Int
+  1. Constants and variables
+    - `true` => Bool
+    - `false` => Bool
+    - 1*DIGIT => Int
+    - anything in vars.keySet (but ideally between 'a' and 'z') => Int
+ * 
+ * This also allows optional whitespace around any token, parenthesis around any expression to change precidence
+ * 
+ * Notably, no unary not and no if statements ; however anything that can be
+ * expressed with unary-not or trinary-if should be expressable with the operators
+ * provided.
+ *  - ex: `!(a < b)` is equivalent to `a >= b`
+ *  - ex: `(a == b ? c : d)` is equivalent to `(a == b && c) || (a != b && d)`
+ * 
+ * Theoretically, this could use the built-in Javascript interpreter, but that seems like a terrible
+ * idea security-wise
+ * 
+ * @group CoordinateFunction
  * 
  * @since next
+ * @constructor
+ * @param vars a translation from variable names to a value
  */
 final class CoordinateFunctionSpecifierParser[Index](vars:Map[Char, CoordinateFunction[Index, Int]]) {
 	// apparently, scala 2.10 has trouble with finding `parserApi`
@@ -96,6 +134,9 @@ final class CoordinateFunctionSpecifierParser[Index](vars:Map[Char, CoordinateFu
 	}
 }
 
+/**
+ * @group CoordinateFunction
+ */
 object CoordinateFunctionSpecifierParser {
 	import com.rayrobdod.boardGame.RectangularIndex
 	import com.rayrobdod.boardGame.HorizontalHexagonalIndex

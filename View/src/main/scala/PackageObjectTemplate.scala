@@ -25,32 +25,67 @@ import java.awt.Color
 import java.net.URL
 
 /**
+ * Contains methods that create things specific to a rendering technology
  * 
+ * @tparam IconPart the layers that compose Icons in this rendering technology
+ * @tparam Icon the Icon type of the rendering technology
+ * 
+ * @group RendererTemplate
+ * 
+ * @contentDiagram
+ * @groupprio Icons 100
+ * @groupprio Tilesheet 200
+ * @groupprio DimensionProperties 210
+ * @groupprio Renderable 110
  */
 abstract class PackageObjectTemplate[IconPart, Icon] {
 	
-	type RenderableComponentType
-	
-	/** Returns a transparent icon of the specified size */
-	def blankIcon():Icon
-	/** Returns a solid-colored rectangular icon of the specified size */
+	/**
+	 * Returns a transparent icon
+	 * @group Icons
+	 */
+	def blankIcon:Icon
+	/**
+	 * Returns a solid-colored rectangular icon of the specified size
+	 * @group Icons
+	 */
 	def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon
-	/** Returns a solid-colored hexagonal icon of the specified size */
+	/**
+	 * Returns a solid-colored hexagonal icon of the specified size
+	 * @group Icons
+	 */
 	def rgbToHorizontalHexagonalIcon(rgb:Color, size:HorizontalHexagonalDimension):Icon
-	/** Returns an icon that displays the specified string */
+	/**
+	 * Returns an icon that displays the specified string
+	 * @group Icons
+	 */
 	def stringIcon(text:String, rgb:Color, size:RectangularDimension):Icon
-	/**  */
+	/**
+	 * 
+	 * @group Icons
+	 */
 	def compostLayers(layersWithLCMFrames:Seq[Seq[IconPart]]):Icon
-	/** Reads an image from the specified URL and splits it into dimension-sized images */
+	/**
+	 * Reads an image from the specified URL and splits it into dimension-sized images
+	 * @group Icons
+	 */
 	def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[IconPart]
 	
 	
+	/**
+	 * Returns a [[view.NilTilesheet]] that uses this template's blankIcon
+	 * as it's icon
+	 * @group Tilesheet
+	 */
 	final def NilTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):NilTilesheet[ev.Index, Dimension, Icon] = {
 		new NilTilesheet[ev.Index, Dimension, Icon](
 			() => blankIcon,
 			dim
 		)
 	}
+	/**
+	 * @group Tilesheet
+	 */
 	final def HashcodeColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):HashcodeColorTilesheet[ev.Index, Dimension, Icon] = {
 		new HashcodeColorTilesheet[ev.Index, Dimension, Icon](
 			  {() => blankIcon}
@@ -58,6 +93,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 			, dim
 		)
 	}
+	/**
+	 * @group Tilesheet
+	 */
 	final def IndexesTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):IndexesTilesheet[ev.Index, Dimension, Icon] = {
 		new IndexesTilesheet(
 			{x:ev.Index => ev.rgbToIcon( ev.indexiesTilesheetColor(x), dim )},
@@ -65,6 +103,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 			dim
 		)
 	}
+	/**
+	 * @group Tilesheet
+	 */
 	final def RandomColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):RandomColorTilesheet[ev.Index, Dimension, Icon] = {
 		new RandomColorTilesheet(
 			ev.rgbToIcon _,
@@ -74,19 +115,28 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	}
 		
 	
+	/**
+	 * @group DimensionProperties
+	 */
 	trait ProbablePropertiesBasedOnDimension[Dimension] {
 		type Index
 		def rgbToIcon(c:Color, d:Dimension):Icon
 		def indexiesTilesheetColor(idx:Index):Color
 		def iconLocation:IconLocation[Index, Dimension]
 	}
-	implicit object RectangularProperties extends ProbablePropertiesBasedOnDimension[RectangularDimension] {
+	/**
+	 * @group DimensionProperties
+	 */
+	implicit final object RectangularProperties extends ProbablePropertiesBasedOnDimension[RectangularDimension] {
 		override type Index = RectangularIndex
 		override def rgbToIcon(c:Color, d:RectangularDimension):Icon = rgbToRectangularIcon(c,d)
 		override def indexiesTilesheetColor(idx:Index):Color = { if ((idx._1 + idx._2) % 2 == 0) {Color.cyan} else {Color.magenta} }
 		override def iconLocation:RectangularIconLocation.type = RectangularIconLocation
 	}
-	implicit object HorizontalHexagonalProperties extends ProbablePropertiesBasedOnDimension[HorizontalHexagonalDimension] {
+	/**
+	 * @group DimensionProperties
+	 */
+	implicit final object HorizontalHexagonalProperties extends ProbablePropertiesBasedOnDimension[HorizontalHexagonalDimension] {
 		override type Index = HorizontalHexagonalIndex
 		override def rgbToIcon(c:Color, d:HorizontalHexagonalDimension):Icon = rgbToHorizontalHexagonalIcon(c,d)
 		override def indexiesTilesheetColor(idx:Index):Color = { math.abs((idx._1 + idx._1 + idx._2) % 3) match {
@@ -99,6 +149,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	
 	
 	
+	/**
+	 * @group Tilesheet
+	 */
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
@@ -114,6 +167,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		)
 	}
 	
+	/**
+	 * @group Tilesheet
+	 */
 	final def VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
@@ -129,8 +185,14 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		)
 	}
 	
+	/**
+	 * @group Renderable
+	 */
+	type RenderableComponentType
 	
-	
+	/**
+	 * @group Renderable
+	 */
 	final def renderable[SpaceClass, Index, Dimension](
 			  field:Tiling[SpaceClass, Index, _]
 			, tilesheet:Tilesheet[SpaceClass, Index, Dimension, Icon]
@@ -149,6 +211,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		(( this.renderable(top, tilesheet.iconDimensions), this.renderable(bot, tilesheet.iconDimensions) ))
 	}
 	
+	/**
+	 * @group Renderable
+	 */
 	def renderable[Index, Dimension](
 			  tiles:Map[Index, Icon]
 			, dimension:Dimension

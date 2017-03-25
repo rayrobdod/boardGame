@@ -3,20 +3,37 @@
 [![Coverage Status](https://coveralls.io/repos/rayrobdod/boardGame/badge.svg?branch=master&service=github)](https://coveralls.io/github/rayrobdod/boardGame?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/vtv458lxe8cd54rv/branch/master?svg=true)](https://ci.appveyor.com/project/rayrobdod/boardgame/branch/master)
 
-In short, a model for tile-based games, and views for those games.
+A model and rendering engine for tile-based games
 
-The model is designed to be agnostic to the number of connections between tiles
-(e.g. it should handle hex, square, and more exotic forms equally well), but
-does have special forms for square and hex. 
+The libraries abstract over
 
-but as I've only used the square models personally, this only contains a view
-for rectangular boards.
+* Space data (tparams: SpaceClass)
+* Shape of the space (tparams: Repr / SpaceType, Index, Dimension)
+* Rendering tecnhology (tparams: Icon, IconPart, Component)
 
+### Space data
 
-## Build Instructions
-This repository uses [sbt](http://www.scala-sbt.org/) as its build tool.
+This is treated as entirely user-defined.
 
-The dependencies can be found by sbt automatically, but only scala itself is
-used something other than some kind of testing harness.
+The intention is that this describes the properties of the space – what is
+allowed to enter the space, how much extra defense a unit gets for standing on
+the space, things like that.
+
+The not-trivial tilesheet is based on
+[View-Tile Rulesets](http://www.squidi.net/three/entry.php?id=166);
+I'd recommend against including "use tile \#38" as a part of this data.
+
+### Shape
+
+There are subclasses of Space which have methods to describe the adjacent space
+in each direction. RectangularSpaces have `north`, `south`, `east` and `west`,
+for example.
+
+### Renderer
+
+Swing, JavaFx, LWJGL (theoretically), etc.
+
+Implementations of the per-renderer things are in the ViewJavaFx and ViewSwing
+subprojects, in the `view.Javafx` and `view.Swing` objects.
 
 

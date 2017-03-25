@@ -21,15 +21,31 @@ import scala.annotation.tailrec
 
 /**
  * 
+ * @groupprio Tilesheet 300
+ * @groupname TrivialTilesheet Tilesheets - Trivial
+ * @groupprio TrivialTilesheet 301
+ * @groupname VisualizationRuleTilesheet Tilesheets - Visualization Rule Based
+ * @groupprio VisualizationRuleTilesheet 302
+ * @groupprio SpaceClassMatcherFactory 500
+ * @groupprio RendererTemplate 101
+ * @groupprio IconLocation 500
+ * @groupprio Dimension 500
+ * @groupprio CoordinateFunction 500
  */
 package object view {
 	type IndexConverter[Index] = Function1[Index, Index]
 	
-	/** Least Common Multiple */
-	def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
+	/**
+	 * Least Common Multiple
+	 * @group utility
+	 */
+	private[view] def lcm(x:Int, y:Int):Int = x / gcd(x,y) * y
 	
-	/** Greatest Common Denominator */
-	@tailrec def gcd(x:Int, y:Int):Int = {
+	/**
+	 * Greatest Common Denominator
+	 * @group utility
+	 */
+	@tailrec private[view] def gcd(x:Int, y:Int):Int = {
 		if (y == 1) {1} else
 		if (x == 1) {1} else
 		if (x == y) {x} else
@@ -38,7 +54,10 @@ package object view {
 	}
 	
 	
-	/** Functions that specify the screen positions of tiles in a Rectangular Tiling  */
+	/**
+	 * Functions that specify the screen positions of tiles in a Rectangular Tiling
+	 * @group IconLocation
+	 */
 	implicit object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
 		
 		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
@@ -56,7 +75,10 @@ package object view {
 		))
 	}
 	
-	/** Functions that specify the screen positions of tiles in a Horizontal Hexagonal Tiling  */
+	/**
+	 * Functions that specify the screen positions of tiles in a Horizontal Hexagonal Tiling
+	 * @group IconLocation
+	 */
 	implicit object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
 		
 		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
@@ -116,31 +138,49 @@ package object view {
 }
 
 package view {
+	/**
+	 * A function that takes a string and converts it into a SpaceClassMatcher
+	 * @group SpaceClassMatcherFactory
+	 */
 	trait SpaceClassMatcherFactory[-SpaceClass] {
 		def apply(reference:String):SpaceClassMatcher[SpaceClass]
 	}
 	
-	/** A tilesheet which will always return the Icon specified in the constructor */
+	/**
+	 * A tilesheet which will always return the Icon specified in the constructor
+	 * @group TrivialTilesheet
+	 */
 	final class NilTilesheet[Index, Dimension, Icon](
 			  private[this] val tile:Function0[Icon]
 			, override val iconDimensions:Dimension
 	) extends Tilesheet[Any, Index, Dimension, Icon] {
-		override def toString:String = "NilTilesheet"
 		override def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
 	}
 	
 	
-	
+	/**
+	 * The dimensions describing a rectangular tile
+	 * @group Dimension
+	 */
 	final case class RectangularDimension(width:Int, height:Int)
 	
+	/**
+	 * The dimensions describing a horizontal hexagonal tile
+	 * @group Dimension
+	 */
 	final case class HorizontalHexagonalDimension(width:Int, height:Int, hinset:Int) {
 		val verticalOffset = height - hinset
 	}
 	
-	final case class StrictElongatedTriangularDimension(width:Int, squareHeight:Int, triangleHeight:Int)
+	/**
+	 * The dimensions describing elongated triangular tiles
+	 * @group Dimension
+	 */
+	final case class ElongatedTriangularDimension(width:Int, squareHeight:Int, triangleHeight:Int)
 	
 	/**
 	 * Functions that specify the screen positions of tiles in a tiling
+	 * @group IconLocation
 	 */
 	trait IconLocation[Index, Dimension] {
 		/** A bounding box for the tile at `idx`  */

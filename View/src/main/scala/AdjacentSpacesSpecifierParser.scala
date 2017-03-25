@@ -20,16 +20,36 @@ package com.rayrobdod.boardGame.view
 import fastparse.all._
 import scala.language.implicitConversions
 import com.rayrobdod.boardGame.{SpaceClassMatcher, ConstFalseSpaceClassMatcher}
-import com.rayrobdod.boardGame.view.{SpaceClassMatcherFactory => RootSpaceClassMatcherFactory}
 
 /**
- * A parser that converts AdjacentSpacesSpecifier strings into [[SpaceClassMatcher]]s.
+ * A parser that converts AdjacentSpacesSpecifier strings into
+ * [[com.rayrobdod.boardGame.SpaceClassMatcher SpaceClassMatcher]]s.
  * 
  * a AdjacentSpacesSpecifier is a string that consists of a sequence of SpaceClassIdentifiers,
- * possibly prepended by "NOT", separated by "AND" or "OR", and with mandatory whitespace
+ * each identifier potentially prepended by "NOT", separated by "AND" or "OR", and with mandatory whitespace
  * separating each token. There is currently no explicit grouping, and the precedence order is
  * NOT before OR before AND.
  * 
+ * Alternatively, in something like ABNF (but not quite ABNF since this isn't
+ * limited to ASCII and writing &lt;identifier&gt;'s description in ABNF is impractical):
+ * 
+ * {{{
+ * specifier  = 1*andpart
+ * andpart    = orpart *( 1*whitespace and 1*whitespace orpart )
+ * orpart     = notpart *( 1*whitespace or 1*whitespace notpart )
+ * notpart    = [ not 1*whitespace ] identifier
+ * 
+ * not        = %x4e.4f.54 ; "NOT"
+ * and        = %x41.4e.44 ; "AND"
+ * or         = %x4f.52    ; "OR"
+ * whitespace = ?? ; any character for which `java.lang.Char::isWhitespace` is true
+ *                 ; Oracle jre1.8.0_111 says %x09 / %x0a / %x0b / %x0c / %x0d / %x1c / %x1d / %x1e / %x1f / %x20 /
+ *                 ;               %x1680 / %x180e / %x2000 / %x2001 / %x2002 / %x2003 / %x2004 / %x2005 / %x2006 /
+ *                 ;                %x2008 / %x2009 / %x200a / %x2028 / %x2029 / %x205f / %x3000
+ * identifier = ?? ; a sequence of 1 or more non-whitespace characters which does not match &lt;not&gt;, &lt;and&gt; or &lt;or&gt;
+ * }}}
+ * 
+ * @group SpaceClassMatcherFactory
  * @since next
  */
 object AdjacentSpacesSpecifierParser {
@@ -54,7 +74,6 @@ object AdjacentSpacesSpecifierParser {
 				case (Left(a), _) => Left(a)
 				case (_, Left(b)) => Left(b)
 			}
-			override def toString = s"MySetOr(${MySet.this}, $rhs)"
 		}
 		/** a intersection of this and rhs */
 		final def and(rhs:MySet[A]):MySet[A] = new MySet[A]{
@@ -65,7 +84,6 @@ object AdjacentSpacesSpecifierParser {
 				case (Left(a), _) => Left(a)
 				case (_, Left(b)) => Left(b)
 			}
-			override def toString = s"MySetAnd(${MySet.this}, $rhs)"
 		}
 	}
 	/** Represents the set that contains only `value` */
@@ -74,7 +92,6 @@ object AdjacentSpacesSpecifierParser {
 		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = {
 			fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetContains(x))}
 		}
-		override def toString = s"MySetContains($value)"
 	}
 	/** Represents the set that contains all strings except `value` */
 	private[this] final class MySetAllBut[A](value:A) extends MySet[A] {
@@ -82,7 +99,6 @@ object AdjacentSpacesSpecifierParser {
 		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = {
 			fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetAllBut(x))}
 		}
-		override def toString = s"MySetAllBut($value)"
 	}
 	
 	
@@ -115,6 +131,15 @@ object AdjacentSpacesSpecifierParser {
 	// TODO: resource strings
 	private[this] final val unknownError:String = "Unknown Identifiers: "
 	
+	/**
+	 * Parse `spec` into a SpaceClassMatcher, using the format described in the class documentation
+	 * 
+	 * @param spec the string to parse
+	 * @param derefSpaceClass a partial function that takes identifiers and returns the appropriate SpaceClass
+	 * @return
+		- A right containing the parsed SpaceClassMatcher
+		- A left containing the identifiers that were in the spec but not in `derefSpaceClass`
+	 */
 	def parse[SpaceClass](spec:String, derefSpaceClass:String => Option[SpaceClass]):Either[(String,Int), SpaceClassMatcher[SpaceClass]] = {
 		parser.parse(spec).fold({(_, idx, extra) => Left(extra.toString, idx)}, {(res, idx) => 
 			res.mapOpt(derefSpaceClass)
@@ -123,8 +148,15 @@ object AdjacentSpacesSpecifierParser {
 		})
 	}
 	
-	def spaceClassMatcherFactory[SpaceClass](derefSpaceClass:String => Option[SpaceClass]):RootSpaceClassMatcherFactory[SpaceClass] = {
-		new RootSpaceClassMatcherFactory[SpaceClass] {
+	/**
+	 * Creates a SpaceClassMatcherFactory that parses strings using the format described in the class documentation 
+	 * 
+	 * If the parsing of the string fails, the Factory will return a [[com.rayrobdod.boardGame.ConstFalseSpaceClassMatcher]]
+	 * 
+	 * @param derefSpaceClass a partial function that takes identifiers and returns the appropriate SpaceClass
+	 */
+	def spaceClassMatcherFactory[SpaceClass](derefSpaceClass:String => Option[SpaceClass]):SpaceClassMatcherFactory[SpaceClass] = {
+		new SpaceClassMatcherFactory[SpaceClass] {
 			def apply(spec:String):SpaceClassMatcher[SpaceClass] = {
 				AdjacentSpacesSpecifierParser.this.parse(spec, derefSpaceClass).fold({err => ConstFalseSpaceClassMatcher}, {m => m})
 			}
