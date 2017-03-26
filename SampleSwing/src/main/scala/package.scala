@@ -250,12 +250,12 @@ package object jsonTilesheetViewer {
 		override def arbitraryField[SpaceClass](clazzTable:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, template.ElongatedTriangularProperties.Index, SpaceType[SpaceClass]] = {
 			ElongatedTriangularField( (
 				for(
-					(clazzRow, j) <- clazzTable.zipWithIndex;
-					(clazz, it) <- clazzRow.zipWithIndex
+					(clazzRow, yt) <- clazzTable.zipWithIndex;
+					(clazz, x) <- clazzRow.zipWithIndex
 				) yield {
-					val (i, t) = (it / 3, ElongatedTriangularType.values(it % 3) )
+					val (y, t) = (yt / 3, ElongatedTriangularType.values(yt % 3) )
 					
-					ElongatedTriangularIndex(i, j, t) -> clazz
+					ElongatedTriangularIndex(x, y, t) -> clazz
 				}
 			).toMap )
 		}
