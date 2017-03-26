@@ -166,6 +166,7 @@ package object jsonTilesheetViewer {
 			RectangularField(clazzTable)
 		}
 	}
+	
 	final class HorizHexNameToTilesheetDemensionType[IconPart, Icon](override val template:PackageObjectTemplate[IconPart, Icon]) extends NameToTilesheetDemensionType[IconPart, Icon] {
 		override type Dimension = HorizontalHexagonalDimension
 		override type SpaceType[SpaceClass] = StrictHorizontalHexagonalSpace[SpaceClass]
@@ -213,6 +214,55 @@ package object jsonTilesheetViewer {
 		}
 	}
 	
+	final class ElongTriNameToTilesheetDemensionType[IconPart, Icon](override val template:PackageObjectTemplate[IconPart, Icon]) extends NameToTilesheetDemensionType[IconPart, Icon] {
+		override type Dimension = ElongatedTriangularDimension
+		override type SpaceType[SpaceClass] = StrictElongatedTriangularSpace[SpaceClass]
+		override val templateProps:template.ElongatedTriangularProperties.type = template.ElongatedTriangularProperties
+		override def textIncludingDimension:ElongatedTriangularDimension = ElongatedTriangularDimension(64, 32, 32)
+		override def hashTilesheetDimension:ElongatedTriangularDimension = ElongatedTriangularDimension(32, 32, 22)
+		override def nilTilesheetDimension:ElongatedTriangularDimension = ElongatedTriangularDimension(16, 10, 8)
+		
+		override def checkerboardTilesheet(x:CheckerboardURIMatcher.CheckerboardTilesheetDelay):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
+			throw new IllegalStateException("Checkerboard doesn't support Hex tilings")
+		}
+		override def parseVisualizationRuleTilesheet(parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
+			val b = template.VisualizationRuleBasedElongatedTriangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
+			parser.parse(b, reader).fold(
+				  {x => x}
+				, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
+				, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
+			).apply(
+				{x => x}
+			)
+		}
+		
+		override def initialRotationField[SpaceClass](initialClass:SpaceClass):Tiling[SpaceClass, template.ElongatedTriangularProperties.Index, SpaceType[SpaceClass]] = {
+			ElongatedTriangularField( (
+				for(
+					j <- 0 to 6;
+					i <- 0 to 9;
+					t <- ElongatedTriangularType.values
+				) yield {
+					ElongatedTriangularIndex(i, j, t) -> initialClass
+				}
+			).toMap )
+		}
+		override def arbitraryField[SpaceClass](clazzTable:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, template.ElongatedTriangularProperties.Index, SpaceType[SpaceClass]] = {
+			ElongatedTriangularField( (
+				for(
+					(clazzRow, j) <- clazzTable.zipWithIndex;
+					(clazz, it) <- clazzRow.zipWithIndex
+				) yield {
+					val (i, t) = (it / 3, ElongatedTriangularType.values(it % 3) )
+					
+					ElongatedTriangularIndex(i, j, t) -> clazz
+				}
+			).toMap )
+		}
+		override def arbitraryField[SpaceClass](clazzTable:Map[template.ElongatedTriangularProperties.Index, SpaceClass]):Tiling[SpaceClass, template.ElongatedTriangularProperties.Index, SpaceType[SpaceClass]] = {
+			ElongatedTriangularField(clazzTable)
+		}
+	}
 	
 	def nameToRandom(s:String):Random = s match{
 		case "" => Random

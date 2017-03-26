@@ -53,17 +53,15 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
 	
-	override def rgbToHorizontalHexagonalIcon(rgb:Color, size:HorizontalHexagonalDimension):Icon = new Icon {
+	override def rgbToPolygonIcon(rgb:Color, shape:java.awt.Polygon):Icon = new Icon {
 		import java.awt.{Component, Graphics}
-		def getIconWidth:Int = size.width
-		def getIconHeight:Int = size.height
+		def getIconWidth:Int = shape.getBounds.width
+		def getIconHeight:Int = shape.getBounds.height
 		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {
 			g.setColor(rgbToColor(rgb))
-			g.fillPolygon(
-				  Array[Int](x + size.width / 2, x + size.width, x + size.width, x + size.width / 2, x, x)
-				, Array[Int](y, y + size.hinset, y + size.height - size.hinset, y + size.height, y + size.height - size.hinset, y + size.hinset)
-				, 6
-			)
+			val copy = new java.awt.Polygon(shape.xpoints, shape.ypoints, shape.npoints)
+			copy.translate(x,y)
+			g.fillPolygon(copy)
 		}
 	}
 	
@@ -124,8 +122,8 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 		val tilesInImageY = sheetImage.getHeight / tileDimension.height
 		
 		for (
-			frameX <- 0 until tilesInImageX;
-			frameY <- 0 until tilesInImageY
+			frameY <- 0 until tilesInImageY;
+			frameX <- 0 until tilesInImageX
 		) yield {
 			sheetImage.getSubimage(frameX * tileDimension.width, frameY * tileDimension.height, tileDimension.width, tileDimension.height);
 		}

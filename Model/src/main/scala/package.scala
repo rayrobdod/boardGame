@@ -234,7 +234,16 @@ package boardGame {
 		x:Int,
 		y:Int,
 		typ:ElongatedTriangularType
-	)
+	) {
+		override def toString:String = {
+			val typChar = typ match {
+				case ElongatedTriangularType.NorthTri => '▲'  
+				case ElongatedTriangularType.Square => '■'
+				case ElongatedTriangularType.SouthTri => '▼'
+			}
+			s"($x,$y,$typChar)"
+		}
+	}
 	
 	/**
 	 * The third axis in an ElongatedTriangularIndex
@@ -251,7 +260,7 @@ package boardGame {
 		object SouthTri extends ElongatedTriangularType
 		
 		val values:Seq[ElongatedTriangularType] = Seq(
-			Square, NorthTri, SouthTri
+			NorthTri, Square, SouthTri
 		)
 	}
 }

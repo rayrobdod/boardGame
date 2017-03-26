@@ -38,12 +38,12 @@ import scala.util.Random
  */
 final class HashcodeColorTilesheet[Index, Dimension, Icon](
 	  transparentIcon:Function0[Icon]
-	, colorToIcon:Function1[java.awt.Color, Icon]
+	, colorToIcon:Function2[java.awt.Color, Index, Icon]
 	, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
 	
 	def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
-		(( colorToIcon(getColorFor(f,xy)), transparentIcon() ))
+		(( colorToIcon(getColorFor(f,xy), xy), transparentIcon() ))
 	}
 	
 	private[this] def getColorFor(f:Tiling[_ <: Any, Index, _], xy:Index):java.awt.Color = {

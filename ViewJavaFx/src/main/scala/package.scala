@@ -45,15 +45,13 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	
 	override def rgbToRectangularIcon(rgb:AwtColor, size:RectangularDimension):Node = new Rectangle(size.width, size.height, rgbToColor(rgb))
 	
-	override def rgbToHorizontalHexagonalIcon(rgb:AwtColor, dim:HorizontalHexagonalDimension):Node = {
-		val retVal = new javafx.scene.shape.Polygon(
-			dim.width / 2, 0,
-			dim.width, dim.hinset,
-			dim.width, dim.height - dim.hinset,
-			dim.width / 2, dim.height,
-			0, dim.height - dim.hinset,
-			0, dim.hinset
-		)
+	override def rgbToPolygonIcon(rgb:AwtColor, shape:java.awt.Polygon):Node = {
+		val points = shape.xpoints.take(shape.npoints)
+			.zip(shape.ypoints.take(shape.npoints))
+			.flatMap{xy => Seq(xy._1, xy._2)}
+			.map{_.doubleValue}
+		
+		val retVal = new javafx.scene.shape.Polygon(points:_*)
 		retVal.setFill( rgbToColor(rgb) )
 		retVal
 	}
@@ -103,8 +101,8 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	override def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[Image] = {
 		val sheetImage:Image = new Image(sheetUrl.toString)
 		
-		(0 to (sheetImage.getWidth.intValue - tileDimension.width) by tileDimension.width).flatMap{x:Int =>
-			(0 to (sheetImage.getHeight.intValue - tileDimension.height) by tileDimension.height).map{y:Int =>
+		(0 to (sheetImage.getHeight.intValue - tileDimension.height) by tileDimension.height).flatMap{y:Int =>
+			(0 to (sheetImage.getWidth.intValue - tileDimension.width) by tileDimension.width).map{x:Int =>
 				val retVal = new WritableImage(tileDimension.width, tileDimension.height)
 				retVal.getPixelWriter().setPixels(
 					0, 0,

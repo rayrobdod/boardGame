@@ -140,6 +140,7 @@ final class CoordinateFunctionSpecifierParser[Index](vars:Map[Char, CoordinateFu
 object CoordinateFunctionSpecifierParser {
 	import com.rayrobdod.boardGame.RectangularIndex
 	import com.rayrobdod.boardGame.HorizontalHexagonalIndex
+	import com.rayrobdod.boardGame.ElongatedTriangularIndex
 	
 	val rectangularVars:Map[Char, CoordinateFunction[RectangularIndex, Int]] = Map(
 		'x' -> new CoordinateFunction[RectangularIndex, Int]{def apply(xy:(Int, Int)) = xy._1; override def toString = "x"},
@@ -149,5 +150,22 @@ object CoordinateFunctionSpecifierParser {
 	val hexagonalVars:Map[Char, CoordinateFunction[HorizontalHexagonalIndex, Int]] = Map(
 		'i' -> new CoordinateFunction[HorizontalHexagonalIndex, Int]{def apply(ij:(Int, Int)) = ij._1; override def toString = "i"},
 		'j' -> new CoordinateFunction[HorizontalHexagonalIndex, Int]{def apply(ij:(Int, Int)) = ij._2; override def toString = "j"}
+	)
+	
+	val elongatedTriangularVars:Map[Char, CoordinateFunction[ElongatedTriangularIndex, Int]] = Map(
+		'x' -> new CoordinateFunction[ElongatedTriangularIndex, Int]{
+			override def apply(idx:ElongatedTriangularIndex) = idx.x
+			override def toString = "x"
+		},
+		'y' -> new CoordinateFunction[ElongatedTriangularIndex, Int]{
+			override def apply(idx:ElongatedTriangularIndex) = idx.y
+			override def toString = "y"
+		},
+		't' -> new CoordinateFunction[ElongatedTriangularIndex, Int]{
+			override def apply(idx:ElongatedTriangularIndex) = {
+				com.rayrobdod.boardGame.ElongatedTriangularType.values.indexOf( idx.typ )
+			}
+			override def toString = "t"
+		}
 	)
 }

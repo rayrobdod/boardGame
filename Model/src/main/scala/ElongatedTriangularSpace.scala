@@ -19,8 +19,8 @@ sealed trait StrictElongatedTriangularSpace[SpaceClass] extends Space[SpaceClass
 	 * @return the results of applying the corresponding function
 	 */
 	final def fold[A](
-		  sf:Function1[Square[SpaceClass], A]
-		, nf:Function1[Triangle1[SpaceClass], A]
+		  nf:Function1[Triangle1[SpaceClass], A]
+		, sf:Function1[Square[SpaceClass], A]
 		, df:Function1[Triangle2[SpaceClass], A]
 	) = this match {
 		case x:Square[SpaceClass] => sf(x)
@@ -50,7 +50,7 @@ object StrictElongatedTriangularSpace {
 		def south:Option[Square[SpaceClass]]
 		def northEast:Option[Triangle2[SpaceClass]]
 		def northWest:Option[Triangle2[SpaceClass]]
-		override def adjacentSpaces:Seq[StrictElongatedTriangularSpace[SpaceClass]] = Seq(south, northEast, northWest).flatMap{_.to[Seq]}
+		final override def adjacentSpaces:Seq[StrictElongatedTriangularSpace[SpaceClass]] = Seq(south, northEast, northWest).flatMap{_.to[Seq]}
 	}
 	/**
 	 * The triangle to the south of a square in an Elongated Triangular Tiling
@@ -59,6 +59,6 @@ object StrictElongatedTriangularSpace {
 		def north:Option[Square[SpaceClass]]
 		def southEast:Option[Triangle1[SpaceClass]]
 		def southWest:Option[Triangle1[SpaceClass]]
-		override def adjacentSpaces:Seq[StrictElongatedTriangularSpace[SpaceClass]] = Seq(north, southEast, southWest).flatMap{_.to[Seq]}
+		final override def adjacentSpaces:Seq[StrictElongatedTriangularSpace[SpaceClass]] = Seq(north, southEast, southWest).flatMap{_.to[Seq]}
 	}
 }

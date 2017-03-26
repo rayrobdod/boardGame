@@ -161,6 +161,22 @@ object VisualizationRuleBasedTilesheetBuilder {
 		override def finalize(x:HorizontalHexagonalDimensionDelay):HorizontalHexagonalDimension = x.build
 	}
 	
+	final class ElongatedTriangularDimensionBuilder extends FinalizableBuilder[String, JsonValue, ElongatedTriangularDimension, ElongatedTriangularDimension] {
+		override def init = ElongatedTriangularDimension(1,1,1)
+		override def apply[Input](
+				folding:ElongatedTriangularDimension,
+				key:String,
+				input:Input,
+				parser:Parser[String, JsonValue, Input]
+		):Either[(String, Int), ElongatedTriangularDimension] = key match {
+			// TODO: make keys more ElongatedTriangular-like and less Rectangular-like
+			case "tileWidth" => parser.parsePrimitive(input).right.flatMap{_.integerToEither{x => Right(folding.copy(width = x))}}
+			case "tileHeight" => parser.parsePrimitive(input).right.flatMap{_.integerToEither{x => Right(folding.copy(squareHeight = x, triangleHeight = x))}}
+			case _ => {parser.parse(ElongatedTriangularDimensionBuilder.this, input); Right(folding)}
+		}
+		override def finalize(x:ElongatedTriangularDimension):ElongatedTriangularDimension = x
+	}
+	
 	final case class HorizontalHexagonalDimensionDelay(width:Int, height:Int, verticalOffset:Int) {
 		val hinset = height - verticalOffset
 		

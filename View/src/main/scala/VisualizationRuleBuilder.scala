@@ -163,6 +163,30 @@ private object VisualizationRuleBuilder {
 		}
 	}
 	
+	def stringToElongatedTriangularIndexTranslation(s:String):Either[(String, Int), IndexConverter[ElongatedTriangularIndex]] = {
+		import java.util.regex.Pattern
+		
+		val pairPattern = Pattern.compile("""\(([\+\-]?\d+),([\+\-]?\d+)\)""")
+		val matcher = pairPattern.matcher(s)
+		if (!matcher.matches()) {
+			Left((s + " does not match pair pattern.", 0))
+		} else {
+			val firstStr = matcher.group(1)
+			val secondStr = matcher.group(2)
+			val firstInt = firstStr.toInt
+			val secondInt = secondStr.toInt
+			
+			Right( new IndexConverter[ElongatedTriangularIndex] {
+				def apply(input:ElongatedTriangularIndex):ElongatedTriangularIndex = {
+					val ElongatedTriangularIndex(inX, inY, inT) = input
+					
+					// TODO: inT deltas
+					new ElongatedTriangularIndex(inX + firstInt, inY + secondInt, inT)
+				}
+			})
+		}
+	}
+	
 	/**
 	 * Represents a state that can collect either `Int`s into a `Seq[Int]` or `(Int, Seq[Int])`
 	 * into a `Map[Int, Seq[Int]]`, but cannot change which one it is collecting   

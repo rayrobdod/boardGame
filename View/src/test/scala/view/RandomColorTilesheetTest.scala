@@ -32,7 +32,7 @@ class RandomColorTilesheetTest extends FunSpec {
 			
 			val exp = (( (("", 0, 64, 24)), (("000000", 0xFFFFFF, 64, 24)) ))
 			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
-					  {(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+					  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
 					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 					, RectangularDimension(64, 24)
 			)
@@ -44,7 +44,7 @@ class RandomColorTilesheetTest extends FunSpec {
 			
 			val exp = (( (("", 0x123456, 64, 24)), (("123456", 0xFFFFFF, 64, 24)) ))
 			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
-					  {(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+					  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
 					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 					, RectangularDimension(64, 24)
 			)
@@ -56,7 +56,7 @@ class RandomColorTilesheetTest extends FunSpec {
 			
 			val exp = (( (("", 0xFFFFFF, 64, 24)), (("ffffff", 0, 64, 24)) ))
 			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
-					  {(a,b) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+					  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
 					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 					, RectangularDimension(64, 24)
 			)
@@ -66,7 +66,7 @@ class RandomColorTilesheetTest extends FunSpec {
 	}
 	describe ("RandomColorTilesheet(13,21)") {
 		val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, javax.swing.Icon](
-				  Swing.rgbToRectangularIcon
+				  {(a,b,c) => Swing.rgbToRectangularIcon(a,b)}
 				, Swing.stringIcon
 				, RectangularDimension(13, 21)
 		)

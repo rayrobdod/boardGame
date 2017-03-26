@@ -60,6 +60,8 @@ final class InputFields(
 	def dimension:NameToTilesheetDemensionType[java.awt.Image, javax.swing.Icon] = {
 		if (horizHexButton.isSelected) {
 			new HorizHexNameToTilesheetDemensionType(Swing)
+		} else if (elongTriButton.isSelected) {
+			new ElongTriNameToTilesheetDemensionType(Swing)
 		} else { // assume rectangularButton is selected
 			new RectangularNameToTilesheetDemensionType(Swing)
 		}
@@ -136,8 +138,10 @@ final class InputFields(
 	private val orientationButtonGroup = new javax.swing.ButtonGroup
 	private val rectangularButton = new JRadioButton("Rectangular")
 	private val horizHexButton = new JRadioButton("HorizHex")
+	private val elongTriButton = new JRadioButton("ElonTri")
 	orientationButtonGroup.add(rectangularButton)
 	orientationButtonGroup.add(horizHexButton)
+	orientationButtonGroup.add(elongTriButton)
 	orientationButtonGroup.setSelected(rectangularButton.getModel, true)
 	
 	
@@ -159,6 +163,7 @@ final class InputFields(
 	panel.add({val a = new JPanel
 		a.add(rectangularButton)
 		a.add(horizHexButton)
+		a.add(elongTriButton)
 		a
 	}, endOfLine)
 	panel.add(goButton, endOfLine)

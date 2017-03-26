@@ -43,19 +43,17 @@ final class RectangularIconLocationTest extends FunSpec {
 					RectangularIconLocation.hit( ((55, 75)), RectangularDimension(20, 10) )
 				}
 			}
-			it ("do thing") {
-				for (
-					x <- (-10 to 10);
-					y <- (-10 to 10);
-					w <- (1 to 5);
-					h <- (1 to 5)
-				) {
-					assertResult(
-						(( x / w, y / h ))
-					){
-						RectangularIconLocation.hit( ((x,y)), RectangularDimension(w,h) )
-					}
-				}
+			it ("1,15  30,30") {
+				assertResult( ((0,0)) ){ RectangularIconLocation.hit( ((1, 15)), RectangularDimension(30, 30) ) }
+			}
+			it ("-1,15  30,30") {
+				assertResult( ((-1,0)) ){ RectangularIconLocation.hit( ((-1, 15)), RectangularDimension(30, 30) ) }
+			}
+			it ("15,1  30,30") {
+				assertResult( ((0,0)) ){ RectangularIconLocation.hit( ((15, 1)), RectangularDimension(30, 30) ) }
+			}
+			it ("15,-1  30,30") {
+				assertResult( ((0,-1)) ){ RectangularIconLocation.hit( ((15, -1)), RectangularDimension(30, 30) ) }
 			}
 		}
 	}

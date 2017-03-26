@@ -54,7 +54,14 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 * Returns a solid-colored hexagonal icon of the specified size
 	 * @group Icons
 	 */
-	def rgbToHorizontalHexagonalIcon(rgb:Color, size:HorizontalHexagonalDimension):Icon
+	final def rgbToHorizontalHexagonalIcon(rgb:Color, size:HorizontalHexagonalDimension):Icon = {
+		this.rgbToPolygonIcon(rgb, size.toPolygon)
+	}
+	/**
+	 * Returns a solid-colored icon of the specified
+	 * @group Icons
+	 */
+	def rgbToPolygonIcon(rgb:Color, size:java.awt.Polygon):Icon
 	/**
 	 * Returns an icon that displays the specified string
 	 * @group Icons
@@ -89,7 +96,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	final def HashcodeColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):HashcodeColorTilesheet[ev.Index, Dimension, Icon] = {
 		new HashcodeColorTilesheet[ev.Index, Dimension, Icon](
 			  {() => blankIcon}
-			, {x:Color => ev.rgbToIcon(x, dim)}
+			, {(rgb:Color, idx:ev.Index) => ev.rgbToIcon(rgb, dim, idx)}
 			, dim
 		)
 	}
@@ -98,7 +105,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 */
 	final def IndexesTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):IndexesTilesheet[ev.Index, Dimension, Icon] = {
 		new IndexesTilesheet(
-			{x:ev.Index => ev.rgbToIcon( ev.indexiesTilesheetColor(x), dim )},
+			{x:ev.Index => ev.rgbToIcon( ev.indexiesTilesheetColor(x), dim, x )},
 			{s:String => stringIcon(s, Color.black, RectangularDimension(64, 24))},
 			dim
 		)
@@ -120,7 +127,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 */
 	trait ProbablePropertiesBasedOnDimension[Dimension] {
 		type Index
-		def rgbToIcon(c:Color, d:Dimension):Icon
+		def rgbToIcon(c:Color, d:Dimension, i:Index):Icon
 		def indexiesTilesheetColor(idx:Index):Color
 		def iconLocation:IconLocation[Index, Dimension]
 	}
@@ -129,7 +136,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 */
 	implicit final object RectangularProperties extends ProbablePropertiesBasedOnDimension[RectangularDimension] {
 		override type Index = RectangularIndex
-		override def rgbToIcon(c:Color, d:RectangularDimension):Icon = rgbToRectangularIcon(c,d)
+		override def rgbToIcon(c:Color, d:RectangularDimension, i:Index):Icon = rgbToRectangularIcon(c,d)
 		override def indexiesTilesheetColor(idx:Index):Color = { if ((idx._1 + idx._2) % 2 == 0) {Color.cyan} else {Color.magenta} }
 		override def iconLocation:RectangularIconLocation.type = RectangularIconLocation
 	}
@@ -138,13 +145,39 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 */
 	implicit final object HorizontalHexagonalProperties extends ProbablePropertiesBasedOnDimension[HorizontalHexagonalDimension] {
 		override type Index = HorizontalHexagonalIndex
-		override def rgbToIcon(c:Color, d:HorizontalHexagonalDimension):Icon = rgbToHorizontalHexagonalIcon(c,d)
+		override def rgbToIcon(c:Color, d:HorizontalHexagonalDimension, i:Index):Icon = rgbToHorizontalHexagonalIcon(c,d)
 		override def indexiesTilesheetColor(idx:Index):Color = { math.abs((idx._1 + idx._1 + idx._2) % 3) match {
 			case 0 => Color.cyan
 			case 1 => Color.magenta
 			case 2 => new Color(0.5f, 1.0f, 0.5f)
 		}}
 		override def iconLocation:HorizontalHexagonalIconLocation.type = HorizontalHexagonalIconLocation
+	}
+	/**
+	 * @group DimensionProperties
+	 */
+	implicit final object ElongatedTriangularProperties extends ProbablePropertiesBasedOnDimension[ElongatedTriangularDimension] {
+		override type Index = ElongatedTriangularIndex
+		import ElongatedTriangularType.{NorthTri, Square, SouthTri}
+		
+		override def rgbToIcon(c:Color, d:ElongatedTriangularDimension, i:Index):Icon = i.typ match {
+			case Square => rgbToRectangularIcon(c, new RectangularDimension(d.width, d.squareHeight))
+			case NorthTri => rgbToPolygonIcon(c, d.northTriToPolygon)
+			case SouthTri => rgbToPolygonIcon(c, d.southTriToPolygon)
+		}
+		
+		override def indexiesTilesheetColor(idx:Index):Color = {
+			val hue = idx match {
+				case ElongatedTriangularIndex(x, _, Square) if x % 2 == 0 => 0.125f
+				case ElongatedTriangularIndex(x, _, Square) if x % 2 == 1 => 0.625f
+				case ElongatedTriangularIndex(_, _, NorthTri) => 0.375f
+				case ElongatedTriangularIndex(_, _, SouthTri) => 0.875f
+			}
+			
+			Color.getHSBColor(hue, 0.8f, 0.95f)
+		}
+		
+		override def iconLocation:ElongatedTriangularIconLocation.type = ElongatedTriangularIconLocation
 	}
 	
 	
@@ -182,6 +215,24 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
 			, CoordinateFunctionSpecifierParser.hexagonalVars
 			, new VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionBuilder
+		)
+	}
+	
+	/**
+	 * @group Tilesheet
+	 */
+	final def VisualizationRuleBasedElongatedTriangularTilesheetBuilder[SpaceClass](
+		baseUrl:URL,
+		classMap:SpaceClassMatcherFactory[SpaceClass]
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, ElongatedTriangularDimension, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, ElongatedTriangularDimension, IconPart, Icon](
+			  baseUrl
+			, classMap
+			, this.compostLayers _
+			, this.sheeturl2images _
+			, VisualizationRuleBuilder.stringToElongatedTriangularIndexTranslation
+			, CoordinateFunctionSpecifierParser.elongatedTriangularVars
+			, new VisualizationRuleBasedTilesheetBuilder.ElongatedTriangularDimensionBuilder
 		)
 	}
 	

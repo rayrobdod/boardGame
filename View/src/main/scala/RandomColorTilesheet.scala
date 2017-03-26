@@ -35,7 +35,7 @@ import com.rayrobdod.boardGame.Tiling
  * @tparam Icon the icon produced by this tilesheet
  */
 final class RandomColorTilesheet[Index, Dimension, Icon](
-		  colorToIcon:Function2[java.awt.Color, Dimension, Icon]
+		  colorToIcon:Function3[java.awt.Color, Dimension, Index, Icon]
 		, stringIcon:Function3[String, java.awt.Color, Dimension, Icon]
 		, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
@@ -45,7 +45,7 @@ final class RandomColorTilesheet[Index, Dimension, Icon](
 		val foreground = this.foreground(background)
 		val text = ("000000" + background.getRGB.toHexString).takeRight(6)
 		
-		(( colorToIcon(background, iconDimensions), stringIcon(text, foreground, iconDimensions) ))
+		(( colorToIcon(background, iconDimensions, x), stringIcon(text, foreground, iconDimensions) ))
 	}
 	
 	/** Find a color that contrasts with the specified background color */

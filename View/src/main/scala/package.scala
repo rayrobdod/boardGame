@@ -70,8 +70,8 @@ package object view {
 		}
 		
 		override def hit(point:(Int, Int), dim:RectangularDimension):RectangularIndex = ((
-			point._1 / dim.width,
-			point._2 / dim.height
+			divideRoundDown(point._1, dim.width),
+			divideRoundDown(point._2, dim.height)
 		))
 	}
 	
@@ -97,8 +97,11 @@ package object view {
 			
 			
 			// find the box which contains the top 2/3 of the hexagon
-			val col = coords._2 / dim.verticalOffset
-			val row = (coords._1 - (if (col % 2 == 0) {0} else {dim.width / 2})) / dim.width - col / 2
+			val col = divideRoundDown(coords._2, dim.verticalOffset)
+			val row = {
+				val adjustedX = (coords._1 - (if (col % 2 == 0) {0} else {dim.width / 2})) 
+				divideRoundDown(adjustedX, dim.width) - divideRoundDown(col, 2)
+			}
 			
 			// translate the coordinate to be relative to (row,col)'s bounding box
 			val bounds = this.bounds( ((row, col)), dim)
@@ -135,6 +138,107 @@ package object view {
 		}
 	}
 	
+	
+	/**
+	 * Functions that specify the screen positions of tiles in a Horizontal Elongated Triangular Tiling
+	 * @group IconLocation
+	 */
+	implicit object ElongatedTriangularIconLocation extends IconLocation[ElongatedTriangularIndex, ElongatedTriangularDimension] {
+		
+		override def bounds(idx:ElongatedTriangularIndex, dim:ElongatedTriangularDimension) = {
+			val ElongatedTriangularIndex(idxX, idxY, typ) = idx
+			val ElongatedTriangularDimension(width, squHeight, triHeight) = dim
+			
+			val isOddRow = (math.abs(idxY) % 2 == 1)
+			
+			val x = width * idxX + (if (isOddRow) {width / 2} else {0})
+			val y = idxY * (squHeight + triHeight) + (typ match {
+				case ElongatedTriangularType.NorthTri => 0
+				case ElongatedTriangularType.Square => triHeight
+				case ElongatedTriangularType.SouthTri => triHeight + squHeight
+			})
+			val height = (typ match {
+				case ElongatedTriangularType.NorthTri => triHeight
+				case ElongatedTriangularType.Square => squHeight
+				case ElongatedTriangularType.SouthTri => triHeight
+			})
+			
+			new java.awt.Rectangle(x, y, width, height)
+		}
+		
+		override def hit(coords:(Int, Int), dim:ElongatedTriangularDimension) = {
+			// Using the 'geometric rectangle-and-two-triangles' approach
+			// high-level is described at: http://gdreflections.com/2011/02/hexagonal-grid-math.html
+			
+			
+			// find the box which contains square and top-tri
+			val ElongatedTriangularDimension(width, squHeight, triHeight) = dim
+			
+			val col = divideRoundDown(coords._2, (squHeight + triHeight))
+			val row = {
+				val adjustedX = (coords._1 - (if (col % 2 == 0) {0} else {width / 2}))
+				divideRoundDown(adjustedX, width)
+			}
+			
+			// translate the coordinate to be relative to (row,col)'s bounding box
+			val localCoords = {
+				val bounds = this.bounds( ElongatedTriangularIndex(row, col, ElongatedTriangularType.NorthTri), dim )
+				((coords._1 - bounds.x, coords._2 - bounds.y))
+			}
+			
+			if (localCoords._2 > triHeight) {
+				// inside the square
+				ElongatedTriangularIndex(row, col, ElongatedTriangularType.Square)
+				
+			} else if (localCoords._1 < dim.width / 2) {
+				// west half of triangle's bounding box
+				
+				val (x1, y1, x2, y2) = (0, triHeight, dim.width / 2.0, 0)
+				def line(x:Double):Double = ((y2 - y1) / (x2 - x1)) * x + y1 - ((y2 - y1) / (x2 - x1)) * x1
+				
+				// if coord is north of that line, then the point is in the hex northwest of the bounding box's hex, else it is in the bounding box's hex 
+				if (line(localCoords._1) >= localCoords._2) {
+					// hex northwest of bounding box
+					val drow = (if (col % 2 == 0) {-1} else {0})
+					ElongatedTriangularIndex(row + drow, col - 1, ElongatedTriangularType.SouthTri)
+				} else {
+					ElongatedTriangularIndex(row, col, ElongatedTriangularType.NorthTri)
+				}
+				
+			} else {
+				// east half of triangle's bounding box
+				
+				val (x1, y1, x2, y2) = (dim.width, triHeight, dim.width / 2.0, 0)
+				def line(x:Double):Double = ((y2 - y1) / (x2 - x1)) * x + y1 - ((y2 - y1) / (x2 - x1)) * x1
+				
+				// if coord is north of that line, then the point is in the hex northwest of the bounding box's hex, else it is in the bounding box's hex 
+				if (line(localCoords._1) >= localCoords._2) {
+					// hex northwest of bounding box
+					val drow = (if (col % 2 == 0) {0} else {1})
+					ElongatedTriangularIndex(row + drow, col - 1, ElongatedTriangularType.SouthTri)
+				} else {
+					ElongatedTriangularIndex(row, col, ElongatedTriangularType.NorthTri)
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Integer division rounds towards zero.
+	 * 
+	 * The hitbox methods want division to round down.
+	 */
+	private[this] def divideRoundDown(num:Int, denom:Int):Int = {
+		// assume denom is a physical dimension and that physical dimensions are greater than zero
+		assert(denom > 0)
+		if (num >= 0) {
+			num / denom
+		} else {
+			-1 + (num + 1) / denom
+		}
+	}
+
+	
 }
 
 package view {
@@ -170,13 +274,31 @@ package view {
 	 */
 	final case class HorizontalHexagonalDimension(width:Int, height:Int, hinset:Int) {
 		val verticalOffset = height - hinset
+		
+		val toPolygon:java.awt.Polygon = new java.awt.Polygon(
+			  Array[Int](this.width / 2, this.width, this.width, this.width / 2, 0, 0)
+			, Array[Int](0, this.hinset, this.height - this.hinset, this.height, this.height - this.hinset, this.hinset)
+			, 6
+		)
 	}
 	
 	/**
 	 * The dimensions describing elongated triangular tiles
 	 * @group Dimension
 	 */
-	final case class ElongatedTriangularDimension(width:Int, squareHeight:Int, triangleHeight:Int)
+	final case class ElongatedTriangularDimension(width:Int, squareHeight:Int, triangleHeight:Int) {
+		
+		def northTriToPolygon = new java.awt.Polygon(
+			Array[Int](0, width / 2, width),
+			Array[Int](triangleHeight, 0, triangleHeight),
+			3
+		)
+		def southTriToPolygon = new java.awt.Polygon(
+			Array[Int](0, width / 2, width),
+			Array[Int](0, triangleHeight, 0),
+			3
+		)
+	}
 	
 	/**
 	 * Functions that specify the screen positions of tiles in a tiling

@@ -59,6 +59,8 @@ final class InputFields2(
 	def dimension:NameToTilesheetDemensionType[Image, Node] = {
 		if (horizHexButton.isSelected) {
 			new HorizHexNameToTilesheetDemensionType(Javafx)
+		} else if (elongTriButton.isSelected) {
+			new ElongTriNameToTilesheetDemensionType(Javafx)
 		} else { // assume rectangularButton is selected
 			new RectangularNameToTilesheetDemensionType(Javafx)
 		}
@@ -129,9 +131,11 @@ final class InputFields2(
 	private val orientationButtonGroup = new javafx.scene.control.ToggleGroup();
 	private val rectangularButton = new javafx.scene.control.RadioButton("Rectangular");
 	private val horizHexButton = new javafx.scene.control.RadioButton("HorizHex");
+	private val elongTriButton = new javafx.scene.control.RadioButton("ElonTri");
 	rectangularButton.setToggleGroup(orientationButtonGroup);
 	rectangularButton.setSelected(true);
 	horizHexButton.setToggleGroup(orientationButtonGroup);
+	elongTriButton.setToggleGroup(orientationButtonGroup);
 	
 	
 	private val randBox = new TextField(initialRand)
@@ -159,7 +163,10 @@ final class InputFields2(
 	panel.add(fieldFileButton, 2, 1, 1, 1 )
 	panel.add(new Text("seed: "), 0, 2, 1, 1)
 	panel.add(randBox, 1, 2, 2, 1 )
-	panel.add(new javafx.scene.layout.FlowPane(rectangularButton, horizHexButton), 0, 3, 3, 1 )
+	panel.add(
+		new javafx.scene.layout.FlowPane(rectangularButton, horizHexButton, elongTriButton),
+		0, 3, 3, 1
+	)
 	panel.add(goButton, 0, 4, 3, 1 )
 }
 
