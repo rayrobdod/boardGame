@@ -22,9 +22,9 @@ import scala.collection.immutable.Seq
 
 class UnidirectionalSpaceTest extends FunSpec {
 
-	val nilSpace = new UnidirectionalSpace("nilSpace", None)
-	val aSpace = new UnidirectionalSpace("a", Some(nilSpace))
-	val bSpace = new UnidirectionalSpace("b", Some(aSpace))
+	val nilSpace = new UnidirectionalSpaceDirect("nilSpace", None)
+	val aSpace = new UnidirectionalSpaceDirect("a", Some(nilSpace))
+	val bSpace = new UnidirectionalSpaceDirect("b", Some(aSpace))
 	val spaceStringCostValue = new CostFunction[SpaceLike[String, _]]{def apply(from:SpaceLike[String, _], to:SpaceLike[String, _]) = to.typeOfSpace.toInt}
 	
 	
@@ -33,20 +33,20 @@ class UnidirectionalSpaceTest extends FunSpec {
 		describe ("adjacentSpaces") {
 			it ("is Seq.empty when nextSpace is None"){
 				val res = None
-				val src = new UnidirectionalSpace("b", res)
+				val src = new UnidirectionalSpaceDirect("b", res)
 				
 				assertResult(Seq.empty){src.adjacentSpaces}
 			}
 			it ("is Seq(_) when nextSpace is Some(_)"){
 				val res = Some(aSpace)
-				val src = new UnidirectionalSpace("b", res)
+				val src = new UnidirectionalSpaceDirect("b", res)
 				
 				assertResult(Seq(aSpace)){src.adjacentSpaces}
 			}
 		}
 		describe ("spaceAfter") {
-			val firstSpace = (0 to 39).foldRight(nilSpace){(x:Int,y:UnidirectionalSpace[String]) => new UnidirectionalSpace(x.toString, Some(y))}
-			val spaceSeq = new UnidirectionalSpaceSeq(Some(firstSpace)) 
+			val firstSpace = (0 to 39).foldRight(nilSpace){(x:Int,y:UnidirectionalSpace[String]) => new UnidirectionalSpaceDirect(x.toString, Some(y))}
+			def spaceSeq(idx:Int, sp:UnidirectionalSpace[String] = firstSpace):UnidirectionalSpace[String] = if (idx <= 0) {sp} else {spaceSeq(idx - 1, sp.next.get)}
 			
 			describe ("is this when availiableCost is 0"){
 				it (" 0") { assertResult( Some(spaceSeq( 0)) ){spaceSeq( 0).spaceAfter(0, constantCostFunction)} }
