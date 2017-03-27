@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2016  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -28,13 +28,11 @@ import javafx.application.Application
 import javafx.event.{EventHandler, ActionEvent}
 
 import com.rayrobdod.boardGame.Tiling
-import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Javafx._
 
 
 /**
- * @author Raymond Dodge
- * @todo I'd love to be able to add an ability to seed the RNG, but the tilesheets are apparently too nondeterministic.
+ * The main class for the FX Sample Viewer
  */
 final class JsonTilesheetViewer2 extends Application {
 	

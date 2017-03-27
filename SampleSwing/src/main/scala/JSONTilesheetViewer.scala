@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -29,10 +29,7 @@ import com.rayrobdod.boardGame.view.Swing._
 
 
 /**
- * A simple program using boardGame to display the results of applying a
- * rectangular tilesheet to a rectangular map
- * 
- * @version next
+ * The main class for the FX Sample Viewer
  */
 object JsonTilesheetViewer {
 	def main(args:Array[String]):Unit = {

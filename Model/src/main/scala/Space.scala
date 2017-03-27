@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import scala.collection.mutable.{Map => MMap}
 /**
  * A spot on a board game board
  * @group Generic
- * @version 4.0
  * @tparam SpaceClass the type of domain object representing the properties of this space 
  * @tparam Repr the type of space representing every other space reachable from this space
  */

@@ -1,3 +1,20 @@
+/*
+	Deduction Tactics
+	Copyright (C) 2012-2017  Raymond Dodge
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.rayrobdod.boardGame
 
 import scala.collection.immutable.{Seq, Map}
@@ -54,10 +71,10 @@ object Field {
 	implicit def rectangularSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] = new RectangularSpaceGenerator[SpaceClass]
 	
 	private final class RectangularSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] {
-		override def apply(sc:SpaceClass, index:RectangularIndex, field:Field[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]) = {
+		override def apply(sc:SpaceClass, index:RectangularIndex, field:Field[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]):StrictRectangularSpace[SpaceClass] = {
 			new MyRectangularSpace[SpaceClass](sc, index, field)
 		}
-		override def hashCode = 23
+		override def hashCode:Int = 23
 		override def equals(other:Any):Boolean = other match {
 			case other2:RectangularSpaceGenerator[_] => true
 			case _ => false
@@ -92,15 +109,20 @@ object Field {
 	implicit def horizontalHexagonalSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]] = new HorizontalHexagonalSpaceGenerator[SpaceClass]
 	
 	private final class HorizontalHexagonalSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]] {
-		override def apply(sc:SpaceClass, index:HorizontalHexagonalIndex, field:Field[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]) = {
+		override def apply(
+			  sc:SpaceClass
+			, index:HorizontalHexagonalIndex
+			, field:Field[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
+		):StrictHorizontalHexagonalSpace[SpaceClass] = {
 			new MyHorizontalHexagonalSpace[SpaceClass](sc, index, field)
 		}
-		override def hashCode = 24
+		override def hashCode:Int = 24
 		override def equals(other:Any):Boolean = other match {
 			case other2:HorizontalHexagonalSpaceGenerator[_] => true
 			case _ => false
 		}
 	}
+	
 	private final class MyHorizontalHexagonalSpace[SpaceClass](
 			sc:SpaceClass,
 			index:HorizontalHexagonalIndex,
@@ -132,24 +154,30 @@ object Field {
 	implicit def elongatedTriangularSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]] = new ElongatedTriangularSpaceGenerator[SpaceClass]
 	
 	private final class ElongatedTriangularSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]] {
-		override def apply(sc:SpaceClass, index:ElongatedTriangularIndex, field:Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]) = {
+		override def apply(
+			  sc:SpaceClass
+			, index:ElongatedTriangularIndex
+			, field:Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
+		):StrictElongatedTriangularSpace[SpaceClass] = {
 			index.typ match {
 				case ElongatedTriangularType.Square => new MySquareElongatedTriangularSpace(sc, field, index.x, index.y)
 				case ElongatedTriangularType.NorthTri => new MyTriangle1ElongatedTriangularSpace(sc, field, index.x, index.y)
 				case ElongatedTriangularType.SouthTri => new MyTriangle2ElongatedTriangularSpace(sc, field, index.x, index.y)
 			}
 		}
-		override def hashCode = 25
+		override def hashCode:Int = 25
 		override def equals(other:Any):Boolean = other match {
 			case other2:ElongatedTriangularSpaceGenerator[_] => true
 			case _ => false
 		}
 	}
+	
 	private implicit class ElongatedTriangularFieldOps[SpaceClass](backing:Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]) {
 		def square(x:Int, y:Int):Option[StrictElongatedTriangularSpace.Square[SpaceClass]] = backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.Square)).map{sc => new MySquareElongatedTriangularSpace(sc, backing, x, y)}
 		def northTri(x:Int, y:Int):Option[StrictElongatedTriangularSpace.Triangle1[SpaceClass]] = backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.NorthTri)).map{sc => new MyTriangle1ElongatedTriangularSpace(sc, backing, x, y)}
 		def southTri(x:Int, y:Int):Option[StrictElongatedTriangularSpace.Triangle2[SpaceClass]] = backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.SouthTri)).map{sc => new MyTriangle2ElongatedTriangularSpace(sc, backing, x, y)}
 	}
+	
 	private final class MySquareElongatedTriangularSpace[SpaceClass](
 			override val typeOfSpace:SpaceClass,
 			private val field:Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]],
@@ -193,6 +221,7 @@ object Field {
 			case _ => false
 		}
 	}
+	
 	private final class MyTriangle2ElongatedTriangularSpace[SpaceClass](
 		override val typeOfSpace:SpaceClass,
 		private val field:Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]],

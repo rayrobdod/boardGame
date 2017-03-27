@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import scala.collection.immutable.{Seq, Map, Vector}
 
 /**
  * A tilesheet that aggregates RectangularVisualizationRule and acts based on those rules
- * @version 3.0.0
  * @group VisualizationRuleTilesheet
  */
 final class VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon](

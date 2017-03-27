@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -84,7 +84,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 * as it's icon
 	 * @group Tilesheet
 	 */
-	final def NilTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):NilTilesheet[ev.Index, Dimension, Icon] = {
+	final def NilTilesheet[Dimension](
+			dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]
+	):NilTilesheet[ev.Index, Dimension, Icon] = {
 		new NilTilesheet[ev.Index, Dimension, Icon](
 			() => blankIcon,
 			dim
@@ -93,7 +95,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	/**
 	 * @group Tilesheet
 	 */
-	final def HashcodeColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):HashcodeColorTilesheet[ev.Index, Dimension, Icon] = {
+	final def HashcodeColorTilesheet[Dimension](
+			dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]
+	):HashcodeColorTilesheet[ev.Index, Dimension, Icon] = {
 		new HashcodeColorTilesheet[ev.Index, Dimension, Icon](
 			  {() => blankIcon}
 			, {(rgb:Color, idx:ev.Index) => ev.rgbToIcon(rgb, dim, idx)}
@@ -103,7 +107,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	/**
 	 * @group Tilesheet
 	 */
-	final def IndexesTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):IndexesTilesheet[ev.Index, Dimension, Icon] = {
+	final def IndexesTilesheet[Dimension](
+			dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]
+	):IndexesTilesheet[ev.Index, Dimension, Icon] = {
 		new IndexesTilesheet(
 			{x:ev.Index => ev.rgbToIcon( ev.indexiesTilesheetColor(x), dim, x )},
 			{s:String => stringIcon(s, Color.black, RectangularDimension(64, 24))},
@@ -113,7 +119,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	/**
 	 * @group Tilesheet
 	 */
-	final def RandomColorTilesheet[Dimension](dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]):RandomColorTilesheet[ev.Index, Dimension, Icon] = {
+	final def RandomColorTilesheet[Dimension](
+			dim:Dimension)(implicit ev:ProbablePropertiesBasedOnDimension[Dimension]
+	):RandomColorTilesheet[ev.Index, Dimension, Icon] = {
 		new RandomColorTilesheet(
 			ev.rgbToIcon _,
 			{(s:String, rgb:Color, blarg:Dimension) => stringIcon(s, rgb, RectangularDimension(64, 24))},

@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package com.rayrobdod.jsonTilesheetViewer
 
 import java.awt.{GridBagLayout, GridBagConstraints}
 import java.awt.event.ActionListener
-import javax.swing.{Icon, JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser, JRadioButton}
+import javax.swing.{JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser, JRadioButton}
 import scala.util.Random
 import com.rayrobdod.swing.GridBagConstraintsFactory
 import com.rayrobdod.boardGame._
@@ -27,9 +27,8 @@ import com.rayrobdod.boardGame.view._
 
 
 /**
- * Holds input fields that accept user input.
- * @since 3.0.0
- * @version next
+ * The Swing Sample's input fields and the conversion from those field's contents to a displayable thing
+ * 
  * @constructor
  * @param initialTilesheetUrl the initial value for the tilesheet input field
  * @param initialFieldUrl the initial value for the field input field
@@ -51,7 +50,7 @@ final class InputFields(
 	}
 	def field(
 		  props:NameToTilesheetDemensionType[_, _]
-	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType[SpaceClass]] = {
+	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType] = {
 		nameToField(fieldUrlBox.getSelectedItem.toString, props)
 	}
 	def rng:Random = {
@@ -80,7 +79,7 @@ final class InputFields(
 	tilesheetFileChooser.setAcceptAllFileFilterUsed(true)
 	tilesheetFileChooser.setMultiSelectionEnabled(false)
 	tilesheetFileChooser.addActionListener(new java.awt.event.ActionListener {
-		def actionPerformed(e:java.awt.event.ActionEvent) = {
+		def actionPerformed(e:java.awt.event.ActionEvent):Unit = {
 			tilesheetUrlBox.setSelectedItem( tilesheetFileChooser.getSelectedFile.toURI.toString )
 		}
 	})
@@ -88,7 +87,7 @@ final class InputFields(
 	fieldFileChooser.setAcceptAllFileFilterUsed(true)
 	fieldFileChooser.setMultiSelectionEnabled(false)
 	fieldFileChooser.addActionListener(new java.awt.event.ActionListener {
-		def actionPerformed(e:java.awt.event.ActionEvent) = {
+		def actionPerformed(e:java.awt.event.ActionEvent):Unit = {
 			fieldUrlBox.setSelectedItem( fieldFileChooser.getSelectedFile.toURI.toString )
 		}
 	})

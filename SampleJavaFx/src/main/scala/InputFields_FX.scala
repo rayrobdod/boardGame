@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import com.rayrobdod.boardGame.view._
 
 
 /**
- * @since 3.0.0
+ * The FX Sample's input fields and the conversion from those field's contents to a displayable thing
  */
 final class InputFields2(
 		initialTilesheetUrl:String,
@@ -50,7 +50,7 @@ final class InputFields2(
 	}
 	def field(
 		  props:NameToTilesheetDemensionType[_, _]
-	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType[SpaceClass]] = {
+	):Tiling[SpaceClass, props.templateProps.Index, props.SpaceType] = {
 		nameToField(fieldUrlBox.getValue, props)
 	}
 	def rng:Random = {

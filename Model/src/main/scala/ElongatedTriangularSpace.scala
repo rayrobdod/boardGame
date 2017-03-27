@@ -1,3 +1,20 @@
+/*
+	Deduction Tactics
+	Copyright (C) 2012-2017  Raymond Dodge
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.rayrobdod.boardGame
 
 import scala.collection.immutable.Seq
@@ -22,7 +39,7 @@ sealed trait StrictElongatedTriangularSpace[SpaceClass] extends Space[SpaceClass
 		  nf:Function1[Triangle1[SpaceClass], A]
 		, sf:Function1[Square[SpaceClass], A]
 		, df:Function1[Triangle2[SpaceClass], A]
-	) = this match {
+	):A = this match {
 		case x:Square[SpaceClass] => sf(x)
 		case x:Triangle1[SpaceClass] => nf(x)
 		case x:Triangle2[SpaceClass] => df(x)

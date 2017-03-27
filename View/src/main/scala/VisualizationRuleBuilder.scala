@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import com.rayrobdod.json.union.{StringOrInt, JsonValue}
 
 /**
  * A Builder of VisualizationRule
- * @version next
  * @group VisualizationRuleTilesheet
  */
 final class VisualizationRuleBuilder[SpaceClass, Index, IconPart](
@@ -79,7 +78,6 @@ final class VisualizationRuleBuilder[SpaceClass, Index, IconPart](
 
 /**
  * A VisualizationRule where each of the overridable methods in represented by one of the constructor parameters
- * @version next
  * @group VisualizationRuleTilesheet
  */
 final case class ParamaterizedVisualizationRule[SpaceClass, Index, IconPart] (
@@ -241,7 +239,6 @@ private object VisualizationRuleBuilder {
 
 
 /**
- * @version next
  * @group VisualizationRuleTilesheet
  */
 private[view] object ParamaterizedVisualizationRule {

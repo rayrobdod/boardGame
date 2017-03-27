@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -27,9 +27,6 @@ import scala.collection.immutable.Seq
  * direction, but this makes no specific checks to that effect.
  * 
  * @group SpaceLike
- * @author Raymond Dodge
- * @version 4.0
- * @see [[com.rayrobdod.boardGame.RectangularField]]
  * @tparam SpaceClass the type of spaceclass used by this class
  * @tparam Repr the type of space representing every other space reachable from this space
  */
@@ -56,7 +53,6 @@ trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Spac
  * A RectangularSpace with the additional requirement that every
  * adjacent space also be a StrictRectangularSpace
  * @group Rectangular
- * @version 4.0
  */
 trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, StrictRectangularSpace[SpaceClass]] {
 }
@@ -66,7 +62,6 @@ trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, St
  * lazily evaluated from `scala.Function0`s
  * 
  * @group SpaceLike
- * @version 4.0
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space 
  * @tparam Repr the type of space representing every other space reachable from this space
@@ -94,7 +89,6 @@ class RectangularSpaceViaFutures[SpaceClass, Repr <: Space[SpaceClass, Repr]](
  * 
  * @group Rectangular
  * 
- * @version 4.0
  * @constructor
  * @tparam SpaceClass the domain object representing the properties of this space
  * @param westFuture  A function that is called to determine the result of the `west`  method
@@ -108,4 +102,6 @@ final class StrictRectangularSpaceViaFutures[SpaceClass](
 		northFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
 		eastFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
 		southFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]]
-) extends RectangularSpaceViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](typeOfSpace, westFuture, northFuture, eastFuture, southFuture) with StrictRectangularSpace[SpaceClass]
+) extends RectangularSpaceViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](
+		typeOfSpace, westFuture, northFuture, eastFuture, southFuture
+) with StrictRectangularSpace[SpaceClass]

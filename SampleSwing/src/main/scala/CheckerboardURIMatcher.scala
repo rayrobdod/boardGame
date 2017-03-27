@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import com.rayrobdod.boardGame.view.RectangularDimension
 
 /**
  * A method that converts a uri string into a matching CheckerboardTilesheet
- * @version next
  */
 object CheckerboardURIMatcher {
 	

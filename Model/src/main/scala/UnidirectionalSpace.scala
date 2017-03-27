@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@ import scala.collection.immutable.Seq
 /**
  * A [[com.rayrobdod.boardGame.Space]] in which a player can continue in only one direction.
  * 
- * @author Raymond Dodge
- * @version 4.0
- * 
  * @group Unidirectional
  * 
  * @constructor
@@ -33,8 +30,10 @@ import scala.collection.immutable.Seq
  * @param typeOfSpace the class that defines how this space interacts with Tokens.
  * @param nextSpace The space a player will continue to after this one 
  */
-final class UnidirectionalSpace[SpaceClass](override val typeOfSpace:SpaceClass, val nextSpace:Option[UnidirectionalSpace[SpaceClass]]) extends Space[SpaceClass, UnidirectionalSpace[SpaceClass]]
-{
+final class UnidirectionalSpace[SpaceClass](
+		  override val typeOfSpace:SpaceClass
+		, val nextSpace:Option[UnidirectionalSpace[SpaceClass]]
+) extends Space[SpaceClass, UnidirectionalSpace[SpaceClass]] {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
 	 */

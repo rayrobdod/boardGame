@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package com.rayrobdod.boardGame
 
 import scala.annotation.tailrec
+import java.awt.{Rectangle, Polygon}
 
 /**
  * 
@@ -60,8 +61,8 @@ package object view {
 	 */
 	implicit object RectangularIconLocation extends IconLocation[RectangularIndex, RectangularDimension] {
 		
-		override def bounds(idx:RectangularIndex, dim:RectangularDimension):java.awt.Rectangle = {
-			new java.awt.Rectangle(
+		override def bounds(idx:RectangularIndex, dim:RectangularDimension):Rectangle = {
+			new Rectangle(
 				idx._1 * dim.width,
 				idx._2 * dim.height,
 				dim.width,
@@ -81,9 +82,9 @@ package object view {
 	 */
 	implicit object HorizontalHexagonalIconLocation extends IconLocation[HorizontalHexagonalIndex, HorizontalHexagonalDimension] {
 		
-		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension) = {
+		override def bounds(idx:HorizontalHexagonalIndex, dim:HorizontalHexagonalDimension):Rectangle = {
 			val (ew, nwse) = idx
-			new java.awt.Rectangle(
+			new Rectangle(
 				dim.width * ew + (dim.width / 2) * nwse,
 				dim.verticalOffset * nwse,
 				dim.width,
@@ -91,7 +92,7 @@ package object view {
 			)
 		}
 		
-		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension) = {
+		override def hit(coords:(Int, Int), dim:HorizontalHexagonalDimension):HorizontalHexagonalIndex = {
 			// Using the 'geometric rectangle-and-two-triangles' approach
 			// high-level is described at: http://gdreflections.com/2011/02/hexagonal-grid-math.html
 			
@@ -145,7 +146,7 @@ package object view {
 	 */
 	implicit object ElongatedTriangularIconLocation extends IconLocation[ElongatedTriangularIndex, ElongatedTriangularDimension] {
 		
-		override def bounds(idx:ElongatedTriangularIndex, dim:ElongatedTriangularDimension) = {
+		override def bounds(idx:ElongatedTriangularIndex, dim:ElongatedTriangularDimension):Rectangle = {
 			val ElongatedTriangularIndex(idxX, idxY, typ) = idx
 			val ElongatedTriangularDimension(width, squHeight, triHeight) = dim
 			
@@ -163,10 +164,10 @@ package object view {
 				case ElongatedTriangularType.SouthTri => triHeight
 			})
 			
-			new java.awt.Rectangle(x, y, width, height)
+			new Rectangle(x, y, width, height)
 		}
 		
-		override def hit(coords:(Int, Int), dim:ElongatedTriangularDimension) = {
+		override def hit(coords:(Int, Int), dim:ElongatedTriangularDimension):ElongatedTriangularIndex = {
 			// Using the 'geometric rectangle-and-two-triangles' approach
 			// high-level is described at: http://gdreflections.com/2011/02/hexagonal-grid-math.html
 			
@@ -275,7 +276,7 @@ package view {
 	final case class HorizontalHexagonalDimension(width:Int, height:Int, hinset:Int) {
 		val verticalOffset = height - hinset
 		
-		val toPolygon:java.awt.Polygon = new java.awt.Polygon(
+		val toPolygon:Polygon = new Polygon(
 			  Array[Int](this.width / 2, this.width, this.width, this.width / 2, 0, 0)
 			, Array[Int](0, this.hinset, this.height - this.hinset, this.height, this.height - this.hinset, this.hinset)
 			, 6
@@ -288,12 +289,12 @@ package view {
 	 */
 	final case class ElongatedTriangularDimension(width:Int, squareHeight:Int, triangleHeight:Int) {
 		
-		def northTriToPolygon = new java.awt.Polygon(
+		def northTriToPolygon:Polygon = new Polygon(
 			Array[Int](0, width / 2, width),
 			Array[Int](triangleHeight, 0, triangleHeight),
 			3
 		)
-		def southTriToPolygon = new java.awt.Polygon(
+		def southTriToPolygon:Polygon = new Polygon(
 			Array[Int](0, width / 2, width),
 			Array[Int](0, triangleHeight, 0),
 			3
@@ -306,7 +307,7 @@ package view {
 	 */
 	trait IconLocation[Index, Dimension] {
 		/** A bounding box for the tile at `idx`  */
-		def bounds(idx:Index, dim:Dimension):java.awt.Rectangle
+		def bounds(idx:Index, dim:Dimension):Rectangle
 		/** The space which contains the `point` */
 		def hit(point:(Int, Int), dim:Dimension):Index
 	}

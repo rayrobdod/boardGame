@@ -1,6 +1,6 @@
 /*
 	Deduction Tactics
-	Copyright (C) 2012-2015  Raymond Dodge
+	Copyright (C) 2012-2017  Raymond Dodge
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@ import scala.collection.immutable.LinearSeq
  * 
  * @group Unidirectional
  * 
- * @author Raymond Dodge
- * @version 3.0.0 rename from UnaryMovementSpaceSeq to UnidirectionalSpaceSeq
  */
 final class UnidirectionalSpaceSeq[SpaceClass](override val headOption:Option[UnidirectionalSpace[SpaceClass]])
 			extends LinearSeq[UnidirectionalSpace[SpaceClass]] 
@@ -37,7 +35,8 @@ final class UnidirectionalSpaceSeq[SpaceClass](override val headOption:Option[Un
 	
 	override def head:UnidirectionalSpace[SpaceClass] = headOption.get
 	override def isEmpty:Boolean = (headOption == None) // assume no nulls, right?
-	override def tail:UnidirectionalSpaceSeq[SpaceClass] = { // TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
+	override def tail:UnidirectionalSpaceSeq[SpaceClass] = {
+		// TRYTHIS test to see if it is worth making this a lazy val: Infinite Seq is probably possible (e.g. Monopoly)
 		if (this.isEmpty) {
 			throw new UnsupportedOperationException("Cannot get tail of empty list")
 		} else {

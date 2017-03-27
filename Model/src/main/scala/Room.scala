@@ -1,3 +1,20 @@
+/*
+	Deduction Tactics
+	Copyright (C) 2012-2017  Raymond Dodge
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.rayrobdod.boardGame
 
 import scala.collection.immutable.{Seq, Map}
@@ -42,10 +59,14 @@ object Room {
 	implicit def rectangularSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] = new RectangularSpaceGenerator[SpaceClass]
 	
 	private final class RectangularSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] {
-		override def apply(sc:SpaceClass, index:RectangularIndex, field:Room[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]) = {
+		override def apply(
+				  sc:SpaceClass
+				, index:RectangularIndex
+				, field:Room[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
+		):StrictRectangularSpace[SpaceClass] = {
 			new MyRectangularSpace[SpaceClass](sc, index, field)
 		}
-		override def hashCode = 26
+		override def hashCode:Int = 26
 		override def equals(other:Any):Boolean = other match {
 			case other2:RectangularSpaceGenerator[_] => true
 			case _ => false
@@ -60,10 +81,18 @@ object Room {
 		
 		override def typeOfSpace:SpaceClass = sc
 		
-		override def west:Option[StrictRectangularSpace[SpaceClass]]  = field.warps.get( ((x - 1, y)) ).map{_.apply}.orElse(field.space((x - 1, y)))
-		override def north:Option[StrictRectangularSpace[SpaceClass]] = field.warps.get( ((x, y - 1)) ).map{_.apply}.orElse(field.space((x, y - 1)))
-		override def east:Option[StrictRectangularSpace[SpaceClass]]  = field.warps.get( ((x + 1, y)) ).map{_.apply}.orElse(field.space((x + 1, y)))
-		override def south:Option[StrictRectangularSpace[SpaceClass]] = field.warps.get( ((x, y + 1)) ).map{_.apply}.orElse(field.space((x, y + 1)))
+		override def west:Option[StrictRectangularSpace[SpaceClass]]  = {
+			field.warps.get( ((x - 1, y)) ).map{_.apply}.orElse(field.space((x - 1, y)))
+		}
+		override def north:Option[StrictRectangularSpace[SpaceClass]] = {
+			field.warps.get( ((x, y - 1)) ).map{_.apply}.orElse(field.space((x, y - 1)))
+		}
+		override def east:Option[StrictRectangularSpace[SpaceClass]]  = {
+			field.warps.get( ((x + 1, y)) ).map{_.apply}.orElse(field.space((x + 1, y)))
+		}
+		override def south:Option[StrictRectangularSpace[SpaceClass]] = {
+			field.warps.get( ((x, y + 1)) ).map{_.apply}.orElse(field.space((x, y + 1)))
+		}
 		
 		override def toString:String = s"RectangularRoom.Space(typ = $typeOfSpace, x = $x, y = $y, field = $field)"
 		override def hashCode:Int = x * 31 + y
@@ -80,10 +109,14 @@ object Room {
 	implicit def horizontalHexagonalSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]] = new HorizontalHexagonalSpaceGenerator[SpaceClass]
 	
 	private final class HorizontalHexagonalSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]] {
-		override def apply(sc:SpaceClass, index:HorizontalHexagonalIndex, field:Room[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]) = {
+		override def apply(
+				  sc:SpaceClass
+				, index:HorizontalHexagonalIndex
+				, field:Room[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
+		):StrictHorizontalHexagonalSpace[SpaceClass] = {
 			new MyHorizontalHexagonalSpace[SpaceClass](sc, index, field)
 		}
-		override def hashCode = 27
+		override def hashCode:Int = 27
 		override def equals(other:Any):Boolean = other match {
 			case other2:HorizontalHexagonalSpaceGenerator[_] => true
 			case _ => false
@@ -98,12 +131,24 @@ object Room {
 		
 		override def typeOfSpace:SpaceClass = sc
 		
-		override def northwest:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {val newidx = ((ew, nwse - 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))}
-		override def southeast:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {val newidx = ((ew, nwse + 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))}
-		override def west:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {val newidx = ((ew - 1, nwse)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))}
-		override def east:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {val newidx = ((ew + 1, nwse)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))}
-		override def northeast:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {val newidx = ((ew + 1, nwse - 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))}
-		override def southwest:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {val newidx = ((ew - 1, nwse + 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))}
+		override def northwest:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+			val newidx = ((ew, nwse - 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
+		}
+		override def southeast:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+			val newidx = ((ew, nwse + 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
+		}
+		override def west:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+			val newidx = ((ew - 1, nwse)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
+		}
+		override def east:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+			val newidx = ((ew + 1, nwse)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
+		}
+		override def northeast:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+			val newidx = ((ew + 1, nwse - 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
+		}
+		override def southwest:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+			val newidx = ((ew - 1, nwse + 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
+		}
 		
 		override def toString:String = s"HorizontalHexagonalRoom.Space(typ = $typeOfSpace, ew = $ew, nwse = $nwse, field = $field)"
 		override def hashCode:Int = ew * 31 + nwse
