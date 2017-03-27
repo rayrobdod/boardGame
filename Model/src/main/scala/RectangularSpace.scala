@@ -30,7 +30,7 @@ import scala.collection.immutable.Seq
  * @tparam SpaceClass the type of spaceclass used by this class
  * @tparam Repr the type of space representing every other space reachable from this space
  */
-trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Space[SpaceClass, Repr] {
+trait RectangularSpaceLike[SpaceClass, Repr <: SpaceLike[SpaceClass, Repr]] extends SpaceLike[SpaceClass, Repr] {
 	/** The space that is located to the west  of this space */
 	def west:Option[Repr]
 	/** The space that is located to the north of this space */
@@ -54,7 +54,7 @@ trait RectangularSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Spac
  * adjacent space also be a StrictRectangularSpace
  * @group Rectangular
  */
-trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, StrictRectangularSpace[SpaceClass]] {
+trait StrictRectangularSpace[SpaceClass] extends RectangularSpaceLike[SpaceClass, StrictRectangularSpace[SpaceClass]] {
 }
 
 /**
@@ -70,13 +70,13 @@ trait StrictRectangularSpace[SpaceClass] extends RectangularSpace[SpaceClass, St
  * @param eastFuture  A function that is called to determine the result of the `east`  method
  * @param southFuture A function that is called to determine the result of the `south` method 
  */
-class RectangularSpaceViaFutures[SpaceClass, Repr <: Space[SpaceClass, Repr]](
+class RectangularSpaceLikeViaFutures[SpaceClass, Repr <: SpaceLike[SpaceClass, Repr]](
 		val typeOfSpace:SpaceClass,
 		westFuture:Function0[Option[Repr]],
 		northFuture:Function0[Option[Repr]],
 		eastFuture:Function0[Option[Repr]],
 		southFuture:Function0[Option[Repr]]
-) extends RectangularSpace[SpaceClass, Repr] {
+) extends RectangularSpaceLike[SpaceClass, Repr] {
 	lazy override val west:Option[Repr] = westFuture()
 	lazy override val north:Option[Repr] = northFuture()
 	lazy override val east:Option[Repr] = eastFuture()
@@ -102,6 +102,6 @@ final class StrictRectangularSpaceViaFutures[SpaceClass](
 		northFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
 		eastFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
 		southFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]]
-) extends RectangularSpaceViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](
+) extends RectangularSpaceLikeViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](
 		typeOfSpace, westFuture, northFuture, eastFuture, southFuture
 ) with StrictRectangularSpace[SpaceClass]

@@ -104,8 +104,8 @@ class SpaceTest extends FunSpec {
 						assertResult(0){distance}
 					} else {
 						assert(
-							(target.asInstanceOf[RectangularSpace[(Int,Int), _]].north == Option(from)) ||
-							(target.asInstanceOf[RectangularSpace[(Int,Int), _]].west == Option(from))
+							(target.asInstanceOf[RectangularSpaceLike[(Int,Int), _]].north == Option(from)) ||
+							(target.asInstanceOf[RectangularSpaceLike[(Int,Int), _]].west == Option(from))
 						)
 						assertResult(uniformField.space((0,0)).get.distanceTo(target, constantCostFunction)){distance}
 					}
@@ -118,7 +118,7 @@ class SpaceTest extends FunSpec {
 	val uniformField = RectangularField[(Int,Int)](
 		(0 to 3).map{(a) => (0 to 3).map{(b) => ((a, b))}}
 	)
-	val unreachableSpace = new Space[Any, Nothing]() {
+	val unreachableSpace = new SpaceLike[Any, Nothing]() {
 		val typeOfSpace = "Unreachable"
 		val adjacentSpaces = Nil
 	}

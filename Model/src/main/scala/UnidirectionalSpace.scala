@@ -33,7 +33,7 @@ import scala.collection.immutable.Seq
 final class UnidirectionalSpace[SpaceClass](
 		  override val typeOfSpace:SpaceClass
 		, val nextSpace:Option[UnidirectionalSpace[SpaceClass]]
-) extends Space[SpaceClass, UnidirectionalSpace[SpaceClass]] {
+) extends SpaceLike[SpaceClass, UnidirectionalSpace[SpaceClass]] {
 	/**
 	 * Returns a singleton set containing {@link #nextSpace} iff nextSpace is not None; else returns an empty set.
 	 */

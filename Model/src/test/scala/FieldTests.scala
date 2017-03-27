@@ -4,7 +4,7 @@ import org.scalatest.FunSpec
 
 trait FieldTests { this: FunSpec =>
 	
-	def singleElementField[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
+	def singleElementField[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]](
 		name:String
 	)(	idx:Index,
 		unequalIndex:Index,

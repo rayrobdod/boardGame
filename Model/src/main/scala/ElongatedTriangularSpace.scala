@@ -24,7 +24,7 @@ import scala.collection.immutable.Seq
  * @tparam SpaceClass the type of domain object representing the properties of this space 
  * @group ElongatedTriangular
  */
-sealed trait StrictElongatedTriangularSpace[SpaceClass] extends Space[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
+sealed trait StrictElongatedTriangularSpace[SpaceClass] extends SpaceLike[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
 	import StrictElongatedTriangularSpace._
 	
 	/**
@@ -54,7 +54,7 @@ object StrictElongatedTriangularSpace {
 	/**
 	 * The square-type space in an Elongated Triangular Tiling
 	 */
-	trait Square[SpaceClass] extends StrictElongatedTriangularSpace[SpaceClass] with RectangularSpace[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
+	trait Square[SpaceClass] extends StrictElongatedTriangularSpace[SpaceClass] with RectangularSpaceLike[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
 		override def north:Option[Triangle1[SpaceClass]]
 		override def south:Option[Triangle2[SpaceClass]]
 		override def east:Option[Square[SpaceClass]]

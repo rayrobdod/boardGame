@@ -31,7 +31,7 @@ import scala.collection.immutable.{Seq, Map}
  * @param classes the mapping from indexies to space classes
  * @param generator a function which will generate the field's spaces
  */
-final class Field[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
+final class Field[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]](
 	private val classes:Map[Index, SpaceClass]
 )(implicit
 	private val generator:Field.SpaceGenerator[SpaceClass, Index, SpaceType]
@@ -62,7 +62,7 @@ object Field {
 	/**
 	 * A function that generates field spaces of a particular shape
 	 */
-	trait SpaceGenerator[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]] {
+	trait SpaceGenerator[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]] {
 		def apply(sc:SpaceClass, index:Index, field:Field[SpaceClass, Index, SpaceType]):SpaceType
 	}
 	

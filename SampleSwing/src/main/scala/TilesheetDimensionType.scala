@@ -30,7 +30,7 @@ import com.rayrobdod.boardGame.view._
 trait NameToTilesheetDemensionType[IconPart, Icon] {
 	val template:PackageObjectTemplate[IconPart, Icon]
 	type Dimension
-	type SpaceType <: Space[SpaceClass, SpaceType]
+	type SpaceType <: SpaceLike[SpaceClass, SpaceType]
 	val templateProps:template.ProbablePropertiesBasedOnDimension[Dimension]
 	def textIncludingDimension:Dimension
 	def hashTilesheetDimension:Dimension

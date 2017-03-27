@@ -27,7 +27,7 @@ import scala.collection.immutable.Seq
  * @tparam Index the key used to specify a space from this field
  * @tparam SpaceType the spaces contained in this tiling
  */
-trait Tiling[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]] {
+trait Tiling[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]] {
 	
 	/**  Returns the space at the specified index */
 	def space(idx:Index):Option[SpaceType]

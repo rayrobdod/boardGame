@@ -47,7 +47,7 @@ import scala.collection.immutable.Seq
  * @tparam SpaceClass the type of spaceclass used by this class
  * @tparam Repr the type of space representing every other space reachable from this space
  */
-trait HorizontalHexagonalSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] extends Space[SpaceClass, Repr] {
+trait HorizontalHexagonalSpaceLike[SpaceClass, Repr <: SpaceLike[SpaceClass, Repr]] extends SpaceLike[SpaceClass, Repr] {
 	/** The space that is located to the immediate northwest of this space */
 	def northwest:Option[Repr]
 	/** The space that is located to the immediate northeast of this space */
@@ -75,4 +75,4 @@ trait HorizontalHexagonalSpace[SpaceClass, Repr <: Space[SpaceClass, Repr]] exte
  * @group HorizontalHexagonal
  * @tparam SpaceClass the type of spaceclass used by this class
  */
-trait StrictHorizontalHexagonalSpace[SpaceClass] extends HorizontalHexagonalSpace[SpaceClass, StrictHorizontalHexagonalSpace[SpaceClass]]
+trait StrictHorizontalHexagonalSpace[SpaceClass] extends HorizontalHexagonalSpaceLike[SpaceClass, StrictHorizontalHexagonalSpace[SpaceClass]]

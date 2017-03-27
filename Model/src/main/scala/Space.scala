@@ -26,7 +26,7 @@ import scala.collection.mutable.{Map => MMap}
  * @tparam SpaceClass the type of domain object representing the properties of this space 
  * @tparam Repr the type of space representing every other space reachable from this space
  */
-trait Space[SpaceClass, Repr <: Space[SpaceClass, Repr]] {
+trait SpaceLike[SpaceClass, Repr <: SpaceLike[SpaceClass, Repr]] {
 	/**
 	 * the domain object  representing the properties of this space 
 	 */

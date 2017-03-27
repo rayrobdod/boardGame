@@ -31,7 +31,7 @@ import scala.collection.immutable.{Seq, Map}
  * @param warps the replacement targets after entering the space with the specified index
  * @param generator a function which will generate the field's spaces
  */
-final class Room[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
+final class Room[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]](
 	classes:Map[Index, SpaceClass],
 	private[Room] val warps:Map[Index, Function0[SpaceType]]
 )(implicit
@@ -50,7 +50,7 @@ final class Room[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
  */
 object Room {
 	
-	trait SpaceGenerator[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]] {
+	trait SpaceGenerator[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]] {
 		def apply(sc:SpaceClass, index:Index, field:Room[SpaceClass, Index, SpaceType]):SpaceType
 	}
 	

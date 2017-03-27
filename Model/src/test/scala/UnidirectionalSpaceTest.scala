@@ -25,7 +25,7 @@ class UnidirectionalSpaceTest extends FunSpec {
 	val nilSpace = new UnidirectionalSpace("nilSpace", None)
 	val aSpace = new UnidirectionalSpace("a", Some(nilSpace))
 	val bSpace = new UnidirectionalSpace("b", Some(aSpace))
-	val spaceStringCostValue = new CostFunction[Space[String, _]]{def apply(from:Space[String, _], to:Space[String, _]) = to.typeOfSpace.toInt}
+	val spaceStringCostValue = new CostFunction[SpaceLike[String, _]]{def apply(from:SpaceLike[String, _], to:SpaceLike[String, _]) = to.typeOfSpace.toInt}
 	
 	
 	

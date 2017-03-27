@@ -4,7 +4,7 @@ import org.scalatest.FunSpec
 
 trait RoomTests { this: FunSpec =>
 	
-	def singleElementRoom[SpaceClass, Index, SpaceType <: Space[SpaceClass, SpaceType]](
+	def singleElementRoom[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]](
 		name:String
 	)(	idx:Index,
 		unequalIndex:Index,
