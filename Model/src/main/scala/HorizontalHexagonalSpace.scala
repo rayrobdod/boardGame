@@ -20,7 +20,7 @@ package com.rayrobdod.boardGame
 import scala.collection.immutable.Seq
 
 /**
- * A "pointy-topped" hexagon-shaped [[com.rayrobdod.boardGame.Space]]
+ * A "pointy-topped" hexagon-shaped [[com.rayrobdod.boardGame.SpaceLike]]
  * 
  * $horizhexsvg
  * 
@@ -67,12 +67,12 @@ trait HorizontalHexagonalSpaceLike[SpaceClass, Repr <: SpaceLike[SpaceClass, Rep
 }
 
 /**
- * A "pointy-topped" hexagon-shaped [[com.rayrobdod.boardGame.Space]]
- * in which all adjacent spaces are also StrictHorizontalHexagonalSpaces
+ * A "pointy-topped" hexagon-shaped [[com.rayrobdod.boardGame.SpaceLike]]
+ * in which all adjacent spaces are also HorizontalHexagonalSpaces
  * 
  * $horizhexsvg
  * 
  * @group HorizontalHexagonal
  * @tparam SpaceClass the type of spaceclass used by this class
  */
-trait StrictHorizontalHexagonalSpace[SpaceClass] extends HorizontalHexagonalSpaceLike[SpaceClass, StrictHorizontalHexagonalSpace[SpaceClass]]
+trait HorizontalHexagonalSpace[SpaceClass] extends HorizontalHexagonalSpaceLike[SpaceClass, HorizontalHexagonalSpace[SpaceClass]]

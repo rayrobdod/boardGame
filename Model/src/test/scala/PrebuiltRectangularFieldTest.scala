@@ -1,8 +1,8 @@
 package com.rayrobdod.boardGame
 
 import org.scalatest.FunSpec
-import com.rayrobdod.boardGame.{StrictRectangularSpace => SRS}
-import com.rayrobdod.boardGame.{StrictRectangularSpaceViaFutures => SRSVF}
+import com.rayrobdod.boardGame.{RectangularSpace => SRS}
+import com.rayrobdod.boardGame.{RectangularSpaceViaFutures => SRSVF}
 
 final class PrebuiltRectangularFieldTest extends FunSpec {
 	object ThreeByThree {
@@ -22,7 +22,7 @@ final class PrebuiltRectangularFieldTest extends FunSpec {
 		describe ("field(zeroZero = _.z)") {
 			val field = new PrebuiltRectangularField(ThreeByThree.z)
 			
-			def doThing( x:Int, y:Int, space:Option[StrictRectangularSpace[String]] ) {
+			def doThing( x:Int, y:Int, space:Option[RectangularSpace[String]] ) {
 				val spaceStr = space.map{_.typeOfSpace}.getOrElse{"None"}
 				it (s"space at $x,$y is _.$spaceStr") {
 					assertResult(space){field.space((x, y))}
@@ -65,7 +65,7 @@ final class PrebuiltRectangularFieldTest extends FunSpec {
 		describe ("zeroZero = _.ne") {
 			val field = new PrebuiltRectangularField(ThreeByThree.ne)
 			
-			def doThing( x:Int, y:Int, space:Option[StrictRectangularSpace[String]] ) {
+			def doThing( x:Int, y:Int, space:Option[RectangularSpace[String]] ) {
 				val spaceStr = space.map{_.typeOfSpace}.getOrElse{"None"}
 				it (s"$x,$y is _.$spaceStr") {
 					assertResult(space){field.space((x, y))}

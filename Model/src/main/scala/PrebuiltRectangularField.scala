@@ -38,11 +38,11 @@ import scala.collection.mutable.{Map => MMap}
  * @tparam SpaceClass the space model
  */
 final class PrebuiltRectangularField[SpaceClass](
-	zeroZeroSpace:StrictRectangularSpace[SpaceClass]
-) extends Tiling[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] {
-	private[this] val map:Map[(Int, Int), StrictRectangularSpace[SpaceClass]] = {
+	zeroZeroSpace:RectangularSpace[SpaceClass]
+) extends Tiling[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]] {
+	private[this] val map:Map[(Int, Int), RectangularSpace[SpaceClass]] = {
 		
-		val closed = MMap.empty[(Int, Int), StrictRectangularSpace[SpaceClass]]
+		val closed = MMap.empty[(Int, Int), RectangularSpace[SpaceClass]]
 		val open = MMap( ((0,0)) -> zeroZeroSpace )
 		
 		while (! open.isEmpty) {
@@ -80,7 +80,7 @@ final class PrebuiltRectangularField[SpaceClass](
 		closed.toMap
 	}
 	
-	override def space(xy:(Int, Int)):Option[StrictRectangularSpace[SpaceClass]] = map.get( xy )
+	override def space(xy:(Int, Int)):Option[RectangularSpace[SpaceClass]] = map.get( xy )
 	
 	override def mapIndex[A](f:((Int,Int)) => A):Seq[A] = map.keySet.to[Seq].map(f)
 	override def foreachIndex(f:((Int,Int)) => Unit):Unit = map.keySet.foreach(f)

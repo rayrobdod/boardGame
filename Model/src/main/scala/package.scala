@@ -52,38 +52,38 @@ package object boardGame {
 	 * @documentable
 	 * @group Rectangular
 	 */
-	type RectangularTiling[SpaceClass] = Tiling[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
+	type RectangularTiling[SpaceClass] = Tiling[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]]
 	/**
 	 * A Tiling of HorizontalHexagonalSpaces
 	 * @documentable
 	 * @group HorizontalHexagonal
 	 */
-	type HorizontalHexagonalTiling[SpaceClass] = Tiling[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
+	type HorizontalHexagonalTiling[SpaceClass] = Tiling[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalSpace[SpaceClass]]
 	/**
 	 * A Tiling of ElongatedTriangularSpaces
 	 * @documentable
 	 * @group ElongatedTriangular
 	 */
-	type ElongatedTriangularTiling[SpaceClass] = Tiling[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
+	type ElongatedTriangularTiling[SpaceClass] = Tiling[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularSpace[SpaceClass]]
 	
 	/**
 	 * A Field of RectangularSpaces
 	 * @documentable
 	 * @group Rectangular
 	 */
-	type RectangularField[SpaceClass] = Field[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
+	type RectangularField[SpaceClass] = Field[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]]
 	/**
 	 * A Field of HorizontalHexagonalSpaces
 	 * @documentable
 	 * @group HorizontalHexagonal
 	 */
-	type HorizontalHexagonalField[SpaceClass] = Field[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
+	type HorizontalHexagonalField[SpaceClass] = Field[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalSpace[SpaceClass]]
 	/**
 	 * A Field of ElongatedTriangularSpaces
 	 * @documentable
 	 * @group ElongatedTriangular
 	 */
-	type ElongatedTriangularField[SpaceClass] = Field[SpaceClass, ElongatedTriangularIndex, StrictElongatedTriangularSpace[SpaceClass]]
+	type ElongatedTriangularField[SpaceClass] = Field[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularSpace[SpaceClass]]
 	
 	/**
 	 * Create a Field of RectangularSpaces using the specified classes
@@ -142,7 +142,7 @@ package object boardGame {
 	 */
 	def RectangularRoom[SpaceClass](
 		classes:Map[RectangularIndex, SpaceClass],
-		warps:Map[RectangularIndex, Function0[StrictRectangularSpace[SpaceClass]]]
+		warps:Map[RectangularIndex, Function0[RectangularSpace[SpaceClass]]]
 	):RectangularTiling[SpaceClass] = {
 		new Room(classes, warps)
 	}
@@ -154,7 +154,7 @@ package object boardGame {
 	 */
 	def RectangularRoom[SpaceClass](
 		classes:Seq[Seq[SpaceClass]],
-		warps:Map[RectangularIndex, Function0[StrictRectangularSpace[SpaceClass]]]
+		warps:Map[RectangularIndex, Function0[RectangularSpace[SpaceClass]]]
 	):RectangularTiling[SpaceClass] = {
 		val remap = for (
 			(clss, j) <- classes.zipWithIndex;
@@ -172,7 +172,7 @@ package object boardGame {
 	 */
 	def HorizontalHexagonalRoom[SpaceClass](
 		classes:Map[HorizontalHexagonalIndex, SpaceClass],
-		warps:Map[HorizontalHexagonalIndex, Function0[StrictHorizontalHexagonalSpace[SpaceClass]]]
+		warps:Map[HorizontalHexagonalIndex, Function0[HorizontalHexagonalSpace[SpaceClass]]]
 	):HorizontalHexagonalTiling[SpaceClass] = {
 		new Room(classes, warps)
 	}

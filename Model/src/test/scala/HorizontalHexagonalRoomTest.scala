@@ -63,7 +63,7 @@ final class HorizontalHexagonalRoomTest extends FunSpec
 				(1,-1) -> "northeast",
 				(-1,1) -> "southwest"
 			),
-			Map.empty[RectangularIndex, Function0[StrictHorizontalHexagonalSpace[String]]]
+			Map.empty[RectangularIndex, Function0[HorizontalHexagonalSpace[String]]]
 		)
 		val center = field.space((0,0)).get
 		
@@ -88,7 +88,7 @@ final class HorizontalHexagonalRoomTest extends FunSpec
 	}
 	
 	
-	private final class NoAdjacentsHorizHexSpace(override val typeOfSpace:String) extends StrictHorizontalHexagonalSpace[String] {
+	private final class NoAdjacentsHorizHexSpace(override val typeOfSpace:String) extends HorizontalHexagonalSpace[String] {
 		override def northwest:Option[Nothing] = None
 		override def northeast:Option[Nothing] = None
 		override def southwest:Option[Nothing] = None

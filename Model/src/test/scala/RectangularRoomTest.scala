@@ -32,7 +32,7 @@ final class RectangularRoomTest extends FunSpec
 	)
 	
 	describe("A room with one space that is surrounded by warps") {
-		def targetSpaceFun(sc:String) = {() => new StrictRectangularSpaceViaFutures(sc, () => None, () => None, () => None, () => None)}
+		def targetSpaceFun(sc:String) = {() => new RectangularSpaceViaFutures(sc, () => None, () => None, () => None, () => None)}
 		
 		val field = RectangularRoom(
 			Map(
@@ -71,7 +71,7 @@ final class RectangularRoomTest extends FunSpec
 				(0,-1) -> "north",
 				(0,1) -> "south"
 			),
-			Map.empty[RectangularIndex, Function0[StrictRectangularSpace[String]]]
+			Map.empty[RectangularIndex, Function0[RectangularSpace[String]]]
 		)
 		val center = field.space((0,0)).get
 		
@@ -97,7 +97,7 @@ final class RectangularRoomTest extends FunSpec
 				Seq("west", "center", "east"),
 				Seq("sw", "south", "se")
 			),
-			Map.empty[RectangularIndex, Function0[StrictRectangularSpace[String]]]
+			Map.empty[RectangularIndex, Function0[RectangularSpace[String]]]
 		)
 		val center = field.space((1,1)).get
 		

@@ -56,14 +56,14 @@ object Room {
 	
 	
 	
-	implicit def rectangularSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] = new RectangularSpaceGenerator[SpaceClass]
+	implicit def rectangularSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]] = new RectangularSpaceGenerator[SpaceClass]
 	
-	private final class RectangularSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]] {
+	private final class RectangularSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]] {
 		override def apply(
 				  sc:SpaceClass
 				, index:RectangularIndex
-				, field:Room[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
-		):StrictRectangularSpace[SpaceClass] = {
+				, field:Room[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]]
+		):RectangularSpace[SpaceClass] = {
 			new MyRectangularSpace[SpaceClass](sc, index, field)
 		}
 		override def hashCode:Int = 26
@@ -75,22 +75,22 @@ object Room {
 	private final class MyRectangularSpace[SpaceClass](
 			sc:SpaceClass,
 			index:RectangularIndex,
-			private val field:Room[SpaceClass, RectangularIndex, StrictRectangularSpace[SpaceClass]]
-	) extends StrictRectangularSpace[SpaceClass] {
+			private val field:Room[SpaceClass, RectangularIndex, RectangularSpace[SpaceClass]]
+	) extends RectangularSpace[SpaceClass] {
 		private val (x, y) = index
 		
 		override def typeOfSpace:SpaceClass = sc
 		
-		override def west:Option[StrictRectangularSpace[SpaceClass]]  = {
+		override def west:Option[RectangularSpace[SpaceClass]]  = {
 			field.warps.get( ((x - 1, y)) ).map{_.apply}.orElse(field.space((x - 1, y)))
 		}
-		override def north:Option[StrictRectangularSpace[SpaceClass]] = {
+		override def north:Option[RectangularSpace[SpaceClass]] = {
 			field.warps.get( ((x, y - 1)) ).map{_.apply}.orElse(field.space((x, y - 1)))
 		}
-		override def east:Option[StrictRectangularSpace[SpaceClass]]  = {
+		override def east:Option[RectangularSpace[SpaceClass]]  = {
 			field.warps.get( ((x + 1, y)) ).map{_.apply}.orElse(field.space((x + 1, y)))
 		}
-		override def south:Option[StrictRectangularSpace[SpaceClass]] = {
+		override def south:Option[RectangularSpace[SpaceClass]] = {
 			field.warps.get( ((x, y + 1)) ).map{_.apply}.orElse(field.space((x, y + 1)))
 		}
 		
@@ -106,14 +106,14 @@ object Room {
 	}
 	
 	
-	implicit def horizontalHexagonalSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]] = new HorizontalHexagonalSpaceGenerator[SpaceClass]
+	implicit def horizontalHexagonalSpaceGenerator[SpaceClass]:SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalSpace[SpaceClass]] = new HorizontalHexagonalSpaceGenerator[SpaceClass]
 	
-	private final class HorizontalHexagonalSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]] {
+	private final class HorizontalHexagonalSpaceGenerator[SpaceClass] extends SpaceGenerator[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalSpace[SpaceClass]] {
 		override def apply(
 				  sc:SpaceClass
 				, index:HorizontalHexagonalIndex
-				, field:Room[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
-		):StrictHorizontalHexagonalSpace[SpaceClass] = {
+				, field:Room[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalSpace[SpaceClass]]
+		):HorizontalHexagonalSpace[SpaceClass] = {
 			new MyHorizontalHexagonalSpace[SpaceClass](sc, index, field)
 		}
 		override def hashCode:Int = 27
@@ -125,28 +125,28 @@ object Room {
 	private final class MyHorizontalHexagonalSpace[SpaceClass](
 			sc:SpaceClass,
 			index:HorizontalHexagonalIndex,
-			private val field:Room[SpaceClass, HorizontalHexagonalIndex, StrictHorizontalHexagonalSpace[SpaceClass]]
-	) extends StrictHorizontalHexagonalSpace[SpaceClass] {
+			private val field:Room[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalSpace[SpaceClass]]
+	) extends HorizontalHexagonalSpace[SpaceClass] {
 		private val (ew, nwse) = index
 		
 		override def typeOfSpace:SpaceClass = sc
 		
-		override def northwest:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+		override def northwest:Option[HorizontalHexagonalSpace[SpaceClass]] = {
 			val newidx = ((ew, nwse - 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
 		}
-		override def southeast:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+		override def southeast:Option[HorizontalHexagonalSpace[SpaceClass]] = {
 			val newidx = ((ew, nwse + 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
 		}
-		override def west:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+		override def west:Option[HorizontalHexagonalSpace[SpaceClass]] = {
 			val newidx = ((ew - 1, nwse)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
 		}
-		override def east:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+		override def east:Option[HorizontalHexagonalSpace[SpaceClass]] = {
 			val newidx = ((ew + 1, nwse)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
 		}
-		override def northeast:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+		override def northeast:Option[HorizontalHexagonalSpace[SpaceClass]] = {
 			val newidx = ((ew + 1, nwse - 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
 		}
-		override def southwest:Option[StrictHorizontalHexagonalSpace[SpaceClass]] = {
+		override def southwest:Option[HorizontalHexagonalSpace[SpaceClass]] = {
 			val newidx = ((ew - 1, nwse + 1)); field.warps.get(newidx).map{_.apply}.orElse(field.space(newidx))
 		}
 		

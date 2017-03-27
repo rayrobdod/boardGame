@@ -21,11 +21,11 @@ import org.scalatest.{FunSpec}
 
 class RectangularSpaceTest extends FunSpec {
 	
-	describe ("StrictRectangularSpaceViaFutures") {
+	describe ("RectangularSpaceViaFutures") {
 		
 		def directionTests(
-				factory:Function1[Function0[Option[StrictRectangularSpace[Int]]], StrictRectangularSpace[Int]],
-				dirFunction:Function1[StrictRectangularSpace[Int], Option[StrictRectangularSpace[Int]]]
+				factory:Function1[Function0[Option[RectangularSpace[Int]]], RectangularSpace[Int]],
+				dirFunction:Function1[RectangularSpace[Int], Option[RectangularSpace[Int]]]
 		) {
 			it ("is the result of calling the westOption parameter"){
 				val res = Some(unescapableSpace(0))
@@ -44,25 +44,25 @@ class RectangularSpaceTest extends FunSpec {
 		
 		describe ("west") {
 			directionTests(
-				{x => new StrictRectangularSpaceViaFutures(1, x, noneFuture, noneFuture, noneFuture)},
+				{x => new RectangularSpaceViaFutures(1, x, noneFuture, noneFuture, noneFuture)},
 				{x => x.west}
 			)
 		}
 		describe ("north") {
 			directionTests(
-				{x => new StrictRectangularSpaceViaFutures(1, noneFuture, x, noneFuture, noneFuture)},
+				{x => new RectangularSpaceViaFutures(1, noneFuture, x, noneFuture, noneFuture)},
 				{x => x.north}
 			)
 		}
 		describe ("east") {
 			directionTests(
-				{x => new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, x, noneFuture)},
+				{x => new RectangularSpaceViaFutures(1, noneFuture, noneFuture, x, noneFuture)},
 				{x => x.east}
 			)
 		}
 		describe ("south") {
 			directionTests(
-				{x => new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, x)},
+				{x => new RectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, x)},
 				{x => x.south}
 			)
 		}
@@ -70,31 +70,31 @@ class RectangularSpaceTest extends FunSpec {
 		
 		describe ("adjacentSpaces") {
 			describe ("when all four elements are Some") {
-				val src = new StrictRectangularSpaceViaFutures(1, unescapableSpaceFuture(34), unescapableSpaceFuture(64), unescapableSpaceFuture(134), unescapableSpaceFuture(-134))
+				val src = new RectangularSpaceViaFutures(1, unescapableSpaceFuture(34), unescapableSpaceFuture(64), unescapableSpaceFuture(134), unescapableSpaceFuture(-134))
 				
 				it ("has a length of four") { assertResult(4){src.adjacentSpaces.size} }
-				it ("contains the west value")  { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.west.get)  }
-				it ("contains the east value") { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.east.get) }
-				it ("contains the north value" ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.north.get)    }
-				it ("contains the south value" ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.south.get)  }
+				it ("contains the west value")  { assert(src.adjacentSpaces.map{x => x:RectangularSpace[Int]} contains src.west.get)  }
+				it ("contains the east value") { assert(src.adjacentSpaces.map{x => x:RectangularSpace[Int]} contains src.east.get) }
+				it ("contains the north value" ) { assert(src.adjacentSpaces.map{x => x:RectangularSpace[Int]} contains src.north.get)    }
+				it ("contains the south value" ) { assert(src.adjacentSpaces.map{x => x:RectangularSpace[Int]} contains src.south.get)  }
 			}
 			describe ("when all four elements are None") {
-				def src = new StrictRectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, noneFuture)
+				def src = new RectangularSpaceViaFutures(1, noneFuture, noneFuture, noneFuture, noneFuture)
 				
 				it ("has a length of zero") { assertResult(0){src.adjacentSpaces.size} }
 			}
 			describe ("when there is a mix of Some and None") {
-				val src = new StrictRectangularSpaceViaFutures(1, unescapableSpaceFuture(7), unescapableSpaceFuture(-345), noneFuture, noneFuture)
+				val src = new RectangularSpaceViaFutures(1, unescapableSpaceFuture(7), unescapableSpaceFuture(-345), noneFuture, noneFuture)
 				
 				it ("has a length equal to the count of Somes") { assertResult(2){src.adjacentSpaces.size} }
-				it ("contains the west value" ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.west.get) }
-				it ("contains the north value"   ) { assert(src.adjacentSpaces.map{x => x:StrictRectangularSpace[Int]} contains src.north.get)   }
+				it ("contains the west value" ) { assert(src.adjacentSpaces.map{x => x:RectangularSpace[Int]} contains src.west.get) }
+				it ("contains the north value"   ) { assert(src.adjacentSpaces.map{x => x:RectangularSpace[Int]} contains src.north.get)   }
 			}
 		}
 	}
 	
 	
 	def noneFuture = {() => None}
-	def unescapableSpace[A](typ:A) = new StrictRectangularSpaceViaFutures(typ, noneFuture, noneFuture, noneFuture, noneFuture)
+	def unescapableSpace[A](typ:A) = new RectangularSpaceViaFutures(typ, noneFuture, noneFuture, noneFuture, noneFuture)
 	def unescapableSpaceFuture[A](typ:A) = {() => Option(unescapableSpace(typ))}
 }

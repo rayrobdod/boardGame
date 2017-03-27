@@ -55,7 +55,7 @@ final class RectangularNameToTilesheetDemensionType[IconPart, Icon](
 	override val template:PackageObjectTemplate[IconPart, Icon]
 ) extends NameToTilesheetDemensionType[IconPart, Icon] {
 	override type Dimension = RectangularDimension
-	override type SpaceType = StrictRectangularSpace[SpaceClass]
+	override type SpaceType = RectangularSpace[SpaceClass]
 	override val templateProps:template.RectangularProperties.type = template.RectangularProperties
 	override def textIncludingDimension:RectangularDimension = RectangularDimension(64, 24)
 	override def hashTilesheetDimension:RectangularDimension = RectangularDimension(24, 24)
@@ -94,7 +94,7 @@ final class HorizHexNameToTilesheetDemensionType[IconPart, Icon](
 	override val template:PackageObjectTemplate[IconPart, Icon]
 ) extends NameToTilesheetDemensionType[IconPart, Icon] {
 	override type Dimension = HorizontalHexagonalDimension
-	override type SpaceType = StrictHorizontalHexagonalSpace[SpaceClass]
+	override type SpaceType = HorizontalHexagonalSpace[SpaceClass]
 	override val templateProps:template.HorizontalHexagonalProperties.type = template.HorizontalHexagonalProperties
 	override def textIncludingDimension:HorizontalHexagonalDimension = HorizontalHexagonalDimension(64, 24, 5)
 	override def hashTilesheetDimension:HorizontalHexagonalDimension = HorizontalHexagonalDimension(24, 24, 8)
@@ -153,7 +153,7 @@ final class ElongTriNameToTilesheetDemensionType[IconPart, Icon](
 	override val template:PackageObjectTemplate[IconPart, Icon]
 ) extends NameToTilesheetDemensionType[IconPart, Icon] {
 	override type Dimension = ElongatedTriangularDimension
-	override type SpaceType = StrictElongatedTriangularSpace[SpaceClass]
+	override type SpaceType = ElongatedTriangularSpace[SpaceClass]
 	override val templateProps:template.ElongatedTriangularProperties.type = template.ElongatedTriangularProperties
 	override def textIncludingDimension:ElongatedTriangularDimension = ElongatedTriangularDimension(64, 32, 32)
 	override def hashTilesheetDimension:ElongatedTriangularDimension = ElongatedTriangularDimension(32, 32, 22)

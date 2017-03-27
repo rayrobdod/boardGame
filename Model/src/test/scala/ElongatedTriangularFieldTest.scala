@@ -37,7 +37,7 @@ final class ElongatedTriangularFieldTest extends FunSpec
 		
 		describe ("the square one") {
 			val index = ElongatedTriangularIndex(0, 0, ElongatedTriangularType.Square)
-			val center = field.space(index).get.asInstanceOf[StrictElongatedTriangularSpace.Square[String]]
+			val center = field.space(index).get.asInstanceOf[ElongatedTriangularSpace.Square[String]]
 			
 			it ("is adjacent to four spaces") {
 				assertResult(4){center.adjacentSpaces.length}
@@ -57,7 +57,7 @@ final class ElongatedTriangularFieldTest extends FunSpec
 		}
 		describe ("the north tri one (even y)") {
 			val index = ElongatedTriangularIndex(0, 0, ElongatedTriangularType.NorthTri)
-			val center = field.space(index).get.asInstanceOf[StrictElongatedTriangularSpace.Triangle1[String]]
+			val center = field.space(index).get.asInstanceOf[ElongatedTriangularSpace.Triangle1[String]]
 			
 			it ("is adjacent to three spaces") {
 				assertResult(3){center.adjacentSpaces.length}
@@ -81,7 +81,7 @@ final class ElongatedTriangularFieldTest extends FunSpec
 		}
 		describe ("the north tri one (odd y)") {
 			val index = ElongatedTriangularIndex(0, 1, ElongatedTriangularType.NorthTri)
-			val center = field.space(index).get.asInstanceOf[StrictElongatedTriangularSpace.Triangle1[String]]
+			val center = field.space(index).get.asInstanceOf[ElongatedTriangularSpace.Triangle1[String]]
 			
 			it ("is adjacent to three spaces") {
 				assertResult(3){center.adjacentSpaces.length}
@@ -105,7 +105,7 @@ final class ElongatedTriangularFieldTest extends FunSpec
 		}
 		describe ("the south tri one (even y)") {
 			val index = ElongatedTriangularIndex(0, 0, ElongatedTriangularType.SouthTri)
-			val center = field.space(index).get.asInstanceOf[StrictElongatedTriangularSpace.Triangle2[String]]
+			val center = field.space(index).get.asInstanceOf[ElongatedTriangularSpace.Triangle2[String]]
 			
 			it ("is adjacent to three spaces") {
 				assertResult(3){center.adjacentSpaces.length}
@@ -129,7 +129,7 @@ final class ElongatedTriangularFieldTest extends FunSpec
 		}
 		describe ("the south tri one (odd y)") {
 			val index = ElongatedTriangularIndex(0, 1, ElongatedTriangularType.SouthTri)
-			val center = field.space(index).get.asInstanceOf[StrictElongatedTriangularSpace.Triangle2[String]]
+			val center = field.space(index).get.asInstanceOf[ElongatedTriangularSpace.Triangle2[String]]
 			
 			it ("is adjacent to three spaces") {
 				assertResult(3){center.adjacentSpaces.length}

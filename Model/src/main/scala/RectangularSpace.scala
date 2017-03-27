@@ -20,7 +20,7 @@ package com.rayrobdod.boardGame
 import scala.collection.immutable.Seq
 
 /**
- * A [[com.rayrobdod.boardGame.Space]] in a rectangular board, such that
+ * A [[com.rayrobdod.boardGame.SpaceLike]] in a rectangular board, such that
  * it can have zero or one bordering space in each of the four cardinal directions.
  * 
  * Euclidean geometry says that `this.west.east == this` and `this.north.south == this`, similarly for each other
@@ -51,10 +51,10 @@ trait RectangularSpaceLike[SpaceClass, Repr <: SpaceLike[SpaceClass, Repr]] exte
 
 /**
  * A RectangularSpace with the additional requirement that every
- * adjacent space also be a StrictRectangularSpace
+ * adjacent space also be a RectangularSpace
  * @group Rectangular
  */
-trait StrictRectangularSpace[SpaceClass] extends RectangularSpaceLike[SpaceClass, StrictRectangularSpace[SpaceClass]] {
+trait RectangularSpace[SpaceClass] extends RectangularSpaceLike[SpaceClass, RectangularSpace[SpaceClass]] {
 }
 
 /**
@@ -84,7 +84,7 @@ class RectangularSpaceLikeViaFutures[SpaceClass, Repr <: SpaceLike[SpaceClass, R
 }
 
 /**
- * A StrictRectangularSpace where the values of `west`, `east`, `north` and `south` are
+ * A RectangularSpace where the values of `west`, `east`, `north` and `south` are
  * lazily evaluated from scala.Function0s
  * 
  * @group Rectangular
@@ -96,12 +96,12 @@ class RectangularSpaceLikeViaFutures[SpaceClass, Repr <: SpaceLike[SpaceClass, R
  * @param eastFuture  A function that is called to determine the result of the `east`  method
  * @param southFuture A function that is called to determine the result of the `south` method 
  */
-final class StrictRectangularSpaceViaFutures[SpaceClass](
+final class RectangularSpaceViaFutures[SpaceClass](
 		typeOfSpace:SpaceClass,
-		westFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
-		northFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
-		eastFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]],
-		southFuture:Function0[Option[StrictRectangularSpace[SpaceClass]]]
-) extends RectangularSpaceLikeViaFutures[SpaceClass, StrictRectangularSpace[SpaceClass]](
+		westFuture:Function0[Option[RectangularSpace[SpaceClass]]],
+		northFuture:Function0[Option[RectangularSpace[SpaceClass]]],
+		eastFuture:Function0[Option[RectangularSpace[SpaceClass]]],
+		southFuture:Function0[Option[RectangularSpace[SpaceClass]]]
+) extends RectangularSpaceLikeViaFutures[SpaceClass, RectangularSpace[SpaceClass]](
 		typeOfSpace, westFuture, northFuture, eastFuture, southFuture
-) with StrictRectangularSpace[SpaceClass]
+) with RectangularSpace[SpaceClass]

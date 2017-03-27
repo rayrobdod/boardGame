@@ -24,8 +24,8 @@ import scala.collection.immutable.Seq
  * @tparam SpaceClass the type of domain object representing the properties of this space 
  * @group ElongatedTriangular
  */
-sealed trait StrictElongatedTriangularSpace[SpaceClass] extends SpaceLike[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
-	import StrictElongatedTriangularSpace._
+sealed trait ElongatedTriangularSpace[SpaceClass] extends SpaceLike[SpaceClass, ElongatedTriangularSpace[SpaceClass]] {
+	import ElongatedTriangularSpace._
 	
 	/**
 	 * Applies the function that matches this's type to this
@@ -47,14 +47,14 @@ sealed trait StrictElongatedTriangularSpace[SpaceClass] extends SpaceLike[SpaceC
 }
 
 /**
- * The three types of [[StrictElongatedTriangularSpace]]s
+ * The three types of [[ElongatedTriangularSpace]]s
  * @group ElongatedTriangular
  */
-object StrictElongatedTriangularSpace {
+object ElongatedTriangularSpace {
 	/**
 	 * The square-type space in an Elongated Triangular Tiling
 	 */
-	trait Square[SpaceClass] extends StrictElongatedTriangularSpace[SpaceClass] with RectangularSpaceLike[SpaceClass, StrictElongatedTriangularSpace[SpaceClass]] {
+	trait Square[SpaceClass] extends ElongatedTriangularSpace[SpaceClass] with RectangularSpaceLike[SpaceClass, ElongatedTriangularSpace[SpaceClass]] {
 		override def north:Option[Triangle1[SpaceClass]]
 		override def south:Option[Triangle2[SpaceClass]]
 		override def east:Option[Square[SpaceClass]]
@@ -63,19 +63,19 @@ object StrictElongatedTriangularSpace {
 	/**
 	 * The triangle to the north of a square in an Elongated Triangular Tiling
 	 */
-	trait Triangle1[SpaceClass] extends StrictElongatedTriangularSpace[SpaceClass] {
+	trait Triangle1[SpaceClass] extends ElongatedTriangularSpace[SpaceClass] {
 		def south:Option[Square[SpaceClass]]
 		def northEast:Option[Triangle2[SpaceClass]]
 		def northWest:Option[Triangle2[SpaceClass]]
-		final override def adjacentSpaces:Seq[StrictElongatedTriangularSpace[SpaceClass]] = Seq(south, northEast, northWest).flatMap{_.to[Seq]}
+		final override def adjacentSpaces:Seq[ElongatedTriangularSpace[SpaceClass]] = Seq(south, northEast, northWest).flatMap{_.to[Seq]}
 	}
 	/**
 	 * The triangle to the south of a square in an Elongated Triangular Tiling
 	 */
-	trait Triangle2[SpaceClass] extends StrictElongatedTriangularSpace[SpaceClass] {
+	trait Triangle2[SpaceClass] extends ElongatedTriangularSpace[SpaceClass] {
 		def north:Option[Square[SpaceClass]]
 		def southEast:Option[Triangle1[SpaceClass]]
 		def southWest:Option[Triangle1[SpaceClass]]
-		final override def adjacentSpaces:Seq[StrictElongatedTriangularSpace[SpaceClass]] = Seq(north, southEast, southWest).flatMap{_.to[Seq]}
+		final override def adjacentSpaces:Seq[ElongatedTriangularSpace[SpaceClass]] = Seq(north, southEast, southWest).flatMap{_.to[Seq]}
 	}
 }

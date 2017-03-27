@@ -21,7 +21,7 @@ import scala.collection.immutable.Seq
 
 
 /**
- * A [[com.rayrobdod.boardGame.Space]] in which a player can continue in only one direction.
+ * A [[com.rayrobdod.boardGame.SpaceLike]] in which a player can continue in only one direction.
  * 
  * @group Unidirectional
  * 
