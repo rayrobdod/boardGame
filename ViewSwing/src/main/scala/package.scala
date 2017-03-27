@@ -51,7 +51,9 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	def rgbToColor(rgb:Color):Color = rgb
 	
-	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = {
+		new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	}
 	
 	override def rgbToPolygonIcon(rgb:Color, shape:java.awt.Polygon):Icon = new Icon {
 		import java.awt.{Component, Graphics}
