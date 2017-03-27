@@ -46,10 +46,15 @@ final class Room[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType
 }
 
 /**
+ * Implicits that either are used by Room, or that add methods to certain types
+ * of rooms
  * @group Generic
  */
 object Room {
 	
+	/**
+	 * A function that generates field spaces of a particular shape and which exist in the specified board
+	 */
 	trait SpaceGenerator[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]] {
 		def apply(sc:SpaceClass, index:Index, field:Room[SpaceClass, Index, SpaceType]):SpaceType
 	}

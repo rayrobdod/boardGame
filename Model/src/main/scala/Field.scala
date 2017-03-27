@@ -54,17 +54,43 @@ final class Field[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceTyp
 }
 
 /**
- * A set of built-in [[SpaceGenerator]]s which may be pulled in by Field implicitly
+ * Implicits that either are used by Field, or that add methods to certain types
+ * of fields
  * @group Generic
  */
 object Field {
 	
 	/**
-	 * A function that generates field spaces of a particular shape
+	 * A function that generates field spaces of a particular shape and which exist in the specified field
 	 */
 	trait SpaceGenerator[SpaceClass, Index, SpaceType <: SpaceLike[SpaceClass, SpaceType]] {
 		def apply(sc:SpaceClass, index:Index, field:Field[SpaceClass, Index, SpaceType]):SpaceType
 	}
+	
+	
+	/**
+	 * Extra methods for `Field[_, ElongatedTriangularIndex, ElongatedTriangularSpace[_]]`
+	 */
+	implicit final class ElongatedTriangularFieldOps[SpaceClass](
+			val backing:Field[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularSpace[SpaceClass]]
+	) extends AnyVal {
+		/** Gets the space at ((x, y, ElongatedTriangularType.Square)), but with a more specific type */
+		def squareSpace(x:Int, y:Int):Option[ElongatedTriangularSpace.Square[SpaceClass]] = {
+			backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.Square))
+				.map{sc => new MySquareElongatedTriangularSpace(sc, backing, x, y)}
+		}
+		/** Gets the space at ((x, y, ElongatedTriangularType.NorthTri)), but with a more specific type */
+		def northTriSpace(x:Int, y:Int):Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = {
+			backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.NorthTri))
+				.map{sc => new MyTriangle1ElongatedTriangularSpace(sc, backing, x, y)}
+		}
+		/** Gets the space at ((x, y, ElongatedTriangularType.SouthTri)), but with a more specific type */
+		def southTriSpace(x:Int, y:Int):Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = {
+			backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.SouthTri))
+				.map{sc => new MyTriangle2ElongatedTriangularSpace(sc, backing, x, y)}
+		}
+	}
+	
 	
 	
 	
@@ -172,12 +198,6 @@ object Field {
 		}
 	}
 	
-	private implicit class ElongatedTriangularFieldOps[SpaceClass](backing:Field[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularSpace[SpaceClass]]) {
-		def square(x:Int, y:Int):Option[ElongatedTriangularSpace.Square[SpaceClass]] = backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.Square)).map{sc => new MySquareElongatedTriangularSpace(sc, backing, x, y)}
-		def northTri(x:Int, y:Int):Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.NorthTri)).map{sc => new MyTriangle1ElongatedTriangularSpace(sc, backing, x, y)}
-		def southTri(x:Int, y:Int):Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = backing.spaceClass(ElongatedTriangularIndex(x, y, ElongatedTriangularType.SouthTri)).map{sc => new MyTriangle2ElongatedTriangularSpace(sc, backing, x, y)}
-	}
-	
 	private final class MySquareElongatedTriangularSpace[SpaceClass](
 			override val typeOfSpace:SpaceClass,
 			private val field:Field[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularSpace[SpaceClass]],
@@ -185,10 +205,10 @@ object Field {
 			private val y:Int
 	) extends ElongatedTriangularSpace.Square[SpaceClass] {
 		
-		override def north:Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = field.northTri(x, y)
-		override def south:Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = field.southTri(x, y)
-		override def east:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.square(x + 1, y)
-		override def west:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.square(x - 1, y)
+		override def north:Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = field.northTriSpace(x, y)
+		override def south:Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = field.southTriSpace(x, y)
+		override def east:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.squareSpace(x + 1, y)
+		override def west:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.squareSpace(x - 1, y)
 		
 		override def toString:String = s"ElongatedTriangularField.Square(typ = $typeOfSpace, x = $x, y = $y, field = ...)"
 		override def hashCode:Int = x * 93 + y * 3
@@ -207,9 +227,9 @@ object Field {
 		private val x:Int,
 		private val y:Int
 	) extends ElongatedTriangularSpace.Triangle1[SpaceClass] {
-		def south:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.square(x, y)
-		def northEast:Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = field.southTri(x + (if (y % 2 == 0) {-1} else {0}), y - 1)
-		def northWest:Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = field.southTri(x + (if (y % 2 == 0) {0} else {1}), y - 1)
+		def south:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.squareSpace(x, y)
+		def northEast:Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = field.southTriSpace(x + (if (y % 2 == 0) {-1} else {0}), y - 1)
+		def northWest:Option[ElongatedTriangularSpace.Triangle2[SpaceClass]] = field.southTriSpace(x + (if (y % 2 == 0) {0} else {1}), y - 1)
 		
 		override def toString:String = s"ElongatedTriangularField.Triangle1(typ = $typeOfSpace, x = $x, y = $y, field = ...)"
 		override def hashCode:Int = x * 93 + y * 3 + 1
@@ -228,9 +248,9 @@ object Field {
 		private val x:Int,
 		private val y:Int
 	) extends ElongatedTriangularSpace.Triangle2[SpaceClass] {
-		def north:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.square(x, y)
-		def southWest:Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = field.northTri(x + (if (y % 2 == 0) {0} else {1}), y + 1)
-		def southEast:Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = field.northTri(x + (if (y % 2 == 0) {-1} else {0}), y + 1)
+		def north:Option[ElongatedTriangularSpace.Square[SpaceClass]] = field.squareSpace(x, y)
+		def southWest:Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = field.northTriSpace(x + (if (y % 2 == 0) {0} else {1}), y + 1)
+		def southEast:Option[ElongatedTriangularSpace.Triangle1[SpaceClass]] = field.northTriSpace(x + (if (y % 2 == 0) {-1} else {0}), y + 1)
 		
 		override def toString:String = s"ElongatedTriangularField.Triangle2(typ = $typeOfSpace, x = $x, y = $y, field = ...)"
 		override def hashCode:Int = x * 93 + y * 3 + 2

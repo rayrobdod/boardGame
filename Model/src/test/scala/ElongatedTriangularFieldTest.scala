@@ -6,6 +6,39 @@ final class ElongatedTriangularFieldTest extends FunSpec
 		with FieldTests
 {
 	
+	describe ("ElongatedTriangularField") {
+		val clazzes = for (
+			i ← -1 to 2;
+			j ← -1 to 2;
+			t ← ElongatedTriangularType.values
+		) yield {
+			ElongatedTriangularIndex(i, j, t) -> s"qwerty"
+		}
+		val field = ElongatedTriangularField(clazzes.toMap)
+		
+		describe ("square") {
+			it ("gets the same thing as space with the appropriate index") {
+				assertResult( field.space( ElongatedTriangularIndex( 0, 0, ElongatedTriangularType.Square ) ) ){
+					field.squareSpace( 0, 0 )
+				}
+			}
+		}
+		describe ("northTri") {
+			it ("gets the same thing as space with the appropriate index") {
+				assertResult( field.space( ElongatedTriangularIndex( 0, 1, ElongatedTriangularType.NorthTri ) ) ){
+					field.northTriSpace( 0, 1 )
+				}
+			}
+		}
+		describe ("southTri") {
+			it ("gets the same thing as space with the appropriate index") {
+				assertResult( field.space( ElongatedTriangularIndex( 2, -1, ElongatedTriangularType.SouthTri ) ) ){
+					field.southTriSpace( 2, -1 )
+				}
+			}
+		}
+	}
+	
 	singleElementField("An ElongatedTriangularField containing a single square space")(
 		  idx = ElongatedTriangularIndex(0,0,ElongatedTriangularType.Square)
 		, unequalIndex = ElongatedTriangularIndex(0,1,ElongatedTriangularType.Square)
