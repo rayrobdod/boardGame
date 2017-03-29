@@ -21,11 +21,7 @@ lazy val view = (project in file("View"))
 			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 			, libraryDependencies ++= Seq(
 				  "com.rayrobdod" %% "json" % "3.0.1"
-				, "com.rayrobdod" %% "utilities" % "20160112"
 				, "com.lihaoyi" %% "fastparse" % "0.4.2"
-			)
-			, unmanagedSourceDirectories in Test += (
-				baseDirectory.value / ".." / "ViewSwing" / "src" / "main" / "scala"
 			)
 		)
 	)
@@ -39,6 +35,9 @@ lazy val viewSwing = (project in file("ViewSwing"))
 			  name := "tile-view-swing"
 			, fork := true
 			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
+			, libraryDependencies ++= Seq(
+				  "com.rayrobdod" %% "utilities" % "20160112"
+			)
 		)
 	)
 
@@ -61,7 +60,7 @@ lazy val sampleSwing = (project in file("SampleSwing"))
 		  commonSettings
 		, commonTestSettings
 		, Seq(
-			  name := "rectangular-tilesheet-viewer-swing"
+			  name := "tiles-sample-viewer-swing"
 			  // heavy resource use
 			, fork := true
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer")
@@ -76,11 +75,11 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 	.dependsOn(viewJavaFx)
 	.dependsOn(sampleSwing)
 	.settings(
-		commonSettings
+		  commonSettings
 		, commonTestSettings
 		, jfxSettings
 		, Seq(
-			  name := "rectangular-tilesheet-viewer-fx"
+			  name := "tiles-sample-viewer-fx"
 			  // main is javafx; javafx requires forking to run
 			, fork := true
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
@@ -138,7 +137,6 @@ lazy val commonSettings = Seq(
 	, mappings in (Compile, packageBin) += (baseDirectory.value / ".." / "LICENSE.txt", "LICENSE.txt" )
 )
 
-// scalaTest
 lazy val commonTestSettings = Seq(
 	  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 	, libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"

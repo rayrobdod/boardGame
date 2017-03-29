@@ -80,9 +80,8 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	override def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Icon = {
 		val a:Seq[Image] = if (! layersWithLCMFrames.isEmpty) {
-			// FIXTHIS: assumes all images are the same size
-			val imageWidth = layersWithLCMFrames.head.head.getWidth(null)
-			val imageHeight = layersWithLCMFrames.head.head.getHeight(null)
+			val imageWidth = layersWithLCMFrames.map{_.map{_.getWidth(null)}.max}.max
+			val imageHeight = layersWithLCMFrames.map{_.map{_.getHeight(null)}.max}.max
 			
 			// merge all the layers in each frame into one image per frame
 			val frames:Seq[java.awt.Image] = layersWithLCMFrames.foldLeft(

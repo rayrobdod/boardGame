@@ -21,7 +21,6 @@ import org.scalatest.FunSpec
 import java.awt.Color
 import javax.swing.Icon;
 import scala.util.Random
-import com.rayrobdod.swing.SolidColorIcon
 import com.rayrobdod.boardGame.RectangularIndex
 
 class RandomColorTilesheetTest extends FunSpec {
@@ -65,27 +64,18 @@ class RandomColorTilesheetTest extends FunSpec {
 		}
 	}
 	describe ("RandomColorTilesheet(13,21)") {
-		val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, javax.swing.Icon](
-				  {(a,b,c) => Swing.rgbToRectangularIcon(a,b)}
-				, Swing.stringIcon
+		val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
+				  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
+				, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
 				, RectangularDimension(13, 21)
 		)
 		
-		it ("getIconFor(null, 0, 0, null)._1 is a SolidColorIcon") {
+		it ("getIconFor(null, 0, 0, null) has the new dimensions") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 			
-			compareIcons(new SolidColorIcon(Color.black, 13,21)){dut.getIconFor(null, (-1, -1), rng)._1}
+			val exp = (( (("", 0, 13, 21)), (("000000", 0xFFFFFF, 13, 21)) ))
+			assertResult(exp){dut.getIconFor(null, (-1, -1), rng)}
 		}
-	}
-	
-	
-	def compareIcons(a:Icon)(b:Icon) = {
-		val a2 = a.asInstanceOf[SolidColorIcon]
-		val b2 = b.asInstanceOf[SolidColorIcon]
-		
-		assertResult(a2.getIconColor){b2.getIconColor}
-		assertResult(a2.getIconWidth){b2.getIconWidth}
-		assertResult(a2.getIconHeight){b2.getIconHeight}
 	}
 }
 
