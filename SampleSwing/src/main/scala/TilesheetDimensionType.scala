@@ -73,7 +73,7 @@ final class RectangularNameToTilesheetDemensionType[IconPart, Icon](
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
+			, {(s,i) => throw new java.text.ParseException(s"${baseUrl}:${i}:$s", i)}
 		).apply(
 			{x => x}
 		)

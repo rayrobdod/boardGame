@@ -23,54 +23,37 @@ import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import javax.swing.Icon
 import scala.collection.immutable.Seq
-import com.rayrobdod.boardGame.view.Swing.compostLayers
+import com.rayrobdod.boardGame.view.Swing.flattenImageLayers
 
-class CompostLayersTest extends FunSpec {
-	import CompostLayersTest._
+final class FlattenLayersTest extends FunSpec {
+	import FlattenLayersTest._
 	
-	describe("Swing::compostLayers") {
+	describe("Swing::flattenImageLayers") {
 		it ("empty input results in transparent image") {
-			val expected = (solidTrans)
-			val result = compostLayers(Nil)
+			val expected = solidTrans
+			val result = flattenImageLayers(Nil)
 			assert(compareImages(expected, result))
 		}
 		it ("single image results in that image") {
-			val expected = (solidRed)
-			val result = compostLayers(Seq(Seq(solidRed)))
+			val expected = solidRed
+			val result = flattenImageLayers(Seq(solidRed))
 			assert(compareImages(expected, result))
 		}
 		it ("images combine via transparency blending") {
-			val expected = (topGreenBottomRed)
-			val result = compostLayers(Seq(Seq(solidRed), Seq(topGreen)))
+			val expected = topGreenBottomRed
+			val result = flattenImageLayers(Seq(solidRed, topGreen))
 			assert(compareImages(expected, result))
 		}
 		it ("images combine via transparency blending (2)") {
-			val expected = (solidRed)
-			val result = compostLayers(Seq(Seq(topGreen), Seq(solidRed)))
+			val expected = solidRed
+			val result = flattenImageLayers(Seq(topGreen, solidRed))
 			assert(compareImages(expected, result))
-		}
-		it ("something-something animation") {
-			val expected = Seq(solidRed, solidBlue)
-			val result = compostLayers(Seq(Seq(solidRed, solidBlue)))
-			assert(compareAnimImage(expected, result))
-		}
-		/* 
-		it ("combining a two-frame and a one-frame animations") {
-			val expected = Seq(solidRed, topGreenBottomRed)
-			val result = compostLayers(Seq(Seq(solidRed), Seq(solidTrans, topGreen)))
-			assert(compareAnimImage(expected, result))
-		}
-		*/
-		it ("combining a two-frame and a two-frame animations") {
-			val expected = Seq(solidBlue, topGreenBottomRed)
-			val result = compostLayers(Seq(Seq(solidBlue, solidRed), Seq(solidTrans, topGreen)))
-			assert(compareAnimImage(expected, result))
 		}
 		
 	}
 }
 
-object CompostLayersTest {
+object FlattenLayersTest {
 	val solidTrans = new BufferedImage(64, 64, TYPE_INT_ARGB)
 	val solidRed = new BufferedImage(64, 64, TYPE_INT_ARGB)
 	val solidBlue = new BufferedImage(64, 64, TYPE_INT_ARGB)
@@ -105,19 +88,6 @@ object CompostLayersTest {
 		(0 until 64).flatMap{x => (0 until 64).map{y =>
 			a.getRGB(x,y) == b.getRGB(x,y)
 		}}.forall{x => x}
-	}
-	
-	/** assumes 64 by 64 images */
-	def compareAnimImage(b:Seq[BufferedImage], a:Icon):Boolean = {
-		import com.rayrobdod.animation._
-		val a2 = a.asInstanceOf[AnimationIcon].animation.asInstanceOf[ImageFrameAnimation]
-		val a3 = b.map{x => 
-			val retVal = new BufferedImage(64, 64, TYPE_INT_ARGB)
-			a2.paintCurrentFrame(null, retVal.createGraphics(), 0, 0)
-			a2.incrementFrame()
-			retVal
-		}
-		a3.zip(b).map{x => compareImages(x._1, x._2)}.forall{x => x}
 	}
 	
 }

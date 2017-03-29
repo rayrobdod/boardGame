@@ -63,39 +63,14 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	}
 	
 	
-	override def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Node = {
-		
-		val a:Seq[Node] = if (! layersWithLCMFrames.isEmpty) {
-			// FIXTHIS: assumes all images are the same size
-			val imageWidth = layersWithLCMFrames.head.head.getWidth.intValue
-			val imageHeight = layersWithLCMFrames.head.head.getHeight.intValue
-			
-			// merge all the layers in each frame into one image per frame
-			val frames:Seq[Node] = layersWithLCMFrames.foldLeft(
-				Seq.fill(layersWithLCMFrames.head.size){
-					new Canvas(imageWidth, imageHeight)
-				}
-			){(newImage:Seq[Canvas], layer:Seq[Image]) =>
-				newImage.zip(layer).map({(newImage:Canvas, layer:Image) =>
-					newImage.getGraphicsContext2D().drawImage(
-						layer,
-						0, 0
-					)
-					newImage
-				}.tupled)
-			}
-			
-			frames
-		} else {
-			Seq(new ImageView(new WritableImage(1,1)))
+	override def flattenImageLayers(layers:Seq[Image]):Node = {
+		val imageWidth = (1.0 +: layers.map{_.getWidth}).max.intValue
+		val imageHeight = (1.0 +: layers.map{_.getHeight}).max.intValue
+		val canvas = new Canvas(imageWidth, imageHeight)
+		layers.foreach{layer =>
+			canvas.getGraphicsContext2D().drawImage(layer, 0, 0)
 		}
-		
-		if (a.length == 1) {
-			a.head
-		} else {
-			// TODO: Animation
-			a.headOption.getOrElse(new ImageView(new WritableImage(1,1)))
-		}
+		canvas
 	}
 	
 	override def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[Image] = {
