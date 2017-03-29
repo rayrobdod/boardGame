@@ -68,16 +68,23 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 */
 	def stringIcon(text:String, rgb:Color, size:RectangularDimension):Icon
 	/**
-	 * 
+	 * Combine several iconparts via Transparency blending
 	 * @group Icons
 	 */
-	def compostLayers(layersWithLCMFrames:Seq[Seq[IconPart]]):Icon
+	def flattenImageLayers(layers:Seq[IconPart]):Icon
 	/**
 	 * Reads an image from the specified URL and splits it into dimension-sized images
 	 * @group Icons
 	 */
 	def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[IconPart]
 	
+	@deprecated("moving animation responsibility", "4.0")
+	final def compostLayers(frameLayers:Seq[Seq[IconPart]]):Icon = {
+		frameLayers.headOption
+			.map(this.flattenImageLayers)
+			.getOrElse(this.flattenImageLayers(Nil))
+	}
+
 	
 	/**
 	 * Returns a [[view.NilTilesheet]] that uses this template's blankIcon

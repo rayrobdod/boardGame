@@ -23,7 +23,7 @@ import java.awt.{Dimension => AwtDimension}
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.awt.image.BufferedImage.{TYPE_INT_ARGB => alphaImage}
+import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.net.URL
 import javax.swing.{Icon, ImageIcon}
 import javax.imageio.ImageIO
@@ -78,34 +78,16 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	}
 	
 	
-	override def compostLayers(layersWithLCMFrames:Seq[Seq[Image]]):Icon = {
-		val a:Seq[Image] = if (! layersWithLCMFrames.isEmpty) {
-			// FIXTHIS: assumes all images are the same size
-			val imageWidth = layersWithLCMFrames.head.head.getWidth(null)
-			val imageHeight = layersWithLCMFrames.head.head.getHeight(null)
-			
-			// merge all the layers in each frame into one image per frame
-			val frames:Seq[java.awt.Image] = layersWithLCMFrames.foldLeft(
-				Seq.fill(layersWithLCMFrames.head.size){
-					new BufferedImage(imageWidth, imageHeight, alphaImage)
-				}
-			){(newImage:Seq[BufferedImage], layer:Seq[Image]) =>
-				newImage.zip(layer).map({(newImage:BufferedImage, layer:Image) =>
-					newImage.getGraphics.drawImage(layer, 0, 0, null)
-					newImage
-				}.tupled)
-			}
-			
-			frames
-		} else {
-			Seq(new BufferedImage(1,1,alphaImage))
+	override def flattenImageLayers(layers:Seq[Image]):Icon = {
+		val canvas = {
+			val imageWidth = (1 +: layers.map{_.getWidth(null)}).max
+			val imageHeight = (1 +: layers.map{_.getHeight(null)}).max
+			new BufferedImage(imageWidth, imageHeight, TYPE_INT_ARGB)
 		}
-		
-		if (a.length == 1) {
-			new ImageIcon(a.head)
-		} else {
-			new AnimationIcon(new ImageFrameAnimation(a, 1000/5, true))
+		layers.foreach{layer =>
+			canvas.getGraphics.drawImage(layer, 0, 0, null)
 		}
+		new ImageIcon(canvas)
 	}
 	
 	/**

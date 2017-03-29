@@ -149,7 +149,7 @@ object PackageObjectTemplateTest {
 	final case class FakeSolidRectIcon(rgb:Color, size:RectangularDimension) extends FakeIcon
 	final case class FakePolygonIcon(rgb:Color, shape:java.awt.Polygon) extends FakeIcon
 	final case class FakeStringIcon(text:String, rgb:Color) extends FakeIcon
-	final case class ComposedIcon(parts:Seq[Seq[FakeIconPart]]) extends FakeIcon
+	final case class ComposedIcon(parts:Seq[FakeIconPart]) extends FakeIcon
 	
 	
 	object FakePackageObject extends PackageObjectTemplate[FakeIconPart, FakeIcon] {
@@ -157,7 +157,7 @@ object PackageObjectTemplateTest {
 		override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):FakeIcon = FakeSolidRectIcon(rgb, size)
 		override def rgbToPolygonIcon(rgb:Color, shape:java.awt.Polygon):FakeIcon = FakePolygonIcon(rgb, shape)
 		override def stringIcon(text:String, rgb:Color, size:RectangularDimension):FakeIcon = FakeStringIcon(text, rgb)
-		override def compostLayers(parts:Seq[Seq[FakeIconPart]]):FakeIcon = ComposedIcon(parts)
+		override def flattenImageLayers(parts:Seq[FakeIconPart]):FakeIcon = ComposedIcon(parts)
 		
 		override def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[FakeIconPart] = {
 			(0 to 63).map{idx => FakeIconPart(sheetUrl, tileDimension, idx)}
