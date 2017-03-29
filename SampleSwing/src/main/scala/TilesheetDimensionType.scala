@@ -73,9 +73,8 @@ final class RectangularNameToTilesheetDemensionType[IconPart, Icon](
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
-		).apply(
-			{x => x}
+			, {x => throw new java.text.ParseException("" + x, 0)}
+			, {x => throw new java.text.ParseException("" + x, 0)}
 		)
 	}
 	
@@ -112,9 +111,8 @@ final class HorizHexNameToTilesheetDemensionType[IconPart, Icon](
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
-		).apply(
-			{x => x.build}
+			, {x => throw new java.text.ParseException("" + x, 0)}
+			, {x => throw new java.text.ParseException("" + x, 0)}
 		)
 	}
 	
@@ -172,9 +170,8 @@ final class ElongTriNameToTilesheetDemensionType[IconPart, Icon](
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
-		).apply(
-			{x => x}
+			, {x => throw new java.text.ParseException("" + x, 0)}
+			, {x => throw new java.text.ParseException("" + x, 0)}
 		)
 	}
 	

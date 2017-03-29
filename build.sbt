@@ -20,7 +20,7 @@ lazy val view = (project in file("View"))
 			, fork := true
 			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 			, libraryDependencies ++= Seq(
-				  "com.rayrobdod" %% "json" % "3.0.1"
+				  "com.rayrobdod" %% "json" % "4.0-SNAPSHOT"
 				, "com.rayrobdod" %% "utilities" % "20160112"
 				, "com.lihaoyi" %% "fastparse" % "0.4.2"
 			)

@@ -312,4 +312,20 @@ package view {
 		def hit(point:(Int, Int), dim:Dimension):Index
 	}
 	
+	sealed trait VisualizationRuleBasedTilesheetFailure
+	object MalformedUrl extends VisualizationRuleBasedTilesheetFailure
+	object FileNotFound extends VisualizationRuleBasedTilesheetFailure
+	
+	sealed trait VisualizationRuleBuilderFailure extends VisualizationRuleBasedTilesheetFailure
+	object ExpectedComplex extends VisualizationRuleBuilderFailure 
+	object ExpectedPrimitive extends VisualizationRuleBuilderFailure 
+	final case class UnsuccessfulTypeCoercion(value:com.rayrobdod.json.union.JsonValue, toType:String) extends VisualizationRuleBuilderFailure
+	final case class IconPartMapKeyNotIntegerConvertable(key:String) extends VisualizationRuleBuilderFailure
+	object IconPartWasInconsistent extends VisualizationRuleBuilderFailure
+	object SurroundingSpacesMapKeyNotDeltaIndex extends VisualizationRuleBuilderFailure
+	
+	sealed trait AdjacentSpacesSpecifierFailure extends VisualizationRuleBuilderFailure
+	final case class InnerFormatParseFailure(idx:Int, extra:fastparse.core.Parsed.Failure.Extra[Char,String]) extends AdjacentSpacesSpecifierFailure
+	final case class UnknownIdentifierFailure(identifiers:Set[String]) extends AdjacentSpacesSpecifierFailure
+	
 }

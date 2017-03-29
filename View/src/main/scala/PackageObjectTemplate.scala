@@ -196,8 +196,8 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	final def VisualizationRuleBasedRectangularTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
-	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, RectangularDimension, IconPart, Icon] = {
-		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, RectangularDimension, IconPart, Icon](
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
 			, this.compostLayers _
@@ -214,8 +214,8 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	final def VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
-	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionDelay, IconPart, Icon] = {
-		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, VisualizationRuleBasedTilesheetBuilder.HorizontalHexagonalDimensionDelay, IconPart, Icon](
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
 			, this.compostLayers _
@@ -232,8 +232,8 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	final def VisualizationRuleBasedElongatedTriangularTilesheetBuilder[SpaceClass](
 		baseUrl:URL,
 		classMap:SpaceClassMatcherFactory[SpaceClass]
-	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, ElongatedTriangularDimension, IconPart, Icon] = {
-		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, ElongatedTriangularDimension, IconPart, Icon](
+	):VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, IconPart, Icon] = {
+		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
 			, this.compostLayers _

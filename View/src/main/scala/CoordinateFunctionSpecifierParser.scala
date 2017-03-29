@@ -128,8 +128,11 @@ final class CoordinateFunctionSpecifierParser[Index](vars:Map[Char, CoordinateFu
 	
 	private[this] val parser:P[CoordinateFunction[Index, Boolean]] = and ~ End
 	
-	def parse(spec:String):Either[(String,Int), CoordinateFunction[Index, Boolean]] = {
-		parser.parse(spec).fold({(_, idx, extra) => Left(extra.toString, idx)}, {(res, idx) => Right(res)})
+	def parse(spec:String):Either[InnerFormatParseFailure, CoordinateFunction[Index, Boolean]] = {
+		parser.parse(spec).fold(
+			  {(_, idx, extra) => Left(InnerFormatParseFailure(idx, extra))}
+			, {(res, idx) => Right(res)}
+		)
 	}
 }
 

@@ -22,57 +22,75 @@ import scala.util.Random
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.builder.{Builder, PrimitiveSeqBuilder}
 import com.rayrobdod.json.parser.Parser
-import com.rayrobdod.json.union.{StringOrInt, JsonValue}
-
+import com.rayrobdod.json.union.{StringOrInt, JsonValue, ParserRetVal}
 
 
 /**
  * A Builder of VisualizationRule
  * @group VisualizationRuleTilesheet
  */
-final class VisualizationRuleBuilder[SpaceClass, Index, IconPart](
-		  tileSeq:Seq[IconPart]
-		, spaceClassUnapplier:SpaceClassMatcherFactory[SpaceClass]
-		, stringToIndexConverter:Function1[String, Either[(String, Int), IndexConverter[Index]]]
+final class VisualizationRuleBuilder[SpaceClass, Index](
+		  spaceClassUnapplier:SpaceClassMatcherFactory[SpaceClass]
+		, stringToIndexConverter:Function1[String, Option[IndexConverter[Index]]]
 		, coordFunVars:Map[Char, CoordinateFunction[Index, Int]]
-) extends Builder[StringOrInt, JsonValue, ParamaterizedVisualizationRule[SpaceClass, Index, IconPart]] {
+) extends Builder[StringOrInt, JsonValue, VisualizationRuleBuilderFailure, ParamaterizedVisualizationRule[SpaceClass, Index, Int]] {
 	import VisualizationRuleBuilder.ARBITRARY_NEGATIVE_VALUE
+	
+	type IconPart = Int
+	override type Middle = ParamaterizedVisualizationRule[SpaceClass, Index, IconPart]
 	
 	override def init:ParamaterizedVisualizationRule[SpaceClass, Index, IconPart] = {
 		new ParamaterizedVisualizationRule[SpaceClass, Index, IconPart]()
 	}
 	
-	override def apply[Input](
+	override def apply[Input, PF](
 			folding:ParamaterizedVisualizationRule[SpaceClass, Index, IconPart],
 			key:StringOrInt,
 			input:Input,
-			parser:Parser[StringOrInt, JsonValue, Input]
-	):Either[(String, Int), ParamaterizedVisualizationRule[SpaceClass, Index, IconPart]] = key match {
+			parser:Parser[StringOrInt, JsonValue, PF, Input]
+	):ParserRetVal[ParamaterizedVisualizationRule[SpaceClass, Index, IconPart], Nothing, PF, VisualizationRuleBuilderFailure] = key match {
 		case StringOrInt.Left("tileRand") => {
-			parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => if (value > 0) {Right(folding.copy(tileRand = value))} else {Left("tileRand may not be negative", 0)}}}
+			parser.parsePrimitive(input, ExpectedPrimitive)
+				.primitive.flatMap{
+					_.ifIsInteger({value =>
+						if (value > 0) {ParserRetVal.Complex(folding.copy(tileRand = value))}
+						else {ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(value, "Unsigned Integer"))}
+					}, {jsonValue =>
+						ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(jsonValue, "Unsigned Integer"))
+					})
+			}
 		}
 		case StringOrInt.Left("indexies") => {
-			parser.parsePrimitive(input).right.flatMap{_.stringToEither{exprStr =>
-				new CoordinateFunctionSpecifierParser(coordFunVars).parse(exprStr).right.map{expr => folding.copy(indexEquation = expr)}
-			}}
+			parser.parsePrimitive(input, ExpectedPrimitive)
+				.primitive.flatMap{
+					_.ifIsString({exprStr =>
+						new CoordinateFunctionSpecifierParser(coordFunVars).parse(exprStr).fold(
+							  {x => ParserRetVal.BuilderFailure(x)}
+							, {expr => ParserRetVal.Complex(folding.copy(indexEquation = expr))}
+						)
+					}, {jsonValue =>
+						ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(jsonValue, "String"))
+					})
+				}
 		}
 		case StringOrInt.Left("surroundingSpaces") => {
 			val builder = new VisualizationRuleBuilder.SurroundingSpacesBuilder(spaceClassUnapplier, stringToIndexConverter)
-			parser.parse(builder, input).complex.toEither.right.map{value => folding.copy(surroundingTiles = value)}
+			parser.parse(builder, input)
+				.primitive.flatMap{value => ParserRetVal.BuilderFailure(ExpectedComplex)}
+				.complex.map{value => folding.copy(surroundingTiles = value)}
 		}
 		case StringOrInt.Left("tiles") => {
-			parser.parse(VisualizationRuleBuilder.IconPartsBuilder, input).fold(
-				{c =>
-					c.collapse(tileSeq).right.map{value => folding.copy(iconParts = value)}
-				},
-				{p:JsonValue => p.integerToEither{tileIndex =>
-					Right(folding.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE -> Seq(tileSeq(tileIndex.intValue)))))
-				}},
-				{(msg, idx) => Left((msg, idx))}
-			)
+			parser.parse(VisualizationRuleBuilder.IconPartsBuilder, input)
+					.complex.map{value => folding.copy(iconParts = value)}
+					.primitive.flatMap{_.ifIsInteger(
+						  {tileIndex => ParserRetVal.Complex(folding.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE -> Seq(tileIndex))))}
+						, {other => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(other, "Integer"))}
+					)}
 		}
-		case _ => Right(folding)
+		case _ => ParserRetVal.Complex(folding)
 	}
+	
+	override def finish(x:Middle) = ParserRetVal.Complex(x)
 }
 
 
@@ -108,6 +126,15 @@ final case class ParamaterizedVisualizationRule[SpaceClass, Index, IconPart] (
 	final override def priority:Int = {
 		surroundingTiles.size * 10000 + tileRand + indexEquation.priority
 	}
+	
+	def mapIconPart[A](x: IconPart => A):ParamaterizedVisualizationRule[SpaceClass, Index, A] = {
+		new ParamaterizedVisualizationRule(
+			  this.iconParts.mapValues{_.map{x}}
+			, tileRand
+			, indexEquation
+			, surroundingTiles
+		)
+	}
 }
 
 
@@ -121,38 +148,45 @@ private object VisualizationRuleBuilder {
 	
 	private class SurroundingSpacesBuilder[Index, A](
 		  spaceClassUnapplier:SpaceClassMatcherFactory[A]
-		, stringToIndexConverter:Function1[String, Either[(String, Int), IndexConverter[Index]]]
-	) extends Builder[StringOrInt, JsonValue, Map[IndexConverter[Index], SpaceClassMatcher[A]]] {
-		def init:SurroundingSpacesMap[Index, A] = Map.empty
-		def apply[I](folding:SurroundingSpacesMap[Index, A], key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, I]):Either[(String, Int), SurroundingSpacesMap[Index, A]] = {
-			val key2 = key.fold(
-				stringToIndexConverter,
-				{i => Left(i + " does not match pair pattern.", 0)}
-			)
-			val value2 = parser.parsePrimitive(input).right.flatMap{_.stringToEither{str =>
-				Right(spaceClassUnapplier(str))
-			}}
+		, stringToIndexConverter:Function1[String, Option[IndexConverter[Index]]]
+	) extends Builder[StringOrInt, JsonValue, VisualizationRuleBuilderFailure, Map[IndexConverter[Index], SpaceClassMatcher[A]]] {
+		override type Middle = Map[IndexConverter[Index], SpaceClassMatcher[A]]
+		override def init:SurroundingSpacesMap[Index, A] = Map.empty
+		override def apply[I, PF](
+				folding:SurroundingSpacesMap[Index, A], key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, PF, I]
+		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBuilderFailure] = {
 			
-			key2.right.flatMap{key3 => value2.right.map{value3 =>
+			val key2 = key.fold(stringToIndexConverter, {i => None})
+			
+			val value2 = parser.parsePrimitive(input, ExpectedPrimitive)
+				.primitive.flatMap{_.ifIsString(
+					  {str => ParserRetVal.Complex(spaceClassUnapplier(str))}
+					, {value => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(value, "String"))}
+				)}
+			
+			key2.map{key3 => value2.complex.map{value3 =>
 				folding + ((key3, value3))
-			}}
+			}}.getOrElse{
+				ParserRetVal.BuilderFailure(SurroundingSpacesMapKeyNotDeltaIndex)
+			}
 		}
+		override def finish(x:Middle) = ParserRetVal.Complex(x)
 	}
 	
-	def stringToRectangularIndexTranslation(s:String):Either[(String, Int), IndexConverter[RectangularIndex]] = {
+	def stringToRectangularIndexTranslation(s:String):Option[IndexConverter[RectangularIndex]] = {
 		import java.util.regex.Pattern
 		
 		val pairPattern = Pattern.compile("""\(([\+\-]?\d+),([\+\-]?\d+)\)""")
 		val matcher = pairPattern.matcher(s)
 		if (!matcher.matches()) {
-			Left((s + " does not match pair pattern.", 0))
+			None
 		} else {
 			val firstStr = matcher.group(1)
 			val secondStr = matcher.group(2)
 			val firstInt = firstStr.toInt
 			val secondInt = secondStr.toInt
 			
-			Right(new RectangularIndexTranslation(firstInt, secondInt))
+			Option(new RectangularIndexTranslation(firstInt, secondInt))
 		}
 	}
 	private final class RectangularIndexTranslation(dx:Int, dy:Int) extends IndexConverter[RectangularIndex] {
@@ -161,20 +195,20 @@ private object VisualizationRuleBuilder {
 		}
 	}
 	
-	def stringToElongatedTriangularIndexTranslation(s:String):Either[(String, Int), IndexConverter[ElongatedTriangularIndex]] = {
+	def stringToElongatedTriangularIndexTranslation(s:String):Option[IndexConverter[ElongatedTriangularIndex]] = {
 		import java.util.regex.Pattern
 		
 		val pairPattern = Pattern.compile("""\(([\+\-]?\d+),([\+\-]?\d+)\)""")
 		val matcher = pairPattern.matcher(s)
 		if (!matcher.matches()) {
-			Left((s + " does not match pair pattern.", 0))
+			None
 		} else {
 			val firstStr = matcher.group(1)
 			val secondStr = matcher.group(2)
 			val firstInt = firstStr.toInt
 			val secondInt = secondStr.toInt
 			
-			Right( new IndexConverter[ElongatedTriangularIndex] {
+			Option( new IndexConverter[ElongatedTriangularIndex] {
 				def apply(input:ElongatedTriangularIndex):ElongatedTriangularIndex = {
 					val ElongatedTriangularIndex(inX, inY, inT) = input
 					
@@ -198,43 +232,70 @@ private object VisualizationRuleBuilder {
 	private sealed trait IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])):IconPartsBuilderValue
 		def seqAppend(x:Int):IconPartsBuilderValue
-		def collapse[IconPart](tileIndex:Function1[Int, IconPart]):Either[(String, Int), Map[Int, Seq[IconPart]]]
+		def result:Either[IconPartWasInconsistent.type, Map[Int, Seq[Int]]]
 	}
 	private[this] object IconPartsBuilderValueNil extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueMap(Map(x))
 		def seqAppend(x:Int) = IconPartsBuilderValueSeq(Seq(x))
-		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Right(Map.empty)
+		def result = Right(Map.empty)
 	}
 	private[this] final case class IconPartsBuilderValueSeq(seq:Seq[Int]) extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueFailure
 		def seqAppend(x:Int) = IconPartsBuilderValueSeq(seq :+ x)
-		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Right(Map(ARBITRARY_NEGATIVE_VALUE -> seq.map{tileIndex}))
+		def result = Right(Map(ARBITRARY_NEGATIVE_VALUE -> seq))
 	}
 	private[this] final case class IconPartsBuilderValueMap(map:Map[Int, Seq[Int]]) extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueMap(map + x)
 		def seqAppend(x:Int) = IconPartsBuilderValueFailure
-		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Right(map.mapValues{_.map{tileIndex}})
+		def result = Right(map)
 	}
 	private[this] object IconPartsBuilderValueFailure extends IconPartsBuilderValue {
 		def mapAppend(x:(Int, Seq[Int])) = IconPartsBuilderValueFailure
 		def seqAppend(x:Int) = IconPartsBuilderValueFailure
-		def collapse[IconPart](tileIndex:Function1[Int, IconPart]) = Left(("frame indexies map parsing failed", 0))
+		def result = Left(IconPartWasInconsistent)
 	}
 	
 	
-	private object IconPartsBuilder extends Builder[StringOrInt, JsonValue, IconPartsBuilderValue] {
+	private object IconPartsBuilder extends Builder[StringOrInt, JsonValue, VisualizationRuleBuilderFailure, Map[Int, Seq[Int]]] {
+		override type Middle = IconPartsBuilderValue
 		override def init:IconPartsBuilderValue = IconPartsBuilderValueNil
-		override def apply[I](folding:IconPartsBuilderValue, key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, I]):Either[(String, Int), IconPartsBuilderValue] = {
+		override def apply[I, PF](folding:IconPartsBuilderValue, key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, PF, I]):ParserRetVal[IconPartsBuilderValue, Nothing, PF, VisualizationRuleBuilderFailure] = {
 			
 			key.fold({(s:String) =>
-				val key2 = s.toInt
-				val builder = new PrimitiveSeqBuilder[Int].flatMapValue[JsonValue]{jv => jv.integerToEither{x => Right(x)}}
-				parser.parse(builder, input).complex.toEither.right.map{value => folding.mapAppend(key2 -> value)}
+				val keyOpt = try {
+					Option(s.toInt)
+				} catch {
+					case ex:NumberFormatException => None
+				}
+				
+				keyOpt.map{key2 =>
+					val builder:Builder[StringOrInt, JsonValue, VisualizationRuleBuilderFailure, Seq[Int]] = {
+						new PrimitiveSeqBuilder[Int, VisualizationRuleBuilderFailure](ExpectedPrimitive)
+							.flatMapValue[JsonValue, VisualizationRuleBuilderFailure]{jv =>
+								jv.ifIsInteger(
+									  {x => Right(x)}
+									, {x => Left(UnsuccessfulTypeCoercion(x, "Integer"))}
+								)
+							}
+							.mapFailure{_.fold({x => x}, {x => x})}
+					}
+					parser.parse(builder, input)
+							.complex.map{value => folding.mapAppend(key2 -> value)}
+							.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex)}
+				}.getOrElse{
+					ParserRetVal.BuilderFailure(IconPartMapKeyNotIntegerConvertable(s))
+				}
 			}, {(i:Int) =>
-				parser.parsePrimitive(input).right.flatMap{_.integerToEither{value => Right(folding.seqAppend(value))}}
+				parser.parsePrimitive(input, ExpectedPrimitive)
+						.primitive.flatMap{_.ifIsInteger(
+							  {value => ParserRetVal.Complex(folding.seqAppend(value))}
+							, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						)}
 			})
 		}
+		override def finish(x:Middle):ParserRetVal[Map[Int, Seq[Int]], Nothing, Nothing, VisualizationRuleBuilderFailure] = x.result.fold({ParserRetVal.BuilderFailure(_)}, {ParserRetVal.Complex(_)})
 	}
+
 }
 
 

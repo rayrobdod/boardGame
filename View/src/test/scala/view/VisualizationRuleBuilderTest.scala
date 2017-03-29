@@ -20,7 +20,7 @@ package com.rayrobdod.boardGame.view
 import org.scalatest.FunSpec
 import scala.collection.immutable.{Seq, Map}
 import com.rayrobdod.json.parser.{JsonParser, IdentityParser}
-import com.rayrobdod.json.union.{StringOrInt, JsonValue}
+import com.rayrobdod.json.union.{StringOrInt, JsonValue, ParserRetVal}
 import com.rayrobdod.boardGame.SpaceClassMatcher
 
 class VisualizationRuleBuilderTest extends FunSpec {
@@ -28,78 +28,116 @@ class VisualizationRuleBuilderTest extends FunSpec {
 	describe("VisualizationRuleBuilder") {
 		describe ("tileRand") {
 			val dut = new VisualizationRuleBuilder(
-					  Nil
-					, MySpaceClassMatcherFactory
+					  MySpaceClassMatcherFactory
 					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
 					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
 			)
 			
 			it ("Accepts positive integer value") {
-				assertResult(4){dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[JsonValue]).right.get.tileRand}
+				assert(
+					dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, 4, _, _)) => true
+					}
+				)
 			}
 			it ("Rejects negative integer value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(-4), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "tileRand", JsonValue(-4), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 			it ("Rejects zero value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(0), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "tileRand", JsonValue(0), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 			it ("Rejects float value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue(1.5), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "tileRand", JsonValue(1.5), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 			it ("Rejects String value") {
-				assertResult(0){dut.apply(dut.init, "tileRand", JsonValue("abc"), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "tileRand", JsonValue("abc"), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 		}
 		describe ("indexies") {
 			val dut = new VisualizationRuleBuilder(
-					  Nil
-					, MySpaceClassMatcherFactory
+					  MySpaceClassMatcherFactory
 					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
 					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
 			)
 			
 			it ("Accepts string") {
-				assertResult("(x == y)"){dut.apply(dut.init, "indexies", JsonValue("x == y"), new IdentityParser[JsonValue]).right.get.indexEquation.toString}
+				assert(
+					dut.apply(dut.init, "indexies", JsonValue("x == y"), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, _, equ, _)) => equ.toString == "(x == y)"
+					}
+				)
 			}
 			it ("Rejects not-string") {
-				assertResult(0){dut.apply(dut.init, "indexies", JsonValue(54), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "indexies", JsonValue(54), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 		}
 		describe ("surroundingSpaces") {
 			val dut = new VisualizationRuleBuilder(
-					  Nil
-					, MySpaceClassMatcherFactory
+					  MySpaceClassMatcherFactory
 					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
 					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
 			)
 			val jsonParser = new JsonParser()
 			
 			it ("Rejects primitive") {
-				assertResult(0){dut.apply(dut.init, "surroundingSpaces", JsonValue(54), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "surroundingSpaces", JsonValue(54), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 			it ("Accepts a correctly-formatted string -> string pair") {
-				val res = dut.apply[Iterable[Char]](dut.init, "surroundingSpaces", """{ "(0,0)": "abc" }""", jsonParser).right.get.surroundingTiles
-				
-				assert(res.size == 1)
-				val ((IndexConverter(x,y), MySpaceClassMatcher(ref))) =  res.head
-				assert(x == 0 && y == 0 && ref == "abc")
+				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": "abc" }"""), jsonParser) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, _, _, MapUnapplyer((IndexConverter(0,0), MySpaceClassMatcher("abc"))))) => {
+						true
+					}
+				}
 			}
-			ignore ("Rejects a pair containing a Number value") {
-				assertResult(10){ dut.apply[Iterable[Char]](dut.init, "surroundingSpaces", """{ "(0,0)": 53 }""", jsonParser).left.get._2 }
+			it ("Rejects a pair containing a Number value") {
+				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": 53 }"""), jsonParser) match {
+					case ParserRetVal.BuilderFailure(_) => true
+					case _ => fail()
+				}
 			}
-			ignore ("Rejects a pair containing a nested-value") {
-				assertResult(10){ dut.apply[Iterable[Char]](dut.init, "surroundingSpaces", """{ "(0,0)": [1,2,3] }""", jsonParser).left.get._2 }
+			it ("Rejects a pair containing a nested-value") {
+				assert(
+					dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": [1,2,3] }"""), jsonParser) match {
+						case ParserRetVal.BuilderFailure(_) => true
+						case _ => false
+					}
+				)
 			}
-			ignore ("Rejects a pair containing an incorrectly-formatted key") {
-				// throws instead
-				assertResult(3){ dut.apply[Iterable[Char]](dut.init, "surroundingSpaces", """{ "abc": "abc" }""", jsonParser).left.get._2 }
+			it ("Rejects a pair containing an incorrectly-formatted key") {
+				assert(
+					dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "abc": "abc" }"""), jsonParser) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 		}
 		describe ("tiles") {
-			val tiles = ('a' to 'z').map{_.toString}
 			val dut = new VisualizationRuleBuilder(
-					  tiles
-					, MySpaceClassMatcherFactory
+					  MySpaceClassMatcherFactory
 					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
 					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
 			)
@@ -107,37 +145,68 @@ class VisualizationRuleBuilderTest extends FunSpec {
 			val jsonParser = new JsonParser()
 			
 			it ("Accepts a primitive int value, treating it as a not-animated tile at some negative layer") {
-				val res = dut.apply(dut.init, "tiles", JsonValue(3), new IdentityParser[JsonValue]).right.get.iconParts
-				
-				assert(res.size == 1)
-				val ((layer, Seq(frame))) = res.head
-				assert(layer < 0 && frame == tiles(3))
+				dut.apply(dut.init, "tiles", JsonValue(3), new IdentityParser[JsonValue]) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer, Seq(frame))), _, _, _)) => {
+						assert(layer < 0 && frame == 3)
+					}
+				}
 			}
 			it ("Accepts a sequence of int values, treating it as a multi-frame animation at some negative layer") {
-				val res = dut.apply[Iterable[Char]](dut.init, "tiles", "[3,10,7]", jsonParser).right.get.iconParts
-				assertResult(Map(-127 -> Seq("d", "k", "h"))){res}
+				dut.apply(dut.init, "tiles", CountingReader("[3,10,7]"), jsonParser) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer, frames)), _, _, _)) => {
+						assert(layer < 0)
+						assertResult(Seq(3, 10, 7)){frames}
+					}
+				}
 			}
 			ignore ("Accepts an empty sequence of int values, treating it as a zero-frame animation at some negative layer") {
-				val res = dut.apply[Iterable[Char]](dut.init, "tiles", "[]", jsonParser).right.get.iconParts
-				assertResult(Map(-127 -> Seq())){res}
+				dut.apply(dut.init, "tiles", CountingReader("[]"), jsonParser) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer, frames)), _, _, _)) => {
+						assert(layer < 0)
+						assertResult(Seq()){frames}
+					}
+				}
 			}
 			it ("Accepts a map of intable strings to seq of int values, treating it as a multi-frame animation at the specified layers") {
-				val res = dut.apply[Iterable[Char]](dut.init, "tiles", "{\"1\":[0,1],\"2\":[2,3]}", jsonParser).right.get.iconParts
-				assertResult(Map(1 -> Seq("a","b"), 2 -> Seq("c", "d"))){res}
+				dut.apply(dut.init, "tiles", CountingReader("""{"1":[0,1],"2":[2,3]}"""), jsonParser) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer1, frames1), (layer2, frames2)), _, _, _)) => {
+						assertResult(1){layer1}
+						assertResult(Seq(0,1)){frames1}
+						assertResult(2){layer2}
+						assertResult(Seq(2,3)){frames2}
+					}
+				}
 			}
 			ignore ("(MAYBE) Accepts a map of intable strings to int values, treating it as a not-animated tile at the specified layers") {
-				val res = dut.apply[Iterable[Char]](dut.init, "tiles", "{\"1\":1,\"2\":2}", jsonParser).right.get.iconParts
-				assertResult(Map(1 -> Seq("b"), 2 -> Seq("c"))){res}
+				dut.apply(dut.init, "tiles", CountingReader("""{"1":1,"2":2}"""), jsonParser) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer1, frames1), (layer2, frames2)), _, _, _)) => {
+						assertResult(1){layer1}
+						assertResult(Seq(1)){frames1}
+						assertResult(2){layer2}
+						assertResult(Seq(2)){frames2}
+					}
+				}
 			}
 			it ("Rejects a primitive string value") {
-				assertResult(0){dut.apply(dut.init, "tiles", JsonValue("abc"), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "tiles", JsonValue("abc"), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 			it ("Rejects a primitive intable string value") {
-				assertResult(0){dut.apply(dut.init, "tiles", JsonValue("43"), new IdentityParser[JsonValue]).left.get._2}
+				assert(
+					dut.apply(dut.init, "tiles", JsonValue("43"), new IdentityParser[JsonValue]) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
-			ignore ("Rejects a sequence-of-strings") {
-				// throws instead
-				assertResult(0){dut.apply[Iterable[Char]](dut.init, "tiles", """["a", "b", "c"]""", jsonParser).left.get._2}
+			it ("Rejects a sequence-of-strings") {
+				assert(
+					dut.apply(dut.init, "tiles", CountingReader("""["a", "b", "c"]"""), jsonParser) match {
+						case ParserRetVal.BuilderFailure(_) => true
+					}
+				)
 			}
 		}
 	}
@@ -153,12 +222,16 @@ class VisualizationRuleBuilderTest extends FunSpec {
 				}
 			}"""
 			val builder = new VisualizationRuleBuilder(
-					  Nil
-					, MySpaceClassMatcherFactory
+					  MySpaceClassMatcherFactory
 					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
 					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
 			).mapKey[StringOrInt](StringOrInt.unwrapToString)
-			val res = new JsonParser().parse(builder, src).fold({x => x}, {x => throw new IllegalArgumentException("Was primitiive" + x)}, {(s,i) => throw new java.text.ParseException(s,i)})
+			val res = new JsonParser().parse(builder, src).fold(
+					  {x => x}
+					, {x => throw new IllegalArgumentException("Was primitiive" + x)}
+					, {x => throw new IllegalArgumentException(x.toString)}
+					, {x => throw new IllegalArgumentException(x.toString)}
+			)
 			
 			res match {
 				case ParamaterizedVisualizationRule(
@@ -190,5 +263,8 @@ class VisualizationRuleBuilderTest extends FunSpec {
 	}
 	object MapUnapplyer {
 		def unapplySeq[A,B](m:Map[A,B]):Option[Seq[(A,B)]] = Option(m.to[Seq])
+	}
+	object CountingReader {
+		def apply(x:String) = new com.rayrobdod.json.parser.CountingReader(new java.io.StringReader(x))
 	}
 }

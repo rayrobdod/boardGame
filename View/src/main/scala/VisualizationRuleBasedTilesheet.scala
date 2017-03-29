@@ -27,7 +27,7 @@ import scala.collection.immutable.{Seq, Map, Vector}
  * @group VisualizationRuleTilesheet
  */
 final class VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon](
-		  name:String
+		  val name:String
 		, val visualizationRules:Seq[view.VisualizationRule[SpaceClass, Index, IconPart]]
 		, compostLayers:Function1[Seq[Seq[IconPart]], Icon]
 		, override val iconDimensions:Dimension

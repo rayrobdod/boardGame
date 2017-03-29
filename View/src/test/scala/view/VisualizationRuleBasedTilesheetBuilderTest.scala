@@ -23,85 +23,94 @@ import java.net.URL
 import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.immutable.Seq
 import com.rayrobdod.json.parser.JsonParser;
-import com.rayrobdod.json.union.StringOrInt
-import com.rayrobdod.json.union.ParserRetVal.Complex
-import com.rayrobdod.json.union.ParserRetVal.Complex
 import com.rayrobdod.boardGame.SpaceClassMatcher
 import com.rayrobdod.boardGame.RectangularIndex
+import com.rayrobdod.boardGame.RectangularField
 
 class VisualizationRuleBasedTilesheetBuilderTest extends FunSpec {
 	val rdb = new VisualizationRuleBasedTilesheetBuilder.RectangularDimensionBuilder()
 	
 	describe("VisualizationRuleBasedTilesheetBuilder + JsonParser") {
 		it ("do a thing") {
-			val compostLayersFun = {x:Seq[Seq[Float]] => "apple"}
-			val urlToFrameImagesFun = {(u:URL, d:java.awt.Dimension) => Seq(0.5f)}
-			val strToIndexTranslationFun = VisualizationRuleBuilder.stringToRectangularIndexTranslation _
-			
-			val expected = Complex(new VisualizationRuleBasedTilesheetBuilder.Delayed(
-				  classMap = StubSpaceClassMatcherFactory
-				, compostLayers = compostLayersFun
-				, urlToFrameImages = urlToFrameImagesFun
-				, stringToIndexConverter = strToIndexTranslationFun
-				, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
-				, dimension = RectangularDimension(32,48)
-				, sheetUrl = new URL("http://localhost/tiles")
-				, tileWidth = 32
-				, tileHeight = 48
-				, rules = new URL("http://localhost/rules")
-				, name = "name"
-			))
-			val src = """{
-				"tiles":"tiles",
-				"tileWidth":32,
-				"tileHeight":48,
-				"rules":"rules",
-				"name":"name"
-			}"""
-			val builder = new VisualizationRuleBasedTilesheetBuilder(
+			val builder = new VisualizationRuleBasedTilesheetBuilder[Int, RectangularIndex, RectangularDimension, (String, Int, Int, Int), Seq[Seq[(String, Int, Int, Int)]]](
 				  baseUrl = new URL("http://localhost/")
-				, classMap = StubSpaceClassMatcherFactory
-				, compostLayers = compostLayersFun
-				, urlToFrameImages = urlToFrameImagesFun
-				, stringToIndexConverter = strToIndexTranslationFun
+				, classMap = MySpaceClassMatcherFactory
+				, compostLayers = {x => x}
+				, urlToFrameImages = {(u:URL, d:java.awt.Dimension) => (0 to 1).map{x => ((u.toString, d.width, d.height, x))}}
+				, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation _
 				, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
 				, dimensionBuilder = rdb
-			).mapKey[StringOrInt](StringOrInt.unwrapToString)
-			val result = new JsonParser().parse(builder, src)
+			)
 			
-			assertResult(expected){result}
+			
+			val src = """{
+				"name" : "name",
+				"tileset" : {
+					"image" : "tiles",
+					"tileWidth" : 32,
+					"tileHeight" : 48
+				},
+				"dimensions" : {
+					"width" : 64,
+					"height" : 24
+				},
+				"rules": [{
+					"tiles": 0
+				}]
+			}"""
+			val result = new JsonParser().parse(builder, src).fold({x => x}, {x => fail()}, {x => fail()}, {x => fail()})
+			
+			val expectedRules = Vector(ParamaterizedVisualizationRule(Map(-127 -> List(("http://localhost/tiles", 32, 48, 0)))))
+			val expectedIcon00 = ((Vector(List(("http://localhost/tiles", 32, 48, 0))),Vector()))
+			assertResult("name"){result.name}
+			assertResult(RectangularDimension(64, 24)){result.iconDimensions}
+			// assertResult(expectedRules){result.visualizationRules}
+			assertResult(expectedIcon00){result.getIconFor(RectangularField(Map((0, 0) -> 0)), (0,0), scala.util.Random)}
 		}
 	}
 	describe("VisualizationRuleBasedTilesheetBuilder.Delayed") {
 		it ("can apply() using a two-image, two-rule pair of files") {
-			val source = new VisualizationRuleBasedTilesheetBuilder.Delayed[String,(Int, Int),RectangularDimension,RectangularDimension,java.awt.Image,javax.swing.Icon](
-				classMap = StubSpaceClassMatcherFactory,
-				compostLayers = Swing.compostLayers,
-				urlToFrameImages = Swing.sheeturl2images,
-				stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation,
-				coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars,
-				dimension = rdb.init,
-				sheetUrl = this.getClass.getResource("/com/rayrobdod/boardGame/swingView/whiteBlackTiles.png"),
-				tileWidth = 32,
-				tileHeight = 32,
-				rules = new URL("data", "text/json", -1, """[{"tiles":0, "indexies":"x == 0"},{"tiles":1}]""", new DataHandler),
-				name = "name"
-			)
-			val result = source.apply(rdb.finalize _)
+			val idxEquationParser = new CoordinateFunctionSpecifierParser(CoordinateFunctionSpecifierParser.rectangularVars)
 			
-			val resRules = result.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[String, RectangularIndex, _]]}
+			val source = new VisualizationRuleBasedTilesheetBuilder.Delayed[Int, RectangularIndex, RectangularDimension](
+				  name = "name"
+				, tilesheet = VisualizationRuleBasedTilesheetBuilder.TilesheetData(
+					  url = this.getClass.getResource("/com/rayrobdod/boardGame/swingView/whiteBlackTiles.png")
+					, tileWidth = 32
+					, tileHeight = 32
+				)
+				, dimension = RectangularDimension(32, 32)
+				, rules = Seq(
+					  ParamaterizedVisualizationRule(
+						  iconParts = Map(-1 -> Seq(0))
+						, indexEquation = idxEquationParser.parse("x == 0").right.get
+					)
+					, ParamaterizedVisualizationRule(
+						  iconParts = Map(-1 -> Seq(1))
+					)
+				)
+			)
+			val result = Swing.VisualizationRuleBasedRectangularTilesheetBuilder(new URL("http://localhost:80"), MySpaceClassMatcherFactory)
+					.finish(source)
+			
+			val resRules = result.fold({x => x}, {x => fail()}, {x => fail()}, {x => fail()})
+					.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[Int, RectangularIndex, RectangularDimension]]}
 			assertResult("(x == 0)"){resRules(0).indexEquation.toString}
 			assertResult("true"){resRules(1).indexEquation.toString}
-			assertResult(java.awt.Color.white.getRGB){resRules(0).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
-			assertResult(java.awt.Color.black.getRGB){resRules(1).iconParts(-127)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
+			assertResult(java.awt.Color.white.getRGB){resRules(0).iconParts(-1)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
+			assertResult(java.awt.Color.black.getRGB){resRules(1).iconParts(-1)(0).asInstanceOf[BufferedImage].getRGB(5,5)}
 		}
 	}
 	
 	
-	object StubSpaceClassMatcherFactory extends SpaceClassMatcherFactory[String] {
-		def apply(ref:String):SpaceClassMatcher[String] = {
-			throw new UnsupportedOperationException("")
+	
+	object MySpaceClassMatcherFactory extends SpaceClassMatcherFactory[Int] {
+		def apply(ref:String):SpaceClassMatcher[Int] = {
+			new MySpaceClassMatcher(ref)
 		}
+	}
+	case class MySpaceClassMatcher(ref:String) extends SpaceClassMatcher[Int] {
+		def unapply(sc:Int):Boolean = {ref == sc.toString}
 	}
 }
 

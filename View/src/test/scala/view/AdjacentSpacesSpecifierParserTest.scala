@@ -134,50 +134,42 @@ class AdjacentSpacesSpecifierParserTest extends FunSpec {
 		}
 		
 		it ("returns an error containing an unknown id when the specifier is just an unknown id") {
-			// assertResult(Set("abc")){
-			assertResult( (("Unknown Identifiers: abc", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("abc"))){
 				AdjacentSpacesSpecifierParser.parse[String]("abc", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing an unknown id when the specifier is NOT followed by an unknown id") {
-			// assertResult(Set("def")){
-			assertResult( (("Unknown Identifiers: def", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("def"))){
 				AdjacentSpacesSpecifierParser.parse[String]("NOT def", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing two unknown id when the specifier is two unknown ids OR'd") {
-			// assertResult(Set("ghi", "jki")){
-			assertResult( (("Unknown Identifiers: ghi, jki", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("ghi", "jki"))){
 				AdjacentSpacesSpecifierParser.parse[String]("ghi OR jki", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing one unknown id when the specifier is one known id ORd with an unknown id") {
-			// assertResult(Set("jki")){
-			assertResult( (("Unknown Identifiers: jki", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("jki"))){
 				AdjacentSpacesSpecifierParser.parse[String]("gh OR jki", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing one unknown id when the specifier is one unknown id ORd with an known id") {
-			// assertResult(Set("ghi")){
-			assertResult( (("Unknown Identifiers: ghi", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("ghi"))){
 				AdjacentSpacesSpecifierParser.parse[String]("ghi OR jk", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing two unknown id when the specifier is two unknown ids AND'd") {
-			// assertResult(Set("ghi", "jki")){
-			assertResult( (("Unknown Identifiers: ghi, jki", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("ghi", "jki"))){
 				AdjacentSpacesSpecifierParser.parse[String]("ghi AND jki", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing one unknown id when the specifier is one known id ANDd with an unknown id") {
-			// assertResult(Set("jki")){
-			assertResult( (("Unknown Identifiers: jki", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("jki"))){
 				AdjacentSpacesSpecifierParser.parse[String]("gh AND jki", evenLenStringToSome).left.get
 			}
 		}
 		it ("returns an error containing one unknown id when the specifier is one unknown id ANDd with an known id") {
-			// assertResult(Set("ghi")){
-			assertResult( (("Unknown Identifiers: ghi", 0)) ){
+			assertResult(UnknownIdentifierFailure(Set("ghi"))){
 				AdjacentSpacesSpecifierParser.parse[String]("ghi AND jk", evenLenStringToSome).left.get
 			}
 		}

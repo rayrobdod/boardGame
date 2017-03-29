@@ -127,8 +127,7 @@ object AdjacentSpacesSpecifierParser {
 		override def unapply(sc:SpaceClass):Boolean = backing.contains(sc)
 	}
 	
-	// TODO: resource strings
-	private[this] final val unknownError:String = "Unknown Identifiers: "
+	
 	
 	/**
 	 * Parse `spec` into a SpaceClassMatcher, using the format described in the class documentation
@@ -139,12 +138,17 @@ object AdjacentSpacesSpecifierParser {
 		- A right containing the parsed SpaceClassMatcher
 		- A left containing the identifiers that were in the spec but not in `derefSpaceClass`
 	 */
-	def parse[SpaceClass](spec:String, derefSpaceClass:String => Option[SpaceClass]):Either[(String,Int), SpaceClassMatcher[SpaceClass]] = {
-		parser.parse(spec).fold({(_, idx, extra) => Left(extra.toString, idx)}, {(res, idx) => 
-			res.mapOpt(derefSpaceClass)
-				.right.map{new SpaceClassMatcherFromMySet(_)}
-				.left.map{x:Set[String] => (x.mkString(unknownError, ", ", ""), 0)}
-		})
+	def parse[SpaceClass](
+		spec:String, derefSpaceClass:String => Option[SpaceClass]
+	):Either[AdjacentSpacesSpecifierFailure, SpaceClassMatcher[SpaceClass]] = {
+		parser.parse(spec).fold(
+			  {(_, idx, extra) => Left(InnerFormatParseFailure(idx, extra))}
+			, {(res, idx) => 
+				res.mapOpt(derefSpaceClass)
+					.right.map{new SpaceClassMatcherFromMySet(_)}
+					.left.map{UnknownIdentifierFailure(_)}
+			}
+		)
 	}
 	
 	/**
@@ -161,4 +165,5 @@ object AdjacentSpacesSpecifierParser {
 			}
 		}
 	}
+	
 }
