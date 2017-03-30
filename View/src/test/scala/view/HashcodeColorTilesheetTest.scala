@@ -30,23 +30,23 @@ class HashcodeColorTilesheetTest extends FunSpec {
 		val dut = new HashcodeColorTilesheet[RectangularIndex, MyDim.type, Int]({() => -1}, {(x:Color, d:(Int, Int)) => x.getRGB & 0xFFFFFF}, MyDim)
 		it ("getIconFor(...)._2 is transparentIcon") {
 			val field = RectangularField(Seq(Seq(1)))
-			val res = dut.getIconFor(field, (0, 0), null)._2
-			assertResult(-1){res}
+			val res = dut.getIconFor(field, (0, 0), null).belowFrames
+			assertResult(Seq(-1)){res}
 		}
 		it ("getIconFor(...)._1 for item with hashcode 1 is 1 << 23") {
 			val field = RectangularField(Seq(Seq(1)))
-			val res = dut.getIconFor(field, (0, 0), null)._1
-			assertResult(1 << 23){res}
+			val res = dut.getIconFor(field, (0, 0), null).aboveFrames
+			assertResult(Seq(1 << 23)){res}
 		}
 		it ("getIconFor(...)._1 for item with hashcode 2 is 1 << 15") {
 			val field = RectangularField(Seq(Seq(2)))
-			val res = dut.getIconFor(field, (0, 0), null)._1
-			assertResult(1 << 15){res}
+			val res = dut.getIconFor(field, (0, 0), null).aboveFrames
+			assertResult(Seq(1 << 15)){res}
 		}
 		it ("getIconFor(...)._1 for item with hashcode 4 is 1 << 7") {
 			val field = RectangularField(Seq(Seq(4)))
-			val res = dut.getIconFor(field, (0, 0), null)._1
-			assertResult(1 << 7){res}
+			val res = dut.getIconFor(field, (0, 0), null).aboveFrames
+			assertResult(Seq(1 << 7)){res}
 		}
 		it ("dimension is dimension") {
 			assertResult(MyDim){dut.iconDimensions}

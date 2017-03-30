@@ -29,17 +29,17 @@ class IndexesTilesheetTest extends FunSpec {
 			, {s => s}
 			, MyDim
 		)
-		it ("getIconFor(...)._1 is light for even index") {
-			assertResult("light"){dut.getIconFor(null, (0, 0), null)._1}
+		it ("getIconFor(...).aboveFrames is light for even index") {
+			assertResult(Seq("light")){dut.getIconFor(null, (0, 0), null).aboveFrames}
 		}
-		it ("getIconFor(...)._1 is dark for odd index") {
-			assertResult("dark"){dut.getIconFor(null, (0, 1), null)._1}
+		it ("getIconFor(...).aboveFrames is dark for odd index") {
+			assertResult(Seq("dark")){dut.getIconFor(null, (0, 1), null).aboveFrames}
 		}
 		it ("getIconFor(...)._2 for (0,0) is '(0,0)'") {
-			assertResult("(0,0)"){dut.getIconFor(null, (0, 0), null)._2}
+			assertResult(Seq("(0,0)")){dut.getIconFor(null, (0, 0), null).belowFrames}
 		}
 		it ("getIconFor(...)._2 for (2,3) is '(2,3)'") {
-			assertResult("(2,3)"){dut.getIconFor(null, (2, 3), null)._2}
+			assertResult(Seq("(2,3)")){dut.getIconFor(null, (2, 3), null).belowFrames}
 		}
 		it ("dimension is dimension") {
 			assertResult(MyDim){dut.iconDimensions}

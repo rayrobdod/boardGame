@@ -23,26 +23,77 @@ import javafx.scene.input.MouseEvent
 import scala.collection.immutable.{Seq, Map}
 
 private[view] final class JavaFxRenderable[Index, Dimension](
-		  tiles:Map[Index, Node]
+		  tiles:Map[Index, AnimationFrames[Node]]
 		, dimension:Dimension
+		, framesPerSecond:Short
  )(implicit
 		iconLocation:IconLocation[Index, Dimension]
 ) extends Renderable[Index, Node] {
 	
+	private[this] val nanosPerSec:Long = 1e9.longValue
+	private[this] val nanosPerFrame:Long = nanosPerSec / framesPerSecond
+	private[this] val modulus = tiles.values.map{_.length}.foldLeft(1){lcm}
+	
+	private object AnimationTimer extends javafx.animation.AnimationTimer{
+		private var previousNowOpt:Option[Long] = None
+		private var remainder:Long = 0
+		private var currentFrame:Int = 0
+		
+		override def stop() {
+			super.stop();
+			this.previousNowOpt = None
+			this.remainder = 0
+		}
+		
+		override def handle(now:Long):Unit = {
+			previousNowOpt.map{previousNow =>
+				remainder = (now - previousNow) + remainder
+				
+				val frameIncrement = (remainder / nanosPerFrame).intValue
+				remainder = remainder % nanosPerFrame
+				val previousFrame = currentFrame
+				currentFrame = (currentFrame + frameIncrement) % modulus
+				
+				tiles.values.foreach{tileSeq =>
+					val hideTile = previousFrame % tileSeq.length
+					val showTile = currentFrame % tileSeq.length
+					
+					tileSeq(hideTile).setVisible(false)
+					tileSeq(showTile).setVisible(true)
+				}
+			}
+			previousNowOpt = Option(now)
+		}
+	}
+	
+	// if only one frame, then there is nothing to animate
+	if (modulus > 2) {
+		AnimationTimer.start()
+	}
+	
 	val component:Node = {
-		tiles.foreach{idxIcn:(Index, Node) =>
-			val (index, icon) = idxIcn
+		tiles.foreach{idxIcnseq =>
+			val (index, iconSeq) = idxIcnseq
 			val bounds = iconLocation.bounds(index, dimension)
 			
-			icon.relocate(bounds.x, bounds.y)
+			iconSeq.tail.foreach{icon =>
+				// animate by setting one of the icons to visible and the rest to not visible
+				// so, for the first frame, set everything but the head to not visible
+				icon.setVisible(false)
+			}
+			iconSeq.foreach{icon =>
+				icon.relocate(bounds.x, bounds.y)
+			}
 		}
-		new javafx.scene.Group(tiles.values.to[Seq]:_*)
+		new javafx.scene.Group(tiles.values.to[Seq].flatten:_*)
 	}
 	
 	def addOnClickHandler(idx:Index, f:Function0[Unit]):Unit = {
-		tiles(idx).setOnMouseClicked(new EventHandler[MouseEvent] {
-			override def handle(e:MouseEvent):Unit = { f.apply() }
-		})
+		tiles(idx).foreach{
+			_.setOnMouseClicked(new EventHandler[MouseEvent] {
+				override def handle(e:MouseEvent):Unit = { f.apply() }
+			})
+		}
 	}
 	
 }

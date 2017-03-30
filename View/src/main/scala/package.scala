@@ -19,6 +19,7 @@ package com.rayrobdod.boardGame
 
 import scala.annotation.tailrec
 import java.awt.{Rectangle, Polygon}
+import scala.collection.immutable.Seq
 
 /**
  * 
@@ -35,6 +36,7 @@ import java.awt.{Rectangle, Polygon}
  */
 package object view {
 	type IndexConverter[Index] = Function1[Index, Index]
+	type AnimationFrames[Icon] = Seq[Icon]
 	
 	/**
 	 * Least Common Multiple
@@ -259,7 +261,14 @@ package view {
 			  private[this] val tile:Function0[Icon]
 			, override val iconDimensions:Dimension
 	) extends Tilesheet[Any, Index, Dimension, Icon] {
-		override def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:scala.util.Random):(Icon, Icon) = ((tile(), tile()))
+		override def getIconFor(
+				  f:Tiling[_ <: Any, Index, _]
+				, xy:Index
+				, rng:scala.util.Random
+		):TileLocationIcons[Icon] = TileLocationIcons(
+				  Seq(tile())
+				, Seq(tile())
+		)
 	}
 	
 	
@@ -311,6 +320,19 @@ package view {
 		/** The space which contains the `point` */
 		def hit(point:(Int, Int), dim:Dimension):Index
 	}
+	
+	final case class TileLocationIcons[Icon](
+			  aboveFrames:AnimationFrames[Icon]
+			, belowFrames:AnimationFrames[Icon]
+	) {
+		assert(aboveFrames.length > 0)
+		assert(belowFrames.length > 0)
+	}
+	
+	object TileLocationIcons {
+		def apply[Icon](above:Icon, below:Icon):TileLocationIcons[Icon] = this.apply(Seq(above), Seq(below))
+	}
+	
 	
 	sealed trait VisualizationRuleBasedTilesheetFailure
 	object MalformedUrl extends VisualizationRuleBasedTilesheetFailure

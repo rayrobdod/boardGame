@@ -24,13 +24,13 @@ class CheckerboardTilesheetTest extends FunSpec {
 	describe ("CheckerboardTilesheet()") {
 		val dut = new CheckerboardTilesheet(() => Color.yellow, () => Color.red, () => Color.blue, new RectangularDimension(12,34))
 		it ("getIconFor(null, 0, 0, null)._1 is lightIcon") {
-			assertResult(Color.red){dut.getIconFor(null, (0, 0), null)._1}
+			assertResult(Seq(Color.red)){dut.getIconFor(null, (0, 0), null).aboveFrames}
 		}
 		it ("getIconFor(null, 0, 1, null)._1 is darkIcon") {
-			assertResult(Color.blue){dut.getIconFor(null, (0, 1), null)._1}
+			assertResult(Seq(Color.blue)){dut.getIconFor(null, (0, 1), null).aboveFrames}
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is transparentIcon") {
-			assertResult(Color.yellow){dut.getIconFor(null, (0, 0), null)._2}
+			assertResult(Seq(Color.yellow)){dut.getIconFor(null, (0, 0), null).belowFrames}
 		}
 		it ("dimension is dimension") {
 			assertResult(new RectangularDimension(12,34)){dut.iconDimensions}

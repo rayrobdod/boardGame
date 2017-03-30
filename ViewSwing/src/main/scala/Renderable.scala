@@ -19,12 +19,14 @@ package com.rayrobdod.boardGame.view
 
 import java.awt.Graphics
 import java.awt.event.{MouseListener, MouseEvent}
+import java.awt.event.{ActionListener, ActionEvent}
 import javax.swing.{JComponent, Icon}
 import scala.collection.immutable.Map
 
 private[view] final class SwingRenderable[Index, Dimension](
-		  tiles:Map[Index, Icon]
+		  tiles:Map[Index, AnimationFrames[Icon]]
 		, dimension:Dimension
+		, framesPerSecond:Short
  )(implicit
 		iconLocation:IconLocation[Index, Dimension]
 ) extends Renderable[Index, JComponent] {
@@ -36,14 +38,38 @@ private[view] final class SwingRenderable[Index, Dimension](
 		}
 		retVal
 	}
+	private[this] val millisPerSecond = 1000
+	private[this] val millisPerFrame = millisPerSecond / framesPerSecond
+	
+	private[this] val modulus = tiles.values.map{_.length}.foldLeft(1){lcm}
+	private[this] var currentFrame:Int = 0
+	
+	private[this] val animationTimer = new javax.swing.Timer(
+		  millisPerFrame
+		, new ActionListener() {
+			def actionPerformed(e:ActionEvent):Unit = {
+				currentFrame = (currentFrame + 1) % modulus
+				component.repaint()
+			}
+		}
+	)
+	
+	// if there is only one frame, then there is no animation
+	if (modulus > 2) {
+		animationTimer.start()
+	}
 	
 	val component:JComponent = new JComponent{
 		override def paintComponent(g:Graphics):Unit = {
 			// tiles should not overlap
-			tiles.foreach({(index:Index, icon:Icon) =>
+			tiles.foreach{idxIcnseq =>
+				val (index, iconSeq) = idxIcnseq
 				val tileBounds = iconLocation.bounds(index, dimension)
-				icon.paintIcon(this, g, tileBounds.x, tileBounds.y)
-			}.tupled)
+				
+				val showTile = currentFrame % iconSeq.length
+				
+				iconSeq(showTile).paintIcon(this, g, tileBounds.x, tileBounds.y)
+			}
 		}
 		
 		override def getMaximumSize():java.awt.Dimension = {

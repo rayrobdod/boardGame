@@ -31,7 +31,7 @@ import VisualizationRuleBasedTilesheetBuilder._
 final class VisualizationRuleBasedTilesheetBuilder[SpaceClass, Index, Dimension, IconPart, Icon](
 		  baseUrl:URL
 		, classMap:SpaceClassMatcherFactory[SpaceClass]
-		, compostLayers:Function1[Seq[Seq[IconPart]], Icon]
+		, mergeLayers:Function1[Seq[IconPart], Icon]
 		, urlToFrameImages:Function2[URL, java.awt.Dimension, Seq[IconPart]]
 		, stringToIndexConverter:Function1[String, Option[IndexConverter[Index]]]
 		, coordFunVars:Map[Char, CoordinateFunction[Index, Int]]
@@ -90,7 +90,7 @@ final class VisualizationRuleBasedTilesheetBuilder[SpaceClass, Index, Dimension,
 		ParserRetVal.Complex(new VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon](
 			  name = x.name
 			, visualizationRules = vizRules
-			, compostLayers = compostLayers
+			, mergeLayers = mergeLayers
 			, iconDimensions = x.dimension
 		))
 	}

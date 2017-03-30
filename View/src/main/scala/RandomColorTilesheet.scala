@@ -40,12 +40,19 @@ final class RandomColorTilesheet[Index, Dimension, Icon](
 		, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
 	
-	override def getIconFor(f:Tiling[_ <: Any, Index, _], x:Index, rng:Random):(Icon, Icon) = {
+	override def getIconFor(
+			  f:Tiling[_ <: Any, Index, _]
+			, xy:Index
+			, rng:Random
+	):TileLocationIcons[Icon] = {
 		val background = new java.awt.Color(rng.nextInt)
 		val foreground = this.foreground(background)
 		val text = ("000000" + background.getRGB.toHexString).takeRight(6)
 		
-		(( colorToIcon(background, iconDimensions, x), stringIcon(text, foreground, iconDimensions) ))
+		TileLocationIcons(
+				  colorToIcon(background, iconDimensions, xy)
+				, stringIcon(text, foreground, iconDimensions)
+		)
 	}
 	
 	/** Find a color that contrasts with the specified background color */

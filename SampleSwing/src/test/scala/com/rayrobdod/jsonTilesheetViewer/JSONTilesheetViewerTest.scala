@@ -44,50 +44,50 @@ class JsonTilesheetViewerTest extends FunSpec {
 		}
 		it ("VisualizationRuleBasedTilesheet() returns []") {
 			assertResult(Seq()){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> ConstTrueSpaceClassMatcher))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a') returns ['a']") {
 			assertResult(Seq("a")){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a")))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a','b') returns ['a','b']") {
 			assertResult(Seq("a","b")){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("b")))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a','!b') returns ['a']") {
 			assertResult(Seq("a")){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.UnequalsMatcher("b")))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}

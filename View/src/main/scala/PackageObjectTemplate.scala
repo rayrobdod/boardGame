@@ -78,13 +78,6 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 */
 	def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[IconPart]
 	
-	@deprecated("moving animation responsibility", "4.0")
-	final def compostLayers(frameLayers:Seq[Seq[IconPart]]):Icon = {
-		frameLayers.headOption
-			.map(this.flattenImageLayers)
-			.getOrElse(this.flattenImageLayers(Nil))
-	}
-
 	
 	/**
 	 * Returns a [[view.NilTilesheet]] that uses this template's blankIcon
@@ -207,7 +200,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, RectangularIndex, RectangularDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
-			, this.compostLayers _
+			, this.flattenImageLayers _
 			, this.sheeturl2images _
 			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
 			, CoordinateFunctionSpecifierParser.rectangularVars
@@ -225,7 +218,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, HorizontalHexagonalIndex, HorizontalHexagonalDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
-			, this.compostLayers _
+			, this.flattenImageLayers _
 			, this.sheeturl2images _
 			, VisualizationRuleBuilder.stringToRectangularIndexTranslation
 			, CoordinateFunctionSpecifierParser.hexagonalVars
@@ -243,7 +236,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		new VisualizationRuleBasedTilesheetBuilder[SpaceClass, ElongatedTriangularIndex, ElongatedTriangularDimension, IconPart, Icon](
 			  baseUrl
 			, classMap
-			, this.compostLayers _
+			, this.flattenImageLayers _
 			, this.sheeturl2images _
 			, VisualizationRuleBuilder.stringToElongatedTriangularIndexTranslation
 			, CoordinateFunctionSpecifierParser.elongatedTriangularVars
@@ -270,9 +263,9 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 		, Renderable[Index, RenderableComponentType]
 	] = {
 		
-		val a:Map[Index, (Icon, Icon)] = field.mapIndex{x => ((x, tilesheet.getIconFor(field, x, rng) )) }.toMap
-		val top = a.mapValues{_._1}
-		val bot = a.mapValues{_._2}
+		val a:Map[Index, TileLocationIcons[Icon]] = field.mapIndex{x => ((x, tilesheet.getIconFor(field, x, rng) )) }.toMap
+		val top = a.mapValues{_.aboveFrames}
+		val bot = a.mapValues{_.belowFrames}
 		
 		(( this.renderable(top, tilesheet.iconDimensions), this.renderable(bot, tilesheet.iconDimensions) ))
 	}
@@ -281,7 +274,7 @@ abstract class PackageObjectTemplate[IconPart, Icon] {
 	 * @group Renderable
 	 */
 	def renderable[Index, Dimension](
-			  tiles:Map[Index, Icon]
+			  tiles:Map[Index, AnimationFrames[Icon]]
 			, dimension:Dimension
 	)(implicit
 			iconLocation:IconLocation[Index, Dimension]

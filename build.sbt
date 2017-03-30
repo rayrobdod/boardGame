@@ -18,7 +18,6 @@ lazy val view = (project in file("View"))
 		, Seq(
 			  name := "tile-view-shared"
 			, fork := true
-			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 			, libraryDependencies ++= Seq(
 				  "com.rayrobdod" %% "json" % "4.0-SNAPSHOT"
 				, "com.lihaoyi" %% "fastparse" % "0.4.2"
@@ -34,11 +33,7 @@ lazy val viewSwing = (project in file("ViewSwing"))
 		, Seq(
 			  name := "tile-view-swing"
 			, fork := true
-			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
-			, libraryDependencies ++= Seq(
-				  "com.rayrobdod" %% "utilities" % "20160112"
 		)
-	)
 	)
 
 lazy val viewJavaFx = (project in file("ViewJavaFx"))
@@ -50,7 +45,6 @@ lazy val viewJavaFx = (project in file("ViewJavaFx"))
 		, Seq(
 			  name := "tile-view-javafx"
 			, fork := true
-			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 		)
 	)
 
@@ -64,9 +58,9 @@ lazy val sampleSwing = (project in file("SampleSwing"))
 			  // heavy resource use
 			, fork := true
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer")
-			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 			, libraryDependencies ++= Seq(
-				"com.opencsv" % "opencsv" % "3.4"
+				  "com.opencsv" % "opencsv" % "3.4"
+				, "com.rayrobdod" %% "utilities" % "20160112"
 			)
 		)
 	)
@@ -83,7 +77,6 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 			  // main is javafx; javafx requires forking to run
 			, fork := true
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
-			, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 			, libraryDependencies ++= Seq(
 			)
 			//, JFX.mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
@@ -97,6 +90,8 @@ lazy val commonSettings = Seq(
 	, apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
 	, scalaVersion := "2.10.6"
 	, crossScalaVersions := Seq("2.10.6", "2.11.8" , "2.12.1")
+	
+	, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
 	
 	, javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 	, javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")

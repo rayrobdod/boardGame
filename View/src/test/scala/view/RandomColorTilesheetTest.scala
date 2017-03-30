@@ -29,7 +29,7 @@ class RandomColorTilesheetTest extends FunSpec {
 		it ("rng is 0") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 			
-			val exp = (( (("", 0, 64, 24)), (("000000", 0xFFFFFF, 64, 24)) ))
+			val exp = TileLocationIcons( (("", 0, 64, 24)), (("000000", 0xFFFFFF, 64, 24)) )
 			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
 					  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
 					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
@@ -41,7 +41,7 @@ class RandomColorTilesheetTest extends FunSpec {
 		it ("rng is 0x123456") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0x123456})
 			
-			val exp = (( (("", 0x123456, 64, 24)), (("123456", 0xFFFFFF, 64, 24)) ))
+			val exp = TileLocationIcons( (("", 0x123456, 64, 24)), (("123456", 0xFFFFFF, 64, 24)) )
 			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
 					  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
 					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
@@ -53,7 +53,7 @@ class RandomColorTilesheetTest extends FunSpec {
 		it ("rng is 0xFFFFFF") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0xFFFFFF})
 			
-			val exp = (( (("", 0xFFFFFF, 64, 24)), (("ffffff", 0, 64, 24)) ))
+			val exp = TileLocationIcons( (("", 0xFFFFFF, 64, 24)), (("ffffff", 0, 64, 24)) )
 			val dut = new RandomColorTilesheet[RectangularIndex, RectangularDimension, (String, Int, Int, Int)](
 					  {(a,b,c) => (("", a.getRGB & 0xFFFFFF, b.width, b.height))}
 					, {(a,b,c) => ((a, b.getRGB & 0xFFFFFF, c.width, c.height))}
@@ -73,7 +73,7 @@ class RandomColorTilesheetTest extends FunSpec {
 		it ("getIconFor(null, 0, 0, null) has the new dimensions") {
 			val rng = new Random(new java.util.Random(){override def next(bits:Int):Int = 0})
 			
-			val exp = (( (("", 0, 13, 21)), (("000000", 0xFFFFFF, 13, 21)) ))
+			val exp = TileLocationIcons( (("", 0, 13, 21)), (("000000", 0xFFFFFF, 13, 21)) )
 			assertResult(exp){dut.getIconFor(null, (-1, -1), rng)}
 		}
 	}
