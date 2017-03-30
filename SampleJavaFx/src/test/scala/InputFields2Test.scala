@@ -21,10 +21,8 @@ import org.scalatest.FunSpec
 import scala.util.Random
 import scala.collection.immutable.Seq
 import com.rayrobdod.boardGame.view._
-import com.rayrobdod.boardGame.javafxView.FxTests
 import com.rayrobdod.boardGame.javafxView.InitializeFx
 
-@FxTests
 class InputFields2Test extends FunSpec {
 	import scala.language.existentials
 	
