@@ -44,7 +44,6 @@ lazy val viewJavaFx = (project in file("ViewJavaFx"))
 	.settings(
 		  commonSettings
 		, commonTestSettings
-		, jfxSettings
 		, Seq(
 			  name := "tile-view-javafx"
 			, fork := true
@@ -73,7 +72,6 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 	.settings(
 		  commonSettings
 		, commonTestSettings
-		, jfxSettings
 		, Seq(
 			  name := "tiles-sample-viewer-fx"
 			  // main is javafx; javafx requires forking to run
@@ -81,7 +79,6 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
 			, libraryDependencies ++= Seq(
 			)
-			//, JFX.mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
 		)
 	)
 
