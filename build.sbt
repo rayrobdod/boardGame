@@ -60,7 +60,6 @@ lazy val sampleSwing = (project in file("SampleSwing"))
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer")
 			, libraryDependencies ++= Seq(
 				  "com.opencsv" % "opencsv" % "3.4"
-				, "com.rayrobdod" %% "utilities" % "20160112"
 			)
 		)
 	)

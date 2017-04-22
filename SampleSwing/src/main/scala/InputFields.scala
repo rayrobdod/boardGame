@@ -21,7 +21,6 @@ import java.awt.{GridBagLayout, GridBagConstraints}
 import java.awt.event.ActionListener
 import javax.swing.{JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser, JRadioButton}
 import scala.util.Random
-import com.rayrobdod.swing.GridBagConstraintsFactory
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 
@@ -147,9 +146,9 @@ final class InputFields(
 	private val randBox = new JTextField(initialRand, 5)
 	private val goButton = new JButton("->")
 	
-	private val label = GridBagConstraintsFactory(insets = new java.awt.Insets(0,5,0,5), fill = GridBagConstraints.BOTH)
-	private val midUrlBox = GridBagConstraintsFactory(fill = GridBagConstraints.BOTH, weightx = 10)
-	private val endOfLine = GridBagConstraintsFactory(gridwidth = GridBagConstraints.REMAINDER, weightx = 1, fill = GridBagConstraints.BOTH)
+	private val label = gridBagConstraints(insets = new java.awt.Insets(0,5,0,5), fill = GridBagConstraints.BOTH)
+	private val midUrlBox = gridBagConstraints(fill = GridBagConstraints.BOTH, weightx = 10)
+	private val endOfLine = gridBagConstraints(gridwidth = GridBagConstraints.REMAINDER, weightx = 1, fill = GridBagConstraints.BOTH)
 	
 	panel.add(new JLabel("tilesheet: "), label)
 	panel.add(tilesheetUrlBox, midUrlBox)

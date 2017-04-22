@@ -17,6 +17,7 @@
 */
 package com.rayrobdod
 
+import java.awt.{Insets, GridBagConstraints}
 import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.immutable.Seq
 import scala.util.Random
@@ -136,15 +137,37 @@ package object jsonTilesheetViewer {
 		
 		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(url).openStream(), UTF_8)
 		val layoutTable:Seq[Seq[String]] = {
-			import scala.collection.JavaConversions.collectionAsScalaIterable;
+			import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 			
 			val reader = new CSVReader(layoutReader);
 			val letterTable3 = reader.readAll();
-			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
+			val letterTable = letterTable3.asScala.map{_.to[Seq]}.to[Seq]
 			
 			letterTable
 		}
 		
 		props.arbitraryField( layoutTable )
 	}
+	
+	/**
+	 * A factory for [[java.awt.GridBagConstraints]].
+	 * 
+	 * This uses the new method of GridBagConstraints; the main difference is that this has default parameters.
+	 */
+	def gridBagConstraints(
+			gridx:Int = GridBagConstraints.RELATIVE,
+			gridy:Int = GridBagConstraints.RELATIVE,
+			gridwidth:Int = 1,
+			gridheight:Int = 1,
+			weightx:Double = 0,
+			weighty:Double = 0,
+			anchor:Int = GridBagConstraints.CENTER,
+			fill:Int = GridBagConstraints.NONE,
+			insets:Insets = new Insets(0,0,0,0),
+			ipadx:Int = 0,
+			ipady:Int = 0
+	) = new GridBagConstraints(
+			gridx, gridy, gridwidth, gridheight,
+			weightx, weighty, anchor, fill, insets, ipadx, ipady
+	)
 }
