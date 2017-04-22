@@ -24,6 +24,7 @@ import com.rayrobdod.json.union.{StringOrInt, JsonValue, ParserRetVal}
 import com.rayrobdod.boardGame.SpaceClassMatcher
 
 class VisualizationRuleBuilderTest extends FunSpec {
+	object MyBuilderFailureExtra
 	
 	describe("VisualizationRuleBuilder") {
 		describe ("tileRand") {
@@ -34,39 +35,34 @@ class VisualizationRuleBuilderTest extends FunSpec {
 			)
 			
 			it ("Accepts positive integer value") {
-				assert(
-					dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, 4, _, _)) => true
-					}
-				)
+				dut.apply(dut.init, "tileRand", JsonValue(4), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, 4, _, _)) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects negative integer value") {
-				assert(
-					dut.apply(dut.init, "tileRand", JsonValue(-4), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tileRand", JsonValue(-4), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects zero value") {
-				assert(
-					dut.apply(dut.init, "tileRand", JsonValue(0), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tileRand", JsonValue(0), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects float value") {
-				assert(
-					dut.apply(dut.init, "tileRand", JsonValue(1.5), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tileRand", JsonValue(1.5), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects String value") {
-				assert(
-					dut.apply(dut.init, "tileRand", JsonValue("abc"), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tileRand", JsonValue("abc"), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 		}
 		describe ("indexies") {
@@ -77,18 +73,16 @@ class VisualizationRuleBuilderTest extends FunSpec {
 			)
 			
 			it ("Accepts string") {
-				assert(
-					dut.apply(dut.init, "indexies", JsonValue("x == y"), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, _, equ, _)) => equ.toString == "(x == y)"
-					}
-				)
+				dut.apply(dut.init, "indexies", JsonValue("x == y"), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, _, equ, _)) => equ.toString == "(x == y)"
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects not-string") {
-				assert(
-					dut.apply(dut.init, "indexies", JsonValue(54), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "indexies", JsonValue(54), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 		}
 		describe ("surroundingSpaces") {
@@ -100,39 +94,35 @@ class VisualizationRuleBuilderTest extends FunSpec {
 			val jsonParser = new JsonParser()
 			
 			it ("Rejects primitive") {
-				assert(
-					dut.apply(dut.init, "surroundingSpaces", JsonValue(54), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "surroundingSpaces", JsonValue(54), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Accepts a correctly-formatted string -> string pair") {
-				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": "abc" }"""), jsonParser) match {
+				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": "abc" }"""), jsonParser, MyBuilderFailureExtra) match {
 					case ParserRetVal.Complex(ParamaterizedVisualizationRule(_, _, _, MapUnapplyer((IndexConverter(0,0), MySpaceClassMatcher("abc"))))) => {
 						true
 					}
 				}
 			}
 			it ("Rejects a pair containing a Number value") {
-				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": 53 }"""), jsonParser) match {
-					case ParserRetVal.BuilderFailure(_) => true
-					case _ => fail()
+				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": 53 }"""), jsonParser, MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, _) => true
+					case x => fail(x.toString)
 				}
 			}
 			it ("Rejects a pair containing a nested-value") {
-				assert(
-					dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": [1,2,3] }"""), jsonParser) match {
-						case ParserRetVal.BuilderFailure(_) => true
-						case _ => false
-					}
-				)
+				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "(0,0)": [1,2,3] }"""), jsonParser, MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, _) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects a pair containing an incorrectly-formatted key") {
-				assert(
-					dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "abc": "abc" }"""), jsonParser) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "surroundingSpaces", CountingReader("""{ "abc": "abc" }"""), jsonParser, MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, _) => true
+					case x => fail(x.toString)
+				}
 			}
 		}
 		describe ("tiles") {
@@ -145,14 +135,14 @@ class VisualizationRuleBuilderTest extends FunSpec {
 			val jsonParser = new JsonParser()
 			
 			it ("Accepts a primitive int value, treating it as a not-animated tile at some negative layer") {
-				dut.apply(dut.init, "tiles", JsonValue(3), new IdentityParser[JsonValue]) match {
+				dut.apply(dut.init, "tiles", JsonValue(3), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
 					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer, Seq(frame))), _, _, _)) => {
 						assert(layer < 0 && frame == 3)
 					}
 				}
 			}
 			it ("Accepts a sequence of int values, treating it as a multi-frame animation at some negative layer") {
-				dut.apply(dut.init, "tiles", CountingReader("[3,10,7]"), jsonParser) match {
+				dut.apply(dut.init, "tiles", CountingReader("[3,10,7]"), jsonParser, MyBuilderFailureExtra) match {
 					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer, frames)), _, _, _)) => {
 						assert(layer < 0)
 						assertResult(Seq(3, 10, 7)){frames}
@@ -160,7 +150,7 @@ class VisualizationRuleBuilderTest extends FunSpec {
 				}
 			}
 			ignore ("Accepts an empty sequence of int values, treating it as a zero-frame animation at some negative layer") {
-				dut.apply(dut.init, "tiles", CountingReader("[]"), jsonParser) match {
+				dut.apply(dut.init, "tiles", CountingReader("[]"), jsonParser, MyBuilderFailureExtra) match {
 					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer, frames)), _, _, _)) => {
 						assert(layer < 0)
 						assertResult(Seq()){frames}
@@ -168,7 +158,7 @@ class VisualizationRuleBuilderTest extends FunSpec {
 				}
 			}
 			it ("Accepts a map of intable strings to seq of int values, treating it as a multi-frame animation at the specified layers") {
-				dut.apply(dut.init, "tiles", CountingReader("""{"1":[0,1],"2":[2,3]}"""), jsonParser) match {
+				dut.apply(dut.init, "tiles", CountingReader("""{"1":[0,1],"2":[2,3]}"""), jsonParser, MyBuilderFailureExtra) match {
 					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer1, frames1), (layer2, frames2)), _, _, _)) => {
 						assertResult(1){layer1}
 						assertResult(Seq(0,1)){frames1}
@@ -178,7 +168,7 @@ class VisualizationRuleBuilderTest extends FunSpec {
 				}
 			}
 			ignore ("(MAYBE) Accepts a map of intable strings to int values, treating it as a not-animated tile at the specified layers") {
-				dut.apply(dut.init, "tiles", CountingReader("""{"1":1,"2":2}"""), jsonParser) match {
+				dut.apply(dut.init, "tiles", CountingReader("""{"1":1,"2":2}"""), jsonParser, MyBuilderFailureExtra) match {
 					case ParserRetVal.Complex(ParamaterizedVisualizationRule(MapUnapplyer((layer1, frames1), (layer2, frames2)), _, _, _)) => {
 						assertResult(1){layer1}
 						assertResult(Seq(1)){frames1}
@@ -188,25 +178,22 @@ class VisualizationRuleBuilderTest extends FunSpec {
 				}
 			}
 			it ("Rejects a primitive string value") {
-				assert(
-					dut.apply(dut.init, "tiles", JsonValue("abc"), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tiles", JsonValue("abc"), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects a primitive intable string value") {
-				assert(
-					dut.apply(dut.init, "tiles", JsonValue("43"), new IdentityParser[JsonValue]) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tiles", JsonValue("43"), new IdentityParser[JsonValue], MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, MyBuilderFailureExtra) => true
+					case x => fail(x.toString)
+				}
 			}
 			it ("Rejects a sequence-of-strings") {
-				assert(
-					dut.apply(dut.init, "tiles", CountingReader("""["a", "b", "c"]"""), jsonParser) match {
-						case ParserRetVal.BuilderFailure(_) => true
-					}
-				)
+				dut.apply(dut.init, "tiles", CountingReader("""["a", "b", "c"]"""), jsonParser, MyBuilderFailureExtra) match {
+					case ParserRetVal.BuilderFailure(_, _) => true
+					case x => fail(x.toString)
+				}
 			}
 		}
 	}
@@ -225,12 +212,12 @@ class VisualizationRuleBuilderTest extends FunSpec {
 					  MySpaceClassMatcherFactory
 					, stringToIndexConverter = VisualizationRuleBuilder.stringToRectangularIndexTranslation
 					, coordFunVars = CoordinateFunctionSpecifierParser.rectangularVars
-			).mapKey[StringOrInt](StringOrInt.unwrapToString)
+			).mapKey[StringOrInt](_.fold({x => x}, {x => x.toString}))
 			val res = new JsonParser().parse(builder, src).fold(
 					  {x => x}
-					, {x => throw new IllegalArgumentException("Was primitiive" + x)}
-					, {x => throw new IllegalArgumentException(x.toString)}
-					, {x => throw new IllegalArgumentException(x.toString)}
+					, {x => fail("Was primitiive" + x)}
+					, {x => fail(x.toString)}
+					, {(x, e) => fail(x.toString)}
 			)
 			
 			res match {

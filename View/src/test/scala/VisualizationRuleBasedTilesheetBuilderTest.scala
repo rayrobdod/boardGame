@@ -58,7 +58,7 @@ class VisualizationRuleBasedTilesheetBuilderTest extends FunSpec {
 					"tiles": 0
 				}]
 			}"""
-			val result = new JsonParser().parse(builder, src).fold({x => x}, {x => fail()}, {x => fail()}, {x => fail()})
+			val result = new JsonParser().parse(builder, src).fold({x => x}, {x => fail()}, {x => fail()}, {(x,e) => fail()})
 			
 			val expectedRules = Vector(ParamaterizedVisualizationRule(Map(-127 -> List(("http://localhost/tiles", 32, 48, 0)))))
 			val expectedIcon00 = TileLocationIcons( Seq(Seq(("http://localhost/tiles", 32, 48, 0))), Seq(Seq()) )

@@ -44,46 +44,47 @@ final class VisualizationRuleBasedTilesheetBuilder[SpaceClass, Index, Dimension,
 		new Delayed[SpaceClass, Index, Dimension](
 			  "???"
 			, TilesheetData()
-			, dimensionBuilder.finish(dimensionBuilder.init).fold({x => x}, {x:Nothing => x}, {x:Nothing => x}, {x => throw new IllegalArgumentException(x.toString)})
+			, dimensionBuilder.finish(())(dimensionBuilder.init).fold({x => x}, {x:Nothing => x}, {x:Nothing => x}, {(x,e) => throw new IllegalArgumentException(x.toString)})
 			, Seq.empty
 		)
 	}
 	
-	override def apply[Input, PF](
+	override def apply[Input, PF, BFE](
 			folding:Middle,
 			key:StringOrInt,
 			input:Input,
-			parser:Parser[StringOrInt, JsonValue, PF, Input]
-	):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure] = key match {
+			parser:Parser[StringOrInt, JsonValue, PF, BFE, Input],
+			bfe:BFE
+	):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure, BFE] = key match {
 		case StringOrInt.Left("name") => {
 			parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 				.primitive.flatMap{_.ifIsString(
 					  {x => ParserRetVal.Complex(folding.copy(name = x))}
-					, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+					, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 				)}
 		}
 		case StringOrInt.Left("tileset") => {
 			parser.parse(new TilesetDataBuilder(baseUrl), input)
 				.complex.map{x => folding.copy(tilesheet = x)}
-				.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex)}
+				.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex, bfe)}
 			
 		}
 		case StringOrInt.Left("dimensions") => {
 			parser.parse(dimensionBuilder, input)
 				.complex.map{x => folding.copy(dimension = x)}
-				.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex)}
+				.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex, bfe)}
 		}
 		case StringOrInt.Left("rules") => {
 			parser.parse(new SeqBuilder(new VisualizationRuleBuilder(classMap, stringToIndexConverter, coordFunVars), ExpectedComplex), input)
 				.complex.map{x => folding.copy(rules = x)}
-				.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex)}
+				.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex, bfe)}
 		}
 		case _ => {
 			parser.parse(this, input); ParserRetVal.Complex(folding)
 		}
 	}
 	
-	override def finish(x:Middle):ParserRetVal[VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon], Nothing, Nothing, VisualizationRuleBasedTilesheetFailure] = {
+	override def finish[BFE](bfe:BFE)(x:Middle):ParserRetVal[VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon], Nothing, Nothing, VisualizationRuleBasedTilesheetFailure, BFE] = {
 		val tiles:Seq[IconPart] = urlToFrameImages(x.tilesheet.url, new java.awt.Dimension(x.tilesheet.tileWidth, x.tilesheet.tileHeight))
 		val vizRules = x.rules.map{_.mapIconPart(tiles)}
 		
@@ -113,142 +114,145 @@ object VisualizationRuleBasedTilesheetBuilder {
 	final class TilesetDataBuilder(baseUrl:URL) extends Builder[StringOrInt, JsonValue, VisualizationRuleBasedTilesheetFailure, TilesheetData] {
 		override type Middle = TilesheetData
 		override def init = TilesheetData()
-		override def apply[Input, PF](
-				folding:Middle, key:StringOrInt, input:Input, parser:Parser[StringOrInt, JsonValue, PF, Input]
-		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure] = key match {
+		override def apply[Input, PF, BFE](
+				folding:Middle, key:StringOrInt, input:Input, parser:Parser[StringOrInt, JsonValue, PF, BFE, Input], bfe:BFE
+		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure, BFE] = key match {
 			case StringOrInt.Left("image") => parser.parsePrimitive(input, ExpectedPrimitive).primitive.flatMap{_.ifIsString(
 					{str =>
 						try {
 							ParserRetVal.Complex(folding.copy(url = new URL(baseUrl, str)))
 						} catch {
-							case ex:java.net.MalformedURLException => ParserRetVal.BuilderFailure(MalformedUrl)
+							case ex:java.net.MalformedURLException => ParserRetVal.BuilderFailure(MalformedUrl, bfe)
 						}
 					},
-					{x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "String"))}
+					{x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "String"), bfe)}
 			)}
 			case StringOrInt.Left("tileWidth") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(tileWidth = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case StringOrInt.Left("tileHeight") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(tileHeight = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case _ => {
 				parser.parse(this, input); ParserRetVal.Complex(folding)
 			}
 		}
-		override def finish(x:Middle) = ParserRetVal.Complex(x)
+		override def finish[BFE](bfe:BFE)(x:Middle) = ParserRetVal.Complex(x)
 	}
 	
 	final class RectangularDimensionBuilder extends Builder[StringOrInt, JsonValue, VisualizationRuleBasedTilesheetFailure, RectangularDimension] {
 		override type Middle = RectangularDimension
 		override def init = RectangularDimension(1,1)
-		override def apply[Input, PF](
+		override def apply[Input, PF, BFE](
 				folding:RectangularDimension,
 				key:StringOrInt,
 				input:Input,
-				parser:Parser[StringOrInt, JsonValue, PF, Input]
-		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure]  = key match {
+				parser:Parser[StringOrInt, JsonValue, PF, BFE, Input],
+				bfe:BFE
+		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure, BFE]  = key match {
 			case StringOrInt.Left("width") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(width = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case StringOrInt.Left("height") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(height = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case _ => {
 				parser.parse(RectangularDimensionBuilder.this, input); ParserRetVal.Complex(folding)
 			}
 		}
-		override def finish(x:Middle) = ParserRetVal.Complex(x)
+		override def finish[BFE](bfe:BFE)(x:Middle) = ParserRetVal.Complex(x)
 	}
 	
 	final class HorizontalHexagonalDimensionBuilder extends Builder[StringOrInt, JsonValue, VisualizationRuleBasedTilesheetFailure, HorizontalHexagonalDimension] {
 		override type Middle = HorizontalHexagonalDimensionDelay
 		override def init = HorizontalHexagonalDimensionDelay(1, 1, 1)
-		override def apply[Input, PF](
+		override def apply[Input, PF, BFE](
 				folding:HorizontalHexagonalDimensionDelay,
 				key:StringOrInt,
 				input:Input,
-				parser:Parser[StringOrInt, JsonValue, PF, Input]
-		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure] = key match {
+				parser:Parser[StringOrInt, JsonValue, PF, BFE, Input],
+				bfe:BFE
+		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure, BFE] = key match {
 			case StringOrInt.Left("width") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(width = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case StringOrInt.Left("height") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(height = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case StringOrInt.Left("verticalOffset") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(verticalOffset = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case _ => {
 				parser.parse(HorizontalHexagonalDimensionBuilder.this, input); ParserRetVal.Complex(folding)
 			}
 		}
-		override def finish(x:Middle) = ParserRetVal.Complex(x.build)
+		override def finish[BFE](bfe:BFE)(x:Middle) = ParserRetVal.Complex(x.build)
 	}
 	
 	final class ElongatedTriangularDimensionBuilder extends Builder[StringOrInt, JsonValue, VisualizationRuleBasedTilesheetFailure, ElongatedTriangularDimension] {
 		override type Middle = ElongatedTriangularDimension
 		override def init = ElongatedTriangularDimension(1,1,1)
-		override def apply[Input, PF](
+		override def apply[Input, PF, BFE](
 				folding:ElongatedTriangularDimension,
 				key:StringOrInt,
 				input:Input,
-				parser:Parser[StringOrInt, JsonValue, PF, Input]
-		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure] = key match {
+				parser:Parser[StringOrInt, JsonValue, PF, BFE, Input],
+				bfe:BFE
+		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBasedTilesheetFailure, BFE] = key match {
 			case StringOrInt.Left("width") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(width = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case StringOrInt.Left("triangleHeight") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(triangleHeight = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case StringOrInt.Left("squareHeight") => {
 				parser.parsePrimitive[VisualizationRuleBasedTilesheetFailure](input, ExpectedPrimitive)
 					.primitive.flatMap{_.ifIsInteger(
 						  {x => ParserRetVal.Complex(folding.copy(squareHeight = x))}
-						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+						, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 					)}
 			}
 			case _ => {
 				parser.parse(ElongatedTriangularDimensionBuilder.this, input); ParserRetVal.Complex(folding)
 			}
 		}
-		override def finish(x:Middle) = ParserRetVal.Complex(x)
+		override def finish[BFE](bfe:BFE)(x:Middle) = ParserRetVal.Complex(x)
 	}
 	
 	final case class HorizontalHexagonalDimensionDelay(width:Int, height:Int, verticalOffset:Int) {

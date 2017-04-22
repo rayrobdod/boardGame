@@ -43,20 +43,21 @@ final class VisualizationRuleBuilder[SpaceClass, Index](
 		new ParamaterizedVisualizationRule[SpaceClass, Index, IconPart]()
 	}
 	
-	override def apply[Input, PF](
+	override def apply[Input, PF, BFE](
 			folding:ParamaterizedVisualizationRule[SpaceClass, Index, IconPart],
 			key:StringOrInt,
 			input:Input,
-			parser:Parser[StringOrInt, JsonValue, PF, Input]
-	):ParserRetVal[ParamaterizedVisualizationRule[SpaceClass, Index, IconPart], Nothing, PF, VisualizationRuleBuilderFailure] = key match {
+			parser:Parser[StringOrInt, JsonValue, PF, BFE, Input],
+			bfe:BFE
+	):ParserRetVal[ParamaterizedVisualizationRule[SpaceClass, Index, IconPart], Nothing, PF, VisualizationRuleBuilderFailure, BFE] = key match {
 		case StringOrInt.Left("tileRand") => {
 			parser.parsePrimitive(input, ExpectedPrimitive)
 				.primitive.flatMap{
 					_.ifIsInteger({value =>
 						if (value > 0) {ParserRetVal.Complex(folding.copy(tileRand = value))}
-						else {ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(value, "Unsigned Integer"))}
+						else {ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(value, "Unsigned Integer"), bfe)}
 					}, {jsonValue =>
-						ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(jsonValue, "Unsigned Integer"))
+						ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(jsonValue, "Unsigned Integer"), bfe)
 					})
 			}
 		}
@@ -65,18 +66,18 @@ final class VisualizationRuleBuilder[SpaceClass, Index](
 				.primitive.flatMap{
 					_.ifIsString({exprStr =>
 						new CoordinateFunctionSpecifierParser(coordFunVars).parse(exprStr).fold(
-							  {x => ParserRetVal.BuilderFailure(x)}
+							  {x => ParserRetVal.BuilderFailure(x, bfe)}
 							, {expr => ParserRetVal.Complex(folding.copy(indexEquation = expr))}
 						)
 					}, {jsonValue =>
-						ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(jsonValue, "String"))
+						ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(jsonValue, "String"), bfe)
 					})
 				}
 		}
 		case StringOrInt.Left("surroundingSpaces") => {
 			val builder = new VisualizationRuleBuilder.SurroundingSpacesBuilder(spaceClassUnapplier, stringToIndexConverter)
 			parser.parse(builder, input)
-				.primitive.flatMap{value => ParserRetVal.BuilderFailure(ExpectedComplex)}
+				.primitive.flatMap{value => ParserRetVal.BuilderFailure(ExpectedComplex, bfe)}
 				.complex.map{value => folding.copy(surroundingTiles = value)}
 		}
 		case StringOrInt.Left("tiles") => {
@@ -84,13 +85,13 @@ final class VisualizationRuleBuilder[SpaceClass, Index](
 					.complex.map{value => folding.copy(iconParts = value)}
 					.primitive.flatMap{_.ifIsInteger(
 						  {tileIndex => ParserRetVal.Complex(folding.copy(iconParts = Map(ARBITRARY_NEGATIVE_VALUE -> Seq(tileIndex))))}
-						, {other => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(other, "Integer"))}
+						, {other => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(other, "Integer"), bfe)}
 					)}
 		}
 		case _ => ParserRetVal.Complex(folding)
 	}
 	
-	override def finish(x:Middle) = ParserRetVal.Complex(x)
+	override def finish[BFE](bfe:BFE)(x:Middle) = ParserRetVal.Complex(x)
 }
 
 
@@ -152,25 +153,25 @@ private object VisualizationRuleBuilder {
 	) extends Builder[StringOrInt, JsonValue, VisualizationRuleBuilderFailure, Map[IndexConverter[Index], SpaceClassMatcher[A]]] {
 		override type Middle = Map[IndexConverter[Index], SpaceClassMatcher[A]]
 		override def init:SurroundingSpacesMap[Index, A] = Map.empty
-		override def apply[I, PF](
-				folding:SurroundingSpacesMap[Index, A], key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, PF, I]
-		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBuilderFailure] = {
+		override def apply[I, PF, BFE](
+				folding:SurroundingSpacesMap[Index, A], key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, PF, BFE, I], bfe:BFE
+		):ParserRetVal[Middle, Nothing, PF, VisualizationRuleBuilderFailure, BFE] = {
 			
 			val key2 = key.fold(stringToIndexConverter, {i => None})
 			
 			val value2 = parser.parsePrimitive(input, ExpectedPrimitive)
 				.primitive.flatMap{_.ifIsString(
 					  {str => ParserRetVal.Complex(spaceClassUnapplier(str))}
-					, {value => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(value, "String"))}
+					, {value => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(value, "String"), bfe)}
 				)}
 			
 			key2.map{key3 => value2.complex.map{value3 =>
 				folding + ((key3, value3))
 			}}.getOrElse{
-				ParserRetVal.BuilderFailure(SurroundingSpacesMapKeyNotDeltaIndex)
+				ParserRetVal.BuilderFailure(SurroundingSpacesMapKeyNotDeltaIndex, bfe)
 			}
 		}
-		override def finish(x:Middle) = ParserRetVal.Complex(x)
+		override def finish[BFE](bfe:BFE)(x:Middle) = ParserRetVal.Complex(x)
 	}
 	
 	def stringToRectangularIndexTranslation(s:String):Option[IndexConverter[RectangularIndex]] = {
@@ -259,7 +260,9 @@ private object VisualizationRuleBuilder {
 	private object IconPartsBuilder extends Builder[StringOrInt, JsonValue, VisualizationRuleBuilderFailure, Map[Int, Seq[Int]]] {
 		override type Middle = IconPartsBuilderValue
 		override def init:IconPartsBuilderValue = IconPartsBuilderValueNil
-		override def apply[I, PF](folding:IconPartsBuilderValue, key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, PF, I]):ParserRetVal[IconPartsBuilderValue, Nothing, PF, VisualizationRuleBuilderFailure] = {
+		override def apply[I, PF, BFE](
+			folding:IconPartsBuilderValue, key:StringOrInt, input:I, parser:Parser[StringOrInt, JsonValue, PF, BFE, I], bfe:BFE
+		):ParserRetVal[IconPartsBuilderValue, Nothing, PF, VisualizationRuleBuilderFailure, BFE] = {
 			
 			key.fold({(s:String) =>
 				val keyOpt = try {
@@ -281,19 +284,21 @@ private object VisualizationRuleBuilder {
 					}
 					parser.parse(builder, input)
 							.complex.map{value => folding.mapAppend(key2 -> value)}
-							.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex)}
+							.primitive.flatMap{x => ParserRetVal.BuilderFailure(ExpectedComplex, bfe)}
 				}.getOrElse{
-					ParserRetVal.BuilderFailure(IconPartMapKeyNotIntegerConvertable(s))
+					ParserRetVal.BuilderFailure(IconPartMapKeyNotIntegerConvertable(s), bfe)
 				}
 			}, {(i:Int) =>
-				parser.parsePrimitive(input, ExpectedPrimitive)
+				parser.parsePrimitive[ExpectedPrimitive.type](input, ExpectedPrimitive)
 						.primitive.flatMap{_.ifIsInteger(
 							  {value => ParserRetVal.Complex(folding.seqAppend(value))}
-							, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"))}
+							, {x => ParserRetVal.BuilderFailure(UnsuccessfulTypeCoercion(x, "Integer"), bfe)}
 						)}
 			})
 		}
-		override def finish(x:Middle):ParserRetVal[Map[Int, Seq[Int]], Nothing, Nothing, VisualizationRuleBuilderFailure] = x.result.fold({ParserRetVal.BuilderFailure(_)}, {ParserRetVal.Complex(_)})
+		override def finish[BFE](bfe:BFE)(x:Middle):ParserRetVal[Map[Int, Seq[Int]], Nothing, Nothing, VisualizationRuleBuilderFailure, BFE] = {
+			x.result.fold({ParserRetVal.BuilderFailure(_, bfe)}, {ParserRetVal.Complex(_)})
+		}
 	}
 
 }
