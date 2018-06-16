@@ -19,11 +19,11 @@ lazy val view = (project in file("View"))
 			  name := "tile-view-shared"
 			, fork := true
 			, libraryDependencies ++= Seq(
-				  "com.rayrobdod" %% "json" % "4.0-SNAPSHOT"
-				, "com.lihaoyi" %% "fastparse" % "0.4.2"
-			)
+				  "com.rayrobdod" %% "json" % "4.0-RC1"
+				, "com.lihaoyi" %% "fastparse" % "1.0.0"
 			)
 		)
+	)
 
 lazy val viewSwing = (project in file("ViewSwing"))
 	.dependsOn(view)
@@ -33,6 +33,8 @@ lazy val viewSwing = (project in file("ViewSwing"))
 		, Seq(
 			  name := "tile-view-swing"
 			, fork := true
+			, libraryDependencies ++= Seq(
+			)
 		)
 	)
 
@@ -41,7 +43,6 @@ lazy val viewJavaFx = (project in file("ViewJavaFx"))
 	.settings(
 		  commonSettings
 		, commonTestSettings
-		, jfxSettings
 		, Seq(
 			  name := "tile-view-javafx"
 			, fork := true
@@ -70,7 +71,6 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 	.settings(
 		commonSettings
 		, commonTestSettings
-		, jfxSettings
 		, Seq(
 			  name := "tiles-sample-viewer-fx"
 			  // main is javafx; javafx requires forking to run
@@ -78,28 +78,28 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
 			, libraryDependencies ++= Seq(
 			)
-			//, JFX.mainClass := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer2")
 		)
 	)
 
 lazy val commonSettings = Seq(
 	  version := "4.0-SNAPSHOT"
 	, organization := "com.rayrobdod"
-	, organizationHomepage := Some(new URL("http://rayrobdod.name/"))
-	, apiURL := Some(url(s"http://doc.rayrobdod.name/boardgame/${version.value}/"))
-	, scalaVersion := "2.10.6"
-	, crossScalaVersions := Seq("2.10.6", "2.11.8" , "2.12.1")
+	, organizationHomepage := Some(new URL("https://rayrobdod.name/"))
+	, apiURL := Some(url(s"https://doc.rayrobdod.name/boardgame/${version.value}/"))
+	, scalaVersion := "2.10.7"
+	, crossScalaVersions := Seq("2.10.7", "2.11.12" , "2.12.6")
 	
-	, resolvers += ("rayrobdod" at "http://ivy.rayrobdod.name/")
-	
+	, compileOrder := CompileOrder.JavaThenScala
 	, javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
-	, javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")
+	, javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.8", "-target", "1.8")
 	, scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 	, scalacOptions ++= (scalaBinaryVersion.value match {
-		case "2.10" => Seq("-target:jvm-1.7")
-		case "2.11" => Seq("-target:jvm-1.7", "-Ywarn-unused-import", "-Ywarn-unused", "-Xlint:_", "-Xlint:-adapted-args")
-		case "2.12" => Seq("-target:jvm-1.8", "-Ywarn-unused-import", "-Ywarn-unused", "-Xlint:_", "-Xlint:-adapted-args")
-		case _ => Nil
+		case "2.10" | "2.11" => Seq("-target:jvm-1.8")
+		case _ => Seq("-target:jvm-1.8")
+	})
+	, scalacOptions ++= (scalaBinaryVersion.value match {
+		case "2.10" => Seq.empty
+		case _ => Seq("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint:_", "-Xlint:-adapted-args")
 	})
 	, scalacOptions in doc in Compile ++= Seq(
 		"-doc-title", name.value,
@@ -132,9 +132,10 @@ lazy val commonSettings = Seq(
 )
 
 lazy val commonTestSettings = Seq(
-	  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+	  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 	, libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
 	, testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
 )
 
-crossScalaVersions := Seq("2.10.6", "2.11.8" , "2.12.1")
+scalaVersion := "2.10.7"
+crossScalaVersions := Seq("2.10.7", "2.11.12" , "2.12.6")

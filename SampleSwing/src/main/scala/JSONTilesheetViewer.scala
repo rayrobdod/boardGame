@@ -26,7 +26,7 @@ import javax.swing.{JFrame, JPanel, JScrollPane}
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 import com.rayrobdod.boardGame.view.Swing._
-
+import javax.swing.WindowConstants.EXIT_ON_CLOSE
 
 /**
  * The main class for the Swing Sample Viewer
@@ -35,7 +35,7 @@ object JsonTilesheetViewer {
 	def main(args:Array[String]):Unit = {
 		
 		val frame = new JFrame("JSON Tilesheet Viewer")
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE)
 		
 		val inputFields = new InputFields(
 				initialTilesheetUrl = if (args.size > 0) args(0) else TAG_SHEET_NIL,

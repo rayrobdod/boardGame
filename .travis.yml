@@ -1,24 +1,29 @@
 language: scala
 
 scala:
-   - 2.10.6
-   - 2.11.8
+   - 2.10.7
+   - 2.11.12
+   - 2.12.6
 
 jdk: 
    - oraclejdk8
-   - oraclejdk7
-   - openjdk7
+   - oraclejdk10
 
-matrix:
-   include:
-      #- scala: 2.12.1
-      #  jdk: oraclejdk8
+before_install:
+  - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
 
 install:
-   - sbt update
+   - |
+      pushd /tmp
+      git clone --branch=4.0-RC1 --depth=2 -- https://github.com/rayrobdod/json.git json
+      cd json
+      echo sbt.version=0.13.17>project/build.properties
+      sbt ++$TRAVIS_SCALA_VERSION publishLocal
+      popd
+   - sbt ++$TRAVIS_SCALA_VERSION update
 
 script:
-  - sbt set\ JFX.devKit\ :=\ JFX.jdk\(\"$JAVA_HOME\"\) set\ testOptions\ in\ Test\ +=\ Tests.Argument\(\"-l\"\,\ \"com.rayrobdod.boardGame.javafxView.FxTests\"\) ++$TRAVIS_SCALA_VERSION coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION coverage test coverageReport
 
 after_success:
-  - sbt ++$TRAVIS_SCALA_VERSION coverageReport coveralls
+  - sbt ++$TRAVIS_SCALA_VERSION coverageAggregate coveralls
