@@ -34,7 +34,6 @@ lazy val viewSwing = (project in file("ViewSwing"))
 			  name := "tile-view-swing"
 			, fork := true
 			, libraryDependencies ++= Seq(
-				  "com.rayrobdod" %% "utilities" % "20160112"
 			)
 		)
 	)
@@ -89,8 +88,6 @@ lazy val commonSettings = Seq(
 	, apiURL := Some(url(s"https://doc.rayrobdod.name/boardgame/${version.value}/"))
 	, scalaVersion := "2.10.6"
 	, crossScalaVersions := Seq("2.10.6", "2.11.8" , "2.12.1")
-	
-	, resolvers += ("rayrobdod" at "https://ivy.rayrobdod.name/")
 	
 	, javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked")
 	, javacOptions in Compile ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7")

@@ -27,8 +27,6 @@ import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.net.URL
 import javax.swing.{Icon, ImageIcon}
 import javax.imageio.ImageIO
-import com.rayrobdod.animation.{AnimationIcon, ImageFrameAnimation}
-import com.rayrobdod.swing.SolidColorIcon
 
 /**
  * 

@@ -21,7 +21,6 @@ import java.awt.{GridBagLayout, GridBagConstraints}
 import java.awt.event.ActionListener
 import javax.swing.{JPanel, JTextField, JLabel, JButton, JComboBox, JFileChooser, JRadioButton}
 import scala.util.Random
-import com.rayrobdod.swing.GridBagConstraintsFactory
 import com.rayrobdod.boardGame._
 import com.rayrobdod.boardGame.view._
 

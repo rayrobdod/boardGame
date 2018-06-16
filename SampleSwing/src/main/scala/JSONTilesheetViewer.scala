@@ -42,7 +42,7 @@ object JsonTilesheetViewer {
 				initialFieldUrl     = if (args.size > 1) args(1) else TAG_MAP_ROTATE,
 				initialRand         = if (args.size > 2) args(2) else ""
 		)
-		val fieldComp = new JPanel(new com.rayrobdod.swing.layouts.LayeredLayout)
+		val fieldComp = new JPanel(new LayeredLayout)
 		
 		inputFields.addOkButtonActionListener(new ActionListener() {
 			override def actionPerformed(e:ActionEvent) {
