@@ -199,6 +199,23 @@ class VisualizationRuleBuilderTest extends FunSpec {
 	}
 	
 	describe("VisualizationRuleBuilder + JsonParser") {
+		it ("has expected default values") {
+			val exp = ParserRetVal.Complex(ParamaterizedVisualizationRule(
+				Map.empty,
+				1,
+				CoordinateFunction.constant(true),
+				Map.empty[IndexConverter[RectangularDimension], SpaceClassMatcher[String]]
+			))
+			val src = "{}"
+			val builder = new VisualizationRuleBuilder(
+				  MySpaceClassMatcherFactory
+				, VisualizationRuleBuilder.stringToRectangularIndexTranslation
+				, CoordinateFunctionSpecifierParser.rectangularVars
+			)
+			val res = new JsonParser().parse(builder, src)
+			
+			assertResult(exp){res}
+		}
 		it ("do a thing") {
 			val src = """{
 				"tileRand":5,
@@ -224,12 +241,12 @@ class VisualizationRuleBuilderTest extends FunSpec {
 				case ParamaterizedVisualizationRule(
 						MapUnapplyer(),
 						5,
-						indexFun,
+						IndexFuntionUnapplier("(((x + y) % 2) == 0)"),
 						MapUnapplyer(
 							Tuple2(IndexConverter(0,0), MySpaceClassMatcher("a")),
 							Tuple2(IndexConverter(1,1), MySpaceClassMatcher("b"))
 						)
-				) => assert(indexFun.toString == "(((x + y) % 2) == 0)")
+				) => {}
 				case _ => fail("res does not match")
 			}
 		}
@@ -246,6 +263,11 @@ class VisualizationRuleBuilderTest extends FunSpec {
 	object IndexConverter {
 		def unapply(f:Function1[(Int, Int), (Int, Int)]):Option[(Int, Int)] = {
 			Option(f((0,0)))
+		}
+	}
+	object IndexFuntionUnapplier {
+		def unapply(f:CoordinateFunction[_,_]):Option[String] = {
+			Option(f.toString)
 		}
 	}
 	object MapUnapplyer {

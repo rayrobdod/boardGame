@@ -52,10 +52,10 @@ import scala.language.implicitConversions
     - 1*DIGIT => Int
     - anything in vars.keySet (but ideally between 'a' and 'z') => Int
  * 
- * This also allows optional whitespace around any token, parenthesis around any expression to change precidence
+ * This also allows optional whitespace around any token, parenthesis around any expression to change precedence
  * 
  * Notably, no unary not and no if statements ; however anything that can be
- * expressed with unary-not or trinary-if should be expressable with the operators
+ * expressed with unary-not or ternary-if should be expressible with the operators
  * provided.
  *  - ex: `!(a < b)` is equivalent to `a >= b`
  *  - ex: `(a == b ? c : d)` is equivalent to `(a == b && c) || (a != b && d)`
@@ -144,30 +144,25 @@ object CoordinateFunctionSpecifierParser {
 	import com.rayrobdod.boardGame.HorizontalHexagonalIndex
 	import com.rayrobdod.boardGame.ElongatedTriangularIndex
 	
+	private[this] class VariableCoordinateFunction[Index](private val name:Char, fun:Function[Index, Int]) extends CoordinateFunction[Index, Int] {
+		override def apply(coord:Index):Int = fun.apply(coord)
+		override def toString:String = name.toString
+		// all values are created inside vals, so the default Object equals is sufficient for this case
+	}
+	
 	val rectangularVars:Map[Char, CoordinateFunction[RectangularIndex, Int]] = Map(
-		'x' -> new CoordinateFunction[RectangularIndex, Int]{def apply(xy:(Int, Int)) = xy._1; override def toString = "x"},
-		'y' -> new CoordinateFunction[RectangularIndex, Int]{def apply(xy:(Int, Int)) = xy._2; override def toString = "y"}
+		'x' -> new VariableCoordinateFunction[RectangularIndex]('x', {xy:(Int, Int) => xy._1}),
+		'y' -> new VariableCoordinateFunction[RectangularIndex]('y', {xy:(Int, Int) => xy._2})
 	)
 	
 	val hexagonalVars:Map[Char, CoordinateFunction[HorizontalHexagonalIndex, Int]] = Map(
-		'i' -> new CoordinateFunction[HorizontalHexagonalIndex, Int]{def apply(ij:(Int, Int)) = ij._1; override def toString = "i"},
-		'j' -> new CoordinateFunction[HorizontalHexagonalIndex, Int]{def apply(ij:(Int, Int)) = ij._2; override def toString = "j"}
+		'i' -> new VariableCoordinateFunction[HorizontalHexagonalIndex]('i', {ij:(Int, Int) => ij._1}),
+		'j' -> new VariableCoordinateFunction[HorizontalHexagonalIndex]('j', {ij:(Int, Int) => ij._2})
 	)
 	
 	val elongatedTriangularVars:Map[Char, CoordinateFunction[ElongatedTriangularIndex, Int]] = Map(
-		'x' -> new CoordinateFunction[ElongatedTriangularIndex, Int]{
-			override def apply(idx:ElongatedTriangularIndex) = idx.x
-			override def toString = "x"
-		},
-		'y' -> new CoordinateFunction[ElongatedTriangularIndex, Int]{
-			override def apply(idx:ElongatedTriangularIndex) = idx.y
-			override def toString = "y"
-		},
-		't' -> new CoordinateFunction[ElongatedTriangularIndex, Int]{
-			override def apply(idx:ElongatedTriangularIndex) = {
-				com.rayrobdod.boardGame.ElongatedTriangularType.values.indexOf( idx.typ )
-			}
-			override def toString = "t"
-		}
+		'x' -> new VariableCoordinateFunction[ElongatedTriangularIndex]('x', {idx:ElongatedTriangularIndex => idx.x}),
+		'y' -> new VariableCoordinateFunction[ElongatedTriangularIndex]('y', {idx:ElongatedTriangularIndex => idx.y}),
+		't' -> new VariableCoordinateFunction[ElongatedTriangularIndex]('t', {idx:ElongatedTriangularIndex => com.rayrobdod.boardGame.ElongatedTriangularType.values.indexOf(idx.typ)})
 	)
 }
