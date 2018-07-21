@@ -118,6 +118,11 @@ object JsonTilesheetViewer2 {
 						inputFields, fieldComp,
 						index, currentRotationRotation, currentRotationState
 				))
+				a._2.addOnClickHandler(index, FieldRotationMouseListener(
+						dimProps)(
+						inputFields, fieldComp,
+						index, currentRotationRotation, currentRotationState
+				))
 			}
 			
 		} else {
@@ -173,6 +178,11 @@ object JsonTilesheetViewer2 {
 			
 			nextRotationState.foreachIndex{index =>
 				a._1.addOnClickHandler(index, FieldRotationMouseListener(
+						dimProps)(
+						inputFields, fieldComp,
+						index, currentRotationRotation, nextRotationState
+				))
+				a._2.addOnClickHandler(index, FieldRotationMouseListener(
 						dimProps)(
 						inputFields, fieldComp,
 						index, currentRotationRotation, nextRotationState

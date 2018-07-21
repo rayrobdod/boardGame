@@ -79,7 +79,7 @@ final class RectangularNameToTilesheetDemensionType[IconPart, Icon](
 	}
 	
 	override def initialRotationField(initialClass:SpaceClass):Tiling[SpaceClass, template.RectangularProperties.Index, SpaceType] = {
-		RectangularField(Seq.fill(14, 12){initialClass})
+		RectangularField(Seq.fill(12, 14){initialClass})
 	}
 	override def arbitraryField(clazzes:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, templateProps.Index, SpaceType] = {
 		RectangularField(clazzes)
