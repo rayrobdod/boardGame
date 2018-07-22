@@ -31,9 +31,9 @@ for example.
 
 ### Renderer
 
-Swing, JavaFx, LWJGL (theoretically), etc.
+Swing, JavaFx
 
 Implementations of the per-renderer things are in the ViewJavaFx and ViewSwing
-subprojects, in the `view.Javafx` and `view.Swing` objects.
-
+subprojects, in the `view.Javafx` and `view.Swing` objects. Adding another
+renderer should be relatively trivial
 
