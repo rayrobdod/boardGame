@@ -69,7 +69,7 @@ final class RectangularNameToTilesheetDemensionType[IconPart, Icon](
 	override def parseVisualizationRuleTilesheet(
 		parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL
 	):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-		val b = template.VisualizationRuleBasedRectangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
+		val b = template.VisualizationRuleBasedRectangularTilesheetBuilder(baseUrl, mySpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
@@ -107,7 +107,7 @@ final class HorizHexNameToTilesheetDemensionType[IconPart, Icon](
 	override def parseVisualizationRuleTilesheet(
 		parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL
 	):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-		val b = template.VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
+		val b = template.VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder(baseUrl, mySpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
@@ -166,7 +166,7 @@ final class ElongTriNameToTilesheetDemensionType[IconPart, Icon](
 	override def parseVisualizationRuleTilesheet(
 		parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL
 	):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-		val b = template.VisualizationRuleBasedElongatedTriangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
+		val b = template.VisualizationRuleBasedElongatedTriangularTilesheetBuilder(baseUrl, mySpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}

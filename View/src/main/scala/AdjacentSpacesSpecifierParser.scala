@@ -58,11 +58,13 @@ object AdjacentSpacesSpecifierParser {
 	
 	
 	/* I'd love to bitset, but the list of possible names is unknown */
-	/** Represents a set of strings */
+	/** Represents a set of spaceclasses */
 	private[this] trait MySet[A] {
 		def contains(x:A):Boolean
 		/** @return Left values that were tried but returned None; Right the mapped set */
 		def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]]
+		/** I don't want this to be public API, but jsonTilesheetViewer does need a list of space classes to cycle through */
+		private[AdjacentSpacesSpecifierParser] def leafComponents:Seq[A]
 		
 		/** A union of this and rhs */
 		final def or(rhs:MySet[A]):MySet[A] = new MySet[A]{
@@ -73,6 +75,7 @@ object AdjacentSpacesSpecifierParser {
 				case (Left(a), _) => Left(a)
 				case (_, Left(b)) => Left(b)
 			}
+			def leafComponents:Seq[A] = MySet.this.leafComponents ++ rhs.leafComponents
 		}
 		/** a intersection of this and rhs */
 		final def and(rhs:MySet[A]):MySet[A] = new MySet[A]{
@@ -83,6 +86,7 @@ object AdjacentSpacesSpecifierParser {
 				case (Left(a), _) => Left(a)
 				case (_, Left(b)) => Left(b)
 			}
+			def leafComponents:Seq[A] = MySet.this.leafComponents ++ rhs.leafComponents
 		}
 	}
 	/** Represents the set that contains only `value` */
@@ -91,6 +95,7 @@ object AdjacentSpacesSpecifierParser {
 		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = {
 			fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetContains(x))}
 		}
+		private[AdjacentSpacesSpecifierParser] def leafComponents:Seq[A] = Seq(value)
 	}
 	/** Represents the set that contains all strings except `value` */
 	private[this] final class MySetAllBut[A](value:A) extends MySet[A] {
@@ -98,6 +103,7 @@ object AdjacentSpacesSpecifierParser {
 		override def mapOpt[B](fun:A => Option[B]):Either[Set[A],MySet[B]] = {
 			fun(value).fold[Either[Set[A],MySet[B]]]{Left(Set(value))}{x => Right(new MySetAllBut(x))}
 		}
+		private[AdjacentSpacesSpecifierParser] def leafComponents:Seq[A] = Seq(value)
 	}
 	
 	
@@ -125,6 +131,7 @@ object AdjacentSpacesSpecifierParser {
 	
 	private[this] final class SpaceClassMatcherFromMySet[SpaceClass](backing:MySet[SpaceClass]) extends SpaceClassMatcher[SpaceClass] {
 		override def unapply(sc:SpaceClass):Boolean = backing.contains(sc)
+		private[AdjacentSpacesSpecifierParser] def leafComponents:Seq[SpaceClass] = backing.leafComponents
 	}
 	
 	
@@ -166,4 +173,9 @@ object AdjacentSpacesSpecifierParser {
 		}
 	}
 	
+	/** I don't want this to be public API, but jsonTilesheetViewer does need a list of space classes to cycle through */
+	private[rayrobdod] def leavesIn[SpaceClass](matcher:SpaceClassMatcher[SpaceClass]):Option[Seq[SpaceClass]] = matcher match {
+		case x:SpaceClassMatcherFromMySet[SpaceClass] => Option(x.leafComponents)
+		case _ => None
+	}
 }
