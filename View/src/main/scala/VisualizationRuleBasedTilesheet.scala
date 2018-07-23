@@ -27,13 +27,17 @@ import scala.collection.immutable.{Seq, Map, Vector}
  * @group VisualizationRuleTilesheet
  */
 final class VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPart, Icon](
-		  name:String
+		  val name:String
 		, val visualizationRules:Seq[view.VisualizationRule[SpaceClass, Index, IconPart]]
-		, compostLayers:Function1[Seq[Seq[IconPart]], Icon]
+		, mergeLayers:Function1[Seq[IconPart], Icon]
 		, override val iconDimensions:Dimension
 ) extends Tilesheet[SpaceClass, Index, Dimension, Icon] {
 	
-	override def getIconFor(field:Tiling[_ <: SpaceClass, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
+	override def getIconFor(
+			  field:Tiling[_ <: SpaceClass, Index, _]
+			, xy:Index
+			, rng:Random
+	):TileLocationIcons[Icon] = {
 		type ImageFrames = Seq[IconPart]
 		
 		val layers:Map[Int, ImageFrames] = {
@@ -49,25 +53,24 @@ final class VisualizationRuleBasedTilesheet[SpaceClass, Index, Dimension, IconPa
 		val lowHighLayers = layers.partition{_._1 < 0}
 		
 		// assumes that all images are the same size
-		def mashTogetherLayers(layers:Map[Int, ImageFrames]):Icon = {
+		def mashTogetherLayers(layers:Map[Int, ImageFrames]):Seq[Icon] = {
 			val layers2:Map[Int, ImageFrames] = layers
 			val layersInOrder:Seq[ImageFrames] = Vector.empty ++ layers2.toSeq.sortBy{_._1}.map{_._2}.filter{_.length > 0}
 			
-			val leastCommonFrameNumber:Int = layersInOrder.map{_.length}.fold(1){lcm}
+			val leastCommonMultipleFrameCount:Int = layersInOrder.map{_.length}.fold(1){lcm}
 			
 			// after this, all layers will have the same number of frames
 			val layersWithLCMFrames:Seq[ImageFrames] = layersInOrder.map{(x:ImageFrames) =>
-				Seq.fill(leastCommonFrameNumber / x.length){x}.flatten
+				Seq.fill(leastCommonMultipleFrameCount / x.length){x}.flatten
 			}
+			val layersWithLCMFrames2 = if (layersWithLCMFrames.isEmpty) {Seq(Nil)} else {layersWithLCMFrames.transpose}
 			
-			compostLayers(layersWithLCMFrames)
+			layersWithLCMFrames2.map(mergeLayers)
 		}
 		
-		val lowHighImages = (
+		TileLocationIcons(
 			mashTogetherLayers(lowHighLayers._1),
-			mashTogetherLayers(lowHighLayers._2) 
+			mashTogetherLayers(lowHighLayers._2)
 		) 
-		
-		lowHighImages
 	}
 }

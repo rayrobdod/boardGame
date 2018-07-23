@@ -42,9 +42,14 @@ final class HashcodeColorTilesheet[Index, Dimension, Icon](
 	, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
 	
-	def getIconFor(f:Tiling[_ <: Any, Index, _], xy:Index, rng:Random):(Icon, Icon) = {
-		(( colorToIcon(getColorFor(f,xy), xy), transparentIcon() ))
-	}
+	override def getIconFor(
+			  f:Tiling[_ <: Any, Index, _]
+			, idx:Index
+			, rng:Random
+	):TileLocationIcons[Icon] = TileLocationIcons(
+			  colorToIcon(getColorFor(f,idx), idx)
+			, transparentIcon()
+	)
 	
 	private[this] def getColorFor(f:Tiling[_ <: Any, Index, _], xy:Index):java.awt.Color = {
 		val hash = f.spaceClass(xy).map{_.hashCode}.getOrElse{0}

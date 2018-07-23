@@ -315,4 +315,81 @@ class CoordinateFunctionSpecifierParserTest extends FunSpec with PropertyChecks 
 			parse("xy == 0").left.get
 		}
 	}
+	
+	describe ("CoordinateFunctionSpecifierParser varmaps") {
+		describe ("rectangularVars") {
+			it ("has keys of x and y") {
+				assertResult(Set('x', 'y')){CoordinateFunctionSpecifierParser.rectangularVars.keySet}
+			}
+			describe ("x") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.rectangularVars('x') == CoordinateFunctionSpecifierParser.rectangularVars('x'))
+				}
+				it ("apply returns first coords") {
+					val dut = CoordinateFunctionSpecifierParser.rectangularVars('x')
+					forAll{(x:Int, y:Int) =>
+						assertResult(x){ dut.apply((x,y)) }
+					}
+				}
+			}
+			describe ("y") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.rectangularVars('y') == CoordinateFunctionSpecifierParser.rectangularVars('y'))
+				}
+				it ("apply returns first coords") {
+					val dut = CoordinateFunctionSpecifierParser.rectangularVars('y')
+					forAll{(x:Int, y:Int) =>
+						assertResult(y){ dut.apply((x,y)) }
+					}
+				}
+			}
+		}
+		describe ("hexagonalVars") {
+			it ("has keys of i and j") {
+				assertResult(Set('i', 'j')){CoordinateFunctionSpecifierParser.hexagonalVars.keySet}
+			}
+			describe ("i") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.hexagonalVars('i') == CoordinateFunctionSpecifierParser.hexagonalVars('i'))
+				}
+				it ("apply returns first coords") {
+					val dut = CoordinateFunctionSpecifierParser.hexagonalVars('i')
+					forAll{(x:Int, y:Int) =>
+						assertResult(x){ dut.apply((x,y)) }
+					}
+				}
+			}
+			describe ("j") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.hexagonalVars('j') == CoordinateFunctionSpecifierParser.hexagonalVars('j'))
+				}
+				it ("apply returns first coords") {
+					val dut = CoordinateFunctionSpecifierParser.hexagonalVars('j')
+					forAll{(x:Int, y:Int) =>
+						assertResult(y){ dut.apply((x,y)) }
+					}
+				}
+			}
+		}
+		describe ("elongatedTriangularVars") {
+			it ("has keys of x and y and t") {
+				assertResult(Set('x', 'y', 't')){CoordinateFunctionSpecifierParser.elongatedTriangularVars.keySet}
+			}
+			describe ("x") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.elongatedTriangularVars('x') == CoordinateFunctionSpecifierParser.elongatedTriangularVars('x'))
+				}
+			}
+			describe ("y") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.elongatedTriangularVars('y') == CoordinateFunctionSpecifierParser.elongatedTriangularVars('y'))
+				}
+			}
+			describe ("t") {
+				it ("equals itself") {
+					assert(CoordinateFunctionSpecifierParser.elongatedTriangularVars('t') == CoordinateFunctionSpecifierParser.elongatedTriangularVars('t'))
+				}
+			}
+		}
+	}
 }

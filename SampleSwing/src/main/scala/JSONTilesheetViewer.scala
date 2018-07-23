@@ -29,7 +29,7 @@ import com.rayrobdod.boardGame.view.Swing._
 import javax.swing.WindowConstants.EXIT_ON_CLOSE
 
 /**
- * The main class for the FX Sample Viewer
+ * The main class for the Swing Sample Viewer
  */
 object JsonTilesheetViewer {
 	def main(args:Array[String]):Unit = {

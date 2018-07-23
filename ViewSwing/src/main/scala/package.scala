@@ -49,8 +49,14 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	def rgbToColor(rgb:Color):Color = rgb
 	
-	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = {
-		new SolidColorIcon(rgbToColor(rgb), size.width, size.height)
+	override def rgbToRectangularIcon(rgb:Color, size:RectangularDimension):Icon = new Icon {
+		import java.awt.{Component, Graphics}
+		def getIconWidth:Int = size.width
+		def getIconHeight:Int = size.height
+		def paintIcon(c:Component, g:Graphics, x:Int, y:Int):Unit = {
+			g.setColor(rgbToColor(rgb))
+			g.fillRect(x, y, size.width, size.height)
+		}
 	}
 	
 	override def rgbToPolygonIcon(rgb:Color, shape:java.awt.Polygon):Icon = new Icon {
@@ -114,11 +120,11 @@ object Swing extends PackageObjectTemplate[Image, Icon] {
 	
 	
 	override def renderable[Index, Dimension](
-			  tiles:Map[Index, Icon]
+			  tiles:Map[Index, AnimationFrames[Icon]]
 			, dimension:Dimension
 	)(implicit
 			iconLocation:IconLocation[Index, Dimension]
 	):Renderable[Index, RenderableComponentType] = {
-		new SwingRenderable(tiles, dimension)(iconLocation)
+		new SwingRenderable(tiles, dimension, 5)(iconLocation)
 	}
 }

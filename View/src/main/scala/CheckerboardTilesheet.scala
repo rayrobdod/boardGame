@@ -38,9 +38,13 @@ final class CheckerboardTilesheet[Icon](
 	override val iconDimensions:RectangularDimension
 ) extends Tilesheet[Any, RectangularIndex, RectangularDimension, Icon] {
 	
-	override def getIconFor(f:Tiling[_ <: Any, RectangularIndex, _], xy:RectangularIndex, rng:Random):(Icon, Icon) = ((
+	override def getIconFor(
+			  f:Tiling[_ <: Any, RectangularIndex, _]
+			, xy:RectangularIndex
+			, rng:Random
+	):TileLocationIcons[Icon] = TileLocationIcons(
 		  if ((xy._1 + xy._2) % 2 == 0) {lightIcon()} else {darkIcon()}
 		, transparentIcon()
-	))
+	)
 	
 }

@@ -69,18 +69,17 @@ final class RectangularNameToTilesheetDemensionType[IconPart, Icon](
 	override def parseVisualizationRuleTilesheet(
 		parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL
 	):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-		val b = template.VisualizationRuleBasedRectangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
+		val b = template.VisualizationRuleBasedRectangularTilesheetBuilder(baseUrl, mySpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s"${baseUrl}:${i}:$s", i)}
-		).apply(
-			{x => x}
+			, {x => throw new java.text.ParseException("" + x, 0)}
+			, {(x, e) => throw new java.text.ParseException("" + x + e, 0)}
 		)
 	}
 	
 	override def initialRotationField(initialClass:SpaceClass):Tiling[SpaceClass, template.RectangularProperties.Index, SpaceType] = {
-		RectangularField(Seq.fill(14, 12){initialClass})
+		RectangularField(Seq.fill(12, 14){initialClass})
 	}
 	override def arbitraryField(clazzes:Seq[Seq[SpaceClass]]):Tiling[SpaceClass, templateProps.Index, SpaceType] = {
 		RectangularField(clazzes)
@@ -108,13 +107,12 @@ final class HorizHexNameToTilesheetDemensionType[IconPart, Icon](
 	override def parseVisualizationRuleTilesheet(
 		parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL
 	):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-		val b = template.VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
+		val b = template.VisualizationRuleBasedHorizontalHexagonalTilesheetBuilder(baseUrl, mySpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
-		).apply(
-			{x => x.build}
+			, {x => throw new java.text.ParseException("" + x, 0)}
+			, {(x, e) => throw new java.text.ParseException("" + x + e, 0)}
 		)
 	}
 	
@@ -168,13 +166,12 @@ final class ElongTriNameToTilesheetDemensionType[IconPart, Icon](
 	override def parseVisualizationRuleTilesheet(
 		parser:JsonParser, reader:java.io.Reader, baseUrl:java.net.URL
 	):Tilesheet[SpaceClass, templateProps.Index, Dimension, Icon] = {
-		val b = template.VisualizationRuleBasedElongatedTriangularTilesheetBuilder(baseUrl, StringSpaceClassMatcherFactory).mapKey(StringOrInt.unwrapToString)
+		val b = template.VisualizationRuleBasedElongatedTriangularTilesheetBuilder(baseUrl, mySpaceClassMatcherFactory).mapKey[StringOrInt](_.fold({x => x}, {_.toString}))
 		parser.parse(b, reader).fold(
 			  {x => x}
 			, {x => throw new java.text.ParseException("Parsed to primitive", 0)}
-			, {(s,i) => throw new java.text.ParseException(s + " : " + i, i)}
-		).apply(
-			{x => x}
+			, {x => throw new java.text.ParseException("" + x, 0)}
+			, {(x, e) => throw new java.text.ParseException("" + x + e, 0)}
 		)
 	}
 	

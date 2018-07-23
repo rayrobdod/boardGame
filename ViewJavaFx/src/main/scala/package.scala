@@ -22,7 +22,7 @@ import java.net.URL
 import java.awt.{Dimension => AwtDimension, Color => AwtColor}
 import scala.collection.immutable.{Seq, Map}
 import javafx.scene.Node
-import javafx.scene.image.{Image, ImageView, WritableImage}
+import javafx.scene.image.{Image, WritableImage}
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
@@ -94,11 +94,11 @@ object Javafx extends PackageObjectTemplate[Image, Node] {
 	
 	
 	override def renderable[Index, Dimension](
-			  tiles:Map[Index, Node]
+			  tiles:Map[Index, AnimationFrames[Node]]
 			, dimension:Dimension
 	)(implicit
 			iconLocation:IconLocation[Index, Dimension]
 	):Renderable[Index, RenderableComponentType] = {
-		new JavaFxRenderable(tiles, dimension)(iconLocation)
+		new JavaFxRenderable(tiles, dimension, 5)(iconLocation)
 	}
 }

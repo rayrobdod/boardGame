@@ -35,9 +35,9 @@ class CheckerboardURIMatcherTest extends FunSpec {
 		) = {
 			it (name) {
 				val dut = delay.apply(transIcon, rgbToIcon)
-				assertResult( transparentIcon ){ dut.getIconFor(null, (0, 0), null)._2 }
-				assertResult( lightIcon ){ dut.getIconFor(null, (0, 0), null)._1 }
-				assertResult( darkIcon ){ dut.getIconFor(null, (0, 1), null)._1 }
+				assertResult( Seq(transparentIcon) ){ dut.getIconFor(null, (0, 0), null).belowFrames }
+				assertResult( Seq(lightIcon) ){ dut.getIconFor(null, (0, 0), null).aboveFrames }
+				assertResult( Seq(darkIcon) ){ dut.getIconFor(null, (0, 1), null).aboveFrames }
 			}
 		}
 		

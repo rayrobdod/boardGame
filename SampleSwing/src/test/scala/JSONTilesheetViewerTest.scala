@@ -44,50 +44,62 @@ class JsonTilesheetViewerTest extends FunSpec {
 		}
 		it ("VisualizationRuleBasedTilesheet() returns []") {
 			assertResult(Seq()){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
 						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> ConstTrueSpaceClassMatcher))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a') returns ['a']") {
 			assertResult(Seq("a")){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
-						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a")))
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> mySpaceClassMatcherFactory("a")))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
+					, RectangularDimension(-1,-1)
+				))
+			}
+		}
+		it ("VisualizationRuleBasedTilesheet('b OR c AND d') returns ['b,c,d']") {
+			assertResult(Seq("b", "c", "d")){
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
+					  ""
+					, Seq(
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> mySpaceClassMatcherFactory("b OR c AND d")))
+					)
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}
 		}
 		it ("VisualizationRuleBasedTilesheet('a','b') returns ['a','b']") {
 			assertResult(Seq("a","b")){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
-						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
-						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("b")))
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> mySpaceClassMatcherFactory("a"))),
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> mySpaceClassMatcherFactory("b")))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}
 		}
-		it ("VisualizationRuleBasedTilesheet('a','!b') returns ['a']") {
-			assertResult(Seq("a")){
-				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Seq[Int]]](
+		it ("VisualizationRuleBasedTilesheet('a','NOT b') returns ['a','b']") {
+			assertResult(Seq("a", "b")){
+				allClassesInTilesheet(new VisualizationRuleBasedTilesheet[SpaceClass, RectangularIndex, RectangularDimension, Int, Seq[Int]](
 					  ""
 					, Seq(
-						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.EqualsMatcher("a"))),
-						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> StringSpaceClassMatcherFactory.UnequalsMatcher("b")))
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> mySpaceClassMatcherFactory("a"))),
+						new ParamaterizedVisualizationRule(surroundingTiles = Map(identityIndexConverter -> mySpaceClassMatcherFactory("NOT b")))
 					)
-					, {a:Seq[Seq[Int]] => a}
+					, {a:Seq[Int] => a}
 					, RectangularDimension(-1,-1)
 				))
 			}

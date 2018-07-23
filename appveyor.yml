@@ -10,7 +10,7 @@ install:
      echo publishTo in Global := {val patterns = if (publishMavenStyle.value) {sbt.Resolver.mavenStylePatterns} else {sbt.Resolver.ivyStylePatterns}; Some(Resolver.file("file", file("""C:\projects\boardgame\publish"""))(patterns) )}>%USERPROFILE%\.sbt\0.13\pubdir.sbt
   - |
      cd C:\projects
-     git clone --branch=3.1 --depth=2 -- https://github.com/rayrobdod/json.git json
+     git clone --branch=4.0-RC1 --depth=2 -- https://github.com/rayrobdod/json.git json
      cd json
      echo sbt.version=0.13.17>project/build.properties
      sbt ++%SCALA_VERSION% publishLocal

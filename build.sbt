@@ -19,7 +19,7 @@ lazy val view = (project in file("View"))
 			  name := "tile-view-shared"
 			, fork := true
 			, libraryDependencies ++= Seq(
-				  "com.rayrobdod" %% "json" % "3.1"
+				  "com.rayrobdod" %% "json" % "4.0-RC1"
 				, "com.lihaoyi" %% "fastparse" % "1.0.0"
 			)
 		)
@@ -60,7 +60,7 @@ lazy val sampleSwing = (project in file("SampleSwing"))
 			, fork := true
 			, mainClass in (Compile, run) := Some("com.rayrobdod.jsonTilesheetViewer.JsonTilesheetViewer")
 			, libraryDependencies ++= Seq(
-				"com.opencsv" % "opencsv" % "3.4"
+				  "com.opencsv" % "opencsv" % "3.4"
 			)
 		)
 	)
@@ -69,7 +69,7 @@ lazy val sampleJavaFx = (project in file("SampleJavaFx"))
 	.dependsOn(viewJavaFx)
 	.dependsOn(sampleSwing)
 	.settings(
-		  commonSettings
+		commonSettings
 		, commonTestSettings
 		, Seq(
 			  name := "tiles-sample-viewer-fx"

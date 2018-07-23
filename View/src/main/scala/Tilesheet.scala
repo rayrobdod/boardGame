@@ -45,7 +45,7 @@ trait Tilesheet[-SpaceClass, Index, Dimension, Icon] {
 		  field:Tiling[_ <: SpaceClass, Index, _]
 		, idx:Index
 		, rng:Random
-	):(Icon, Icon)
+	):TileLocationIcons[Icon]
 	
 	/**
 	 * the size of each tile

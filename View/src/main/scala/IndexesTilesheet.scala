@@ -39,7 +39,12 @@ final class IndexesTilesheet[Index, Dimension, Icon](
 	, override val iconDimensions:Dimension
 ) extends Tilesheet[Any, Index, Dimension, Icon] {
 	
-	override def getIconFor(f:Tiling[_ <: Any, Index, _], idx:Index, rng:Random):(Icon, Icon) = {
-		(( fillIcon(idx), stringIcon(idx.toString) ))
-	}
+	override def getIconFor(
+			  f:Tiling[_ <: Any, Index, _]
+			, idx:Index
+			, rng:Random
+	):TileLocationIcons[Icon] = TileLocationIcons(
+			  fillIcon(idx)
+			, stringIcon(idx.toString)
+	)
 }

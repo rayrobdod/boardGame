@@ -32,10 +32,10 @@ import java.awt.Dimension;
 import java.awt.LayoutManager2;
 
 /**
- * A layout that makes every component on atop another
+ * A layout that causes every inner component to take the entire space of the
+ * container, one atop another
  */
-public class LayeredLayout implements LayoutManager2
-{
+public final class LayeredLayout implements LayoutManager2 {
 	/** Creates a layered layout. */
 	public LayeredLayout() {}
 	

@@ -22,14 +22,14 @@ import org.scalatest.FunSpec
 class NilTilesheetTest extends FunSpec {
 	describe ("NilTilesheet") {
 		val dut = new NilTilesheet[Int, Float, Float](() => 1f, 2f)
-		it ("getIconFor(null, 0, 0, null)._1 is BlankIcon") {
-			assertResult(1f){dut.getIconFor(null, -1, null)._1}
+		it ("getIconFor(null, 0, 0, null).aboveFrames is BlankIcon") {
+			assertResult(Seq(1f)){dut.getIconFor(null, -1, null).aboveFrames}
 		}
-		it ("getIconFor(null, 0, 1, null)._1 is BlankIcon") {
-			assertResult(1f){dut.getIconFor(null, 0, null)._1}
+		it ("getIconFor(null, 0, 1, null).aboveFrames is BlankIcon") {
+			assertResult(Seq(1f)){dut.getIconFor(null, 0, null).aboveFrames}
 		}
 		it ("getIconFor(null, 0, 0, null)._2 is BlankIcon") {
-			assertResult(1f){dut.getIconFor(null, 1, null)._2}
+			assertResult(Seq(1f)){dut.getIconFor(null, 1, null).belowFrames}
 		}
 		it ("dimension is dimension") {
 			assertResult(2f){dut.iconDimensions}

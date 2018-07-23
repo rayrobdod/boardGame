@@ -17,6 +17,7 @@
 */
 package com.rayrobdod
 
+import java.awt.{Insets, GridBagConstraints}
 import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.immutable.Seq
 import scala.util.Random
@@ -45,6 +46,10 @@ package object jsonTilesheetViewer {
 	val TAG_SHEET_CHECKER:String = "tag:rayrobdod.name,2013-08:tilesheet-checker"
 	
 	
+	val mySpaceClassMatcherFactory = {
+		com.rayrobdod.boardGame.view.AdjacentSpacesSpecifierParser.spaceClassMatcherFactory({x => Option(x)})
+	}
+	
 	
 	private def urlOrFileStringToUrl(s:String):java.net.URL = {
 		try {
@@ -56,26 +61,23 @@ package object jsonTilesheetViewer {
 	}
 	
 	def allClassesInTilesheet(f:com.rayrobdod.boardGame.view.Tilesheet[SpaceClass, _, _, _]):Seq[SpaceClass] = {
-		import com.rayrobdod.boardGame.SpaceClassMatcher
 		import com.rayrobdod.boardGame.view.ParamaterizedVisualizationRule
 		import com.rayrobdod.boardGame.view.VisualizationRuleBasedTilesheet
 		import com.rayrobdod.boardGame.view.HashcodeColorTilesheet
-		import StringSpaceClassMatcherFactory.EqualsMatcher
+		import com.rayrobdod.boardGame.view.AdjacentSpacesSpecifierParser
 		
 		val a = f match {
 			case x:VisualizationRuleBasedTilesheet[SpaceClass, _, _, _, _] => {
-				val a:Seq[ParamaterizedVisualizationRule[SpaceClass, _, _]] = x.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[SpaceClass, _, _]]}
-				val b:Seq[Map[_, SpaceClassMatcher[SpaceClass]]] = a.map{_.surroundingTiles}
-				val c:Seq[Seq[SpaceClassMatcher[SpaceClass]]] = b.map{(a) => (Seq.empty ++ a.toSeq).map{_._2}}
-				val d:Seq[SpaceClassMatcher[SpaceClass]] = c.flatten
-				
-				val e:Seq[Option[SpaceClass]] = d.map{_ match {
-					case EqualsMatcher(ref) => Option(ref)
-					case _ => None
-				}}
-				val f:Seq[SpaceClass] = e.flatten.distinct
-				
-				f
+				(
+					for (
+						rule <- x.visualizationRules.map{_.asInstanceOf[ParamaterizedVisualizationRule[SpaceClass, _, _]]};
+						matcher <- rule.surroundingTiles.values;
+						spaceclassOpt <- AdjacentSpacesSpecifierParser.leavesIn(matcher).toSeq;
+						spaceclass <- spaceclassOpt
+					) yield {
+						spaceclass
+					}
+				).distinct
 			}
 			// designed to be one of each color // green, blue, red, white
 			//case x:HashcodeColorTilesheet[SpaceClass] => Seq("AWv", "Ahf", "\u43c8\u0473\u044b", "")
@@ -136,15 +138,37 @@ package object jsonTilesheetViewer {
 		
 		val layoutReader = new InputStreamReader(urlOrFileStringToUrl(url).openStream(), UTF_8)
 		val layoutTable:Seq[Seq[String]] = {
-			import scala.collection.JavaConversions.collectionAsScalaIterable;
+			import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 			
 			val reader = new CSVReader(layoutReader);
 			val letterTable3 = reader.readAll();
-			val letterTable = Seq.empty ++ letterTable3.map{Seq.empty ++ _}
+			val letterTable = letterTable3.asScala.map{_.to[Seq]}.to[Seq]
 			
 			letterTable
 		}
 		
 		props.arbitraryField( layoutTable )
 	}
+	
+	/**
+	 * A factory for [[java.awt.GridBagConstraints]].
+	 * 
+	 * This uses the new method of GridBagConstraints; the main difference is that this has default parameters.
+	 */
+	def gridBagConstraints(
+			gridx:Int = GridBagConstraints.RELATIVE,
+			gridy:Int = GridBagConstraints.RELATIVE,
+			gridwidth:Int = 1,
+			gridheight:Int = 1,
+			weightx:Double = 0,
+			weighty:Double = 0,
+			anchor:Int = GridBagConstraints.CENTER,
+			fill:Int = GridBagConstraints.NONE,
+			insets:Insets = new Insets(0,0,0,0),
+			ipadx:Int = 0,
+			ipady:Int = 0
+	) = new GridBagConstraints(
+			gridx, gridy, gridwidth, gridheight,
+			weightx, weighty, anchor, fill, insets, ipadx, ipady
+	)
 }

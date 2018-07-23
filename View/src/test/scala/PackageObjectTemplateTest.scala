@@ -13,7 +13,7 @@ final class PackageObjectTemplateTest extends FunSpec {
 	
 	describe ("NilTilesheet") {
 		it ("uses blankIcon") {
-			assertResult( ((FakeBlankIcon, FakeBlankIcon)) ){
+			assertResult( TileLocationIcons(FakeBlankIcon, FakeBlankIcon) ){
 				FakePackageObject.NilTilesheet(RectangularDimension(20, 20)).getIconFor(null, null, null)
 			}
 		}
@@ -28,7 +28,7 @@ final class PackageObjectTemplateTest extends FunSpec {
 		val field = RectangularField( Map(((0, 0)) -> 0) )
 		
 		it ("uses rgbToRectangularIcon") {
-			assertResult( ((FakeSolidRectIcon(new Color(0), dim), FakeBlankIcon )) ){
+			assertResult( TileLocationIcons(FakeSolidRectIcon(new Color(0), dim), FakeBlankIcon) ){
 				FakePackageObject.HashcodeColorTilesheet(dim).getIconFor(field, ((0,0)), null)
 			}
 		}
@@ -45,7 +45,7 @@ final class PackageObjectTemplateTest extends FunSpec {
 		it ("uses rgbToHorizontalHexagonalIcon") {
 			val icon = FakePackageObject.HashcodeColorTilesheet(dim).getIconFor(field, ((0,0)), null)
 			icon match {
-				case ((FakePolygonIcon(Color.black, polygon), FakeBlankIcon )) =>
+				case TileLocationIcons(Seq(FakePolygonIcon(Color.black, polygon)), Seq(FakeBlankIcon)) =>
 					assert( polygonEquals( dim.toPolygon, polygon ) )
 				case _ => fail(icon.toString)
 			}
@@ -61,14 +61,14 @@ final class PackageObjectTemplateTest extends FunSpec {
 		
 		it ("do thing") {
 			for (x <- -5 to 10; y <- -5 to 10) { if ((x + y) % 2 == 0) {
-				assertResult( ((FakeSolidRectIcon(Color.cyan, dim), FakeStringIcon(s"($x,$y)", Color.black) )) ){
+				assertResult( TileLocationIcons(Seq(FakeSolidRectIcon(Color.cyan, dim)), Seq(FakeStringIcon(s"($x,$y)", Color.black)) )){
 					FakePackageObject.IndexesTilesheet(dim).getIconFor(null, ((x,y)), null)
 				}
 			}}
 		}
 		it ("uses alternating colors") {
 			for (x <- -5 to 10; y <- -5 to 10) { if ((x + y) % 2 == 1) {
-				assertResult( ((FakeSolidRectIcon(Color.magenta, dim), FakeStringIcon(s"($x,$y)", Color.black) )) ){
+				assertResult( TileLocationIcons(Seq(FakeSolidRectIcon(Color.magenta, dim)), Seq(FakeStringIcon(s"($x,$y)", Color.black)) )){
 					FakePackageObject.IndexesTilesheet(dim).getIconFor(null, ((x,y)), null)
 				}
 			}}
@@ -85,7 +85,7 @@ final class PackageObjectTemplateTest extends FunSpec {
 		it ("do thing") {
 			val icon = FakePackageObject.IndexesTilesheet(dim).getIconFor(null, ((0,0)), null)
 			icon match {
-				case ((FakePolygonIcon(Color.cyan, polygon), FakeStringIcon("(0,0)", Color.black) )) =>
+				case TileLocationIcons(Seq(FakePolygonIcon(Color.cyan, polygon)), Seq(FakeStringIcon("(0,0)", Color.black)) ) =>
 					assert( polygonEquals( dim.toPolygon, polygon ) )
 				case _ => fail(icon.toString)
 			}
@@ -93,7 +93,7 @@ final class PackageObjectTemplateTest extends FunSpec {
 		it ("uses alternating colors") {
 			val icon = FakePackageObject.IndexesTilesheet(dim).getIconFor(null, ((0,1)), null)
 			icon match {
-				case ((FakePolygonIcon(Color.magenta, polygon), FakeStringIcon("(0,1)", Color.black) )) =>
+				case TileLocationIcons(Seq(FakePolygonIcon(Color.magenta, polygon)), Seq(FakeStringIcon("(0,1)", Color.black)) ) =>
 					assert( polygonEquals( dim.toPolygon, polygon ) )
 				case _ => fail(icon.toString)
 			}
@@ -101,7 +101,7 @@ final class PackageObjectTemplateTest extends FunSpec {
 		it ("uses alternating colors (2)") {
 			val icon = FakePackageObject.IndexesTilesheet(dim).getIconFor(null, ((1,0)), null)
 			icon match {
-				case ((FakePolygonIcon(ColorRgb(128, 255, 128), polygon), FakeStringIcon("(1,0)", Color.black) )) =>
+				case TileLocationIcons(Seq(FakePolygonIcon(ColorRgb(128, 255, 128), polygon)), Seq(FakeStringIcon("(1,0)", Color.black)) ) =>
 					assert( polygonEquals( dim.toPolygon, polygon ) )
 			}
 		}
@@ -116,12 +116,12 @@ final class PackageObjectTemplateTest extends FunSpec {
 		def fixedRng(x:Int) = new Random(new java.util.Random(){override def next(bits:Int):Int = x})
 		
 		it ("do thing") {
-			assertResult( ((FakeSolidRectIcon(new Color(0x123456), dim), FakeStringIcon("123456", Color.white) )) ){
+			assertResult( TileLocationIcons(Seq(FakeSolidRectIcon(new Color(0x123456), dim)), Seq(FakeStringIcon("123456", Color.white))) ){
 				FakePackageObject.RandomColorTilesheet(dim).getIconFor(null, null, fixedRng(0x123456))
 			}
 		}
 		it ("do thing (light)") {
-			assertResult( ((FakeSolidRectIcon(new Color(0xC0FFEE), dim), FakeStringIcon("c0ffee", Color.black) )) ){
+			assertResult( TileLocationIcons(Seq(FakeSolidRectIcon(new Color(0xC0FFEE), dim)), Seq(FakeStringIcon("c0ffee", Color.black))) ){
 				FakePackageObject.RandomColorTilesheet(dim).getIconFor(null, null, fixedRng(0xC0FFEE))
 			}
 		}
@@ -162,7 +162,7 @@ object PackageObjectTemplateTest {
 		override def sheeturl2images(sheetUrl:URL, tileDimension:AwtDimension):Seq[FakeIconPart] = {
 			(0 to 63).map{idx => FakeIconPart(sheetUrl, tileDimension, idx)}
 		}
-		override def renderable[Index, Dimension](tiles:Map[Index, FakeIcon], dimension:Dimension)(implicit iconLocation:IconLocation[Index, Dimension]):Renderable[Index, RenderableComponentType] = ???
+		override def renderable[Index, Dimension](tiles:Map[Index, Seq[FakeIcon]], dimension:Dimension)(implicit iconLocation:IconLocation[Index, Dimension]):Renderable[Index, RenderableComponentType] = ???
 	}
 	
 	object ColorRgb {

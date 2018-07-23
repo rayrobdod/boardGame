@@ -56,7 +56,7 @@ trait CoordinateFunction[-Index, @specialized(Int, Boolean) A] {
 			name:String,
 			incrementDivCount:Int = 0,
 			incrementAndCount:Int = 0
-	) = {
+	):CoordinateFunction[Index2, C] = {
 		new CoordinateFunction[Index2, C]{
 			override def apply(idx:Index2):C =
 				mapping(CoordinateFunction.this.apply(idx), rhs.apply(idx))
@@ -64,6 +64,8 @@ trait CoordinateFunction[-Index, @specialized(Int, Boolean) A] {
 			override def andCount:Int = CoordinateFunction.this.andCount + rhs.andCount + incrementAndCount
 			override def primitiveSum:Int = CoordinateFunction.this.primitiveSum + rhs.primitiveSum
 			override def toString = name
+			// On the one hand, equals seems useful, on the other, comparing toStrings seems to work well enough in the tests
+			// Not to mention, equals with a Funciton is a bit hard
 		}
 	}
 }
@@ -74,8 +76,7 @@ trait CoordinateFunction[-Index, @specialized(Int, Boolean) A] {
  * @group CoordinateFunction
  */
 private[view] object CoordinateFunction {
-	/** A CoordinateFunction that always returns the specified value */
-	def constant[@specialized(Int, Boolean) A](a:A):CoordinateFunction[Any, A] = new CoordinateFunction[Any, A]{
+	private[this] final class ConstantCoordinateFunction[@specialized(Int, Boolean) A](a:A) extends CoordinateFunction[Any, A]{
 		override def apply(idx:Any):A = a
 		override def primitiveSum:Int = {
 			if (a.isInstanceOf[Int]) {a.asInstanceOf[Int]} else {0}
@@ -84,5 +85,14 @@ private[view] object CoordinateFunction {
 			if (a.isInstanceOf[Boolean]) {a.asInstanceOf[Boolean]} else {false}
 		}
 		override def toString:String = a.toString
+		override def equals(x:Any):Boolean = x match {
+			case rhs:ConstantCoordinateFunction[_] => {
+				this.apply("blah").equals(rhs.apply("blah"))
+			}
+			case _ => false
+		}
 	}
+	
+	/** A CoordinateFunction that always returns the specified value */
+	def constant[@specialized(Int, Boolean) A](a:A):CoordinateFunction[Any, A] = new ConstantCoordinateFunction[A](a)
 }
